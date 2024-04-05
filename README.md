@@ -3,7 +3,7 @@
 Projet d'informatique pour la fin de notre année en Pré ING 1
 Fait par le trinôme A
 
-##Contributeurs
+## Contributeurs
 
 Romain MICHAUT--JOYEUX
 Kevin NGUYEN OANH
