@@ -5,6 +5,6 @@ Fait par le trinôme A
 
 ## Contributeurs
 
-Romain MICHAUT--JOYEUX
-Kevin NGUYEN OANH
-Mathis SINET
+- Romain MICHAUT--JOYEUX
+- Kevin NGUYEN OANH
+- Mathis SINET
