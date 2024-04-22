@@ -21,5 +21,5 @@ $(BUILD):
 clean:
 	cd $(BUILD)/; rm *.o; cd ..
 
-run:
+run: $(BUILD)/CosmicYonder
 	cd $(BUILD); ./CosmicYonder
