@@ -1,4 +1,18 @@
+/*
+The part of the code not related to display.
+*/
+
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
+
 #include "settings.h"
+
+typedef struct Coordinates
+{
+    int16_t x;
+    int16_t y;
+}Co;
 
 //Structure for the items
 typedef struct Item
@@ -11,10 +25,10 @@ Item;
 typedef struct Player
 {
     char name[MAX_PLAYER_NAME_COUNT];
-    uint32_t hp;
-    uint32_t xp;
-    uint32_t atk;
-    uint32_t def;
+    int32_t hp;
+    int32_t xp;
+    int32_t atk;
+    int32_t def;
 }
 Player;
 
@@ -23,8 +37,7 @@ typedef struct Room
     bool is_generated; //is the room generated
 
     //coordinates of the top-left corner of the room
-    uint16_t x; 
-    uint16_t y;
+    Co corner;
 
     uint8_t width;
     uint8_t height;
@@ -39,6 +52,8 @@ typedef struct Region
     int8_t **grid;
     Room *roomlist;
     uint16_t allocated_rooms;
+
+    Co zero; //coordinated in grid of the zero
 }
 Region;
 

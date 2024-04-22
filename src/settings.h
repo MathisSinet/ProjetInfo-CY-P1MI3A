@@ -1,7 +1,6 @@
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
-
+/*
+Definitions of the balance parameters of the game.
+*/
 
 #define MAX_ROOM_COUNT 50
 

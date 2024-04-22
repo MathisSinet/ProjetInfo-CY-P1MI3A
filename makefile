@@ -1,18 +1,25 @@
 DIR=src
+BUILD=build
 
-all: $(DIR)/CosmicYonder
+all: $(BUILD)/CosmicYonder
 
-$(DIR)/game.o: $(DIR)/game.c $(DIR)/settings.h $(DIR)/game.h 
+$(BUILD)/game.o: $(DIR)/game.c $(DIR)/settings.h $(DIR)/game.h $(BUILD)
 	gcc -c $< -o $@
 
-$(DIR)/display.o: $(DIR)/display.c $(DIR)/display.h 
+$(BUILD)/display.o: $(DIR)/display.c $(DIR)/display.h $(BUILD)
 	gcc -c $< -o $@
 
-$(DIR)/main.o: $(DIR)/main.c
+$(BUILD)/main.o: $(DIR)/main.c $(BUILD)
 	gcc -c $< -o $@
 
-$(DIR)/CosmicYonder: $(DIR)/game.o $(DIR)/display.o  $(DIR)/main.o
+$(BUILD)/CosmicYonder: $(BUILD)/game.o $(BUILD)/display.o  $(BUILD)/main.o
 	gcc $^ -o $@
 
+$(BUILD):
+	mkdir -p $(BUILD)/
+
 clean:
-	cd $(DIR); rm *.o; cd ..
+	cd $(BUILD)/; rm *.o; cd ..
+
+run:
+	cd $(BUILD); ./CosmicYonder
