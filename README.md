@@ -8,3 +8,9 @@ Fait par le trinôme A
 - Romain MICHAUT--JOYEUX
 - Kevin NGUYEN OANH
 - Mathis SINET
+
+## Utilisation
+
+Pour compiler la solution, utiliser `make`.
+
+Pour exécuter la solution, utiliser `make run`.
