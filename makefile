@@ -1,25 +1,33 @@
-DIR=src
-BUILD=build
+#Core variables
 
-all: $(BUILD)/CosmicYonder
+DIR = src
+BUILD = build
+EXEC = $(BUILD)/CosmicYonder
 
-$(BUILD)/game.o: $(DIR)/game.c $(DIR)/settings.h $(DIR)/game.h $(BUILD)
-	gcc -c $< -o $@
+#Soucre list
 
-$(BUILD)/display.o: $(DIR)/display.c $(DIR)/display.h $(BUILD)
-	gcc -c $< -o $@
+SRC = $(wildcard src/*.c)
+OBJ = $(patsubst $(DIR)/%.c,$(BUILD)/%.o,$(SRC))
 
-$(BUILD)/main.o: $(DIR)/main.c $(BUILD)
-	gcc -c $< -o $@
+#Compiler flags
 
-$(BUILD)/CosmicYonder: $(BUILD)/game.o $(BUILD)/display.o  $(BUILD)/main.o
-	gcc $^ -o $@
+CFLAGS = -Wall
+
+#Targets
+
+all: $(EXEC)
+
+$(BUILD)/%.o: $(DIR)/%.c $(DIR)/%.h $(DIR)/settings.h | $(BUILD)
+	gcc $(CFLAGS) -c $< -o $@
+
+$(EXEC): $(OBJ)
+	gcc $(CFLAGS) $^ -o $@
 
 $(BUILD):
 	mkdir -p $(BUILD)/
 
 clean:
-	cd $(BUILD)/; rm *.o; cd ..
+	rm -rf $(BUILD)
 
-run: $(BUILD)/CosmicYonder
-	cd $(BUILD); ./CosmicYonder
+run: $(EXEC)
+	$(EXEC)
