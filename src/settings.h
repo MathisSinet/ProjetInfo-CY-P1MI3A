@@ -10,5 +10,9 @@ Definitions of the balance parameters of the game.
 #define MAX_PLAYER_NAME_COUNT 35
 #define MAX_INVENTORY_SIZE 5
 
+/*
+Constants used by the random number generator.
+*/
+
 #define RAND_A 157
 #define RAND_C 221
