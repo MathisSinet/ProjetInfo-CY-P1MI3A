@@ -2,9 +2,11 @@
 The part of the code not related to display.
 */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <time.h>
 
 #include "settings.h"
 
@@ -48,13 +50,29 @@ Room;
 
 typedef struct Region
 {
-    uint64_t seed;
+    uint32_t seed;
+
     int8_t **grid;
-    Room *roomlist;
+    uint16_t grid_width;
+    uint16_t grid_height;
+
+
+    Room *roomlist[MAX_ROOM_COUNT];
     uint16_t allocated_rooms;
+
 
     Co zero; //coordinated in grid of the zero
 }
 Region;
 
+//Coordinates builder
+Co coordinates(int16_t, int16_t);
+
+//generate a random number with the region's seed
+uint32_t new_rand(Region*); 
+
+//initializes a new map
+void initial_map(Region*);
+
+//allocated a room
 void allocate_room(Region*, uint16_t, uint16_t);
