@@ -12,7 +12,7 @@ OBJ = $(patsubst $(DIR)/%.c,$(BUILD)/%.o,$(SRC))
 
 #Compiler flags
 
-CFLAGS = -Wall -lcurses
+CFLAGS = -Wall -lncurses
 
 #Targets
 
@@ -29,6 +29,9 @@ $(BUILD):
 
 clean:
 	rm -rf $(BUILD)
+
+touch:
+	touch src/*
 
 run: $(EXEC)
 	$(EXEC)

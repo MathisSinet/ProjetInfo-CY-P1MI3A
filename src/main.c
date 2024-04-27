@@ -7,10 +7,11 @@ int main(int argc, char **argv)
     srand(time(NULL));
     rand();
 
+    initial_map(&reg);
+
     initscr();
 
-    initial_map(&reg);
-    HelloWorld();
+    init_debug_print(&reg);
     
     endwin();
     

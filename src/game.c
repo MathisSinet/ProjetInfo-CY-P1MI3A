@@ -15,9 +15,18 @@ uint32_t new_rand(Region* r)
     return r->seed;
 }
 
-uint32_t randint(Region *r, uint32_t min, uint32_t max)
+int32_t randint(Region *r, int32_t min, int32_t max)
 {
-    return new_rand(r) % (min-max+1) + min;
+    return new_rand(r) % (max-min+1) + min;
+}
+
+int8_t* get_from_grid(Region* reg, int32_t x, int32_t y)
+{
+    //ATTENTION SEGFAULT
+    //fprintf(stderr, "\nCalling get_from_grid... ");
+    //fprintf(stderr, "x=%d,y=%d... ",x,y);
+    //fprintf(stderr, "zero x=%d,y=%d",reg->zero.x, reg->zero.y);
+    return reg->grid[reg->zero.x + x] + reg->zero.y + y;
 }
 
 Room *allocate_room(Region* r)
@@ -35,10 +44,74 @@ void init_room(Room* room)
 {
     room->is_generated = false;
     room->door_count = 0;
-    room->door_north = NULL;
-    room->door_east = NULL;
-    room->door_south = NULL;
-    room->door_west = NULL;
+    room->door_north.exists = false;
+    room->door_north.to = NULL;
+    room->door_east.exists = false;
+    room->door_east.to = NULL;
+    room->door_south.exists = false;
+    room->door_south.to = NULL;
+    room->door_west.exists = false;
+    room->door_west.to = NULL;
+}
+
+bool is_free_box(Region *reg, Co corner, uint16_t width, uint16_t height)
+{
+    for (int x=corner.x; x<corner.x+width; x++)
+    {
+        for (int y=corner.y; y<corner.y+height; y++)
+        {
+            if (*get_from_grid(reg, x, y) != VOID)
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+void reserve_box(Region *reg, Co corner)
+{
+    for (int x=corner.x; x<corner.x+RESERVE_WIDTH; x++)
+    {
+        for (int y=corner.y; y<corner.y+RESERVE_HEIGHT; y++)
+        {
+            *get_from_grid(reg, x, y) = RESERVED;
+        }
+    }
+}
+
+int reserve_room(Region* reg, Room* room, Pole pole)
+{
+    Co corner;
+    Room *newroom;
+
+    if (reg->allocated_rooms == MAX_ROOM_COUNT)
+    {
+        return 0;
+    }
+
+    switch (pole)
+    {
+    case NORTH:
+        corner.x = room->corner.x + room->door_north.dist - 1;
+        corner.y = room->corner.y - RESERVE_HEIGHT + 1;
+        //fprintf(stderr, "room corner %d,%d, dist:%d\n", room->corner.x, room->corner.y, room->door_north.dist);
+        if (!is_free_box(reg, corner, RESERVE_WIDTH, RESERVE_HEIGHT))
+        {
+            return 0;
+        }
+        reserve_box(reg, corner);
+        newroom = allocate_room(reg);
+        init_room(newroom);
+        room->door_north.to = &newroom;
+        newroom->door_south.to = &room;
+        newroom->door_south.exists = true;
+        break;
+    
+    default:
+        break;
+    }
+
+    return 1;
 }
 
 void initial_map(Region* reg)
@@ -77,5 +150,27 @@ void initial_map(Region* reg)
     firstRoom->width = 11;
     firstRoom->height = 11;
     firstRoom->door_count = 4;
-    //...
+    
+    firstRoom->door_north.exists = true;
+    firstRoom->door_north.dist = randint(reg, 1, 9);
+    reserve_room(reg, firstRoom, NORTH);
+
+    firstRoom->door_east.exists = true;
+    firstRoom->door_east.dist = randint(reg, 1, 9);
+    firstRoom->door_south.exists = true;
+    firstRoom->door_south.dist = randint(reg, 1, 9);
+    firstRoom->door_west.exists = true;
+    firstRoom->door_west.dist = randint(reg, 1, 9);
+
+    for (int dx=0; dx<firstRoom->width; dx++)
+    {
+        if (dx == firstRoom->door_north.dist)
+        {
+            *get_from_grid(reg, firstRoom->corner.x + dx, firstRoom->corner.y) = DOOR;
+        }
+        else
+        {
+            *get_from_grid(reg, firstRoom->corner.x + dx, firstRoom->corner.y) = WALL;
+        }
+    }
 }
