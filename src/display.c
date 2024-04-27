@@ -2,5 +2,7 @@
 
 void HelloWorld()
 {
-    printf("Hello world!\n");
+    printw("Hello world!\n");
+    refresh();
+    getch();
 }

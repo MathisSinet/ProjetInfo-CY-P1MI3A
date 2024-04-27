@@ -15,6 +15,32 @@ uint32_t new_rand(Region* r)
     return r->seed;
 }
 
+uint32_t randint(Region *r, uint32_t min, uint32_t max)
+{
+    return new_rand(r) % (min-max+1) + min;
+}
+
+Room *allocate_room(Region* r)
+{
+    int index = r->allocated_rooms++;
+    r->roomlist[index] = malloc(sizeof(Room));
+    if (r->roomlist[index] == NULL)
+    {
+        perror("Room allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
+    return r->roomlist[index];
+}
+void init_room(Room* room)
+{
+    room->is_generated = false;
+    room->door_count = 0;
+    room->door_north = NULL;
+    room->door_east = NULL;
+    room->door_south = NULL;
+    room->door_west = NULL;
+}
+
 void initial_map(Region* reg)
 {
     //Room list initialisation
@@ -47,5 +73,9 @@ void initial_map(Region* reg)
     }
 
     //First room initialisation
+    Room *firstRoom = allocate_room(reg);
+    firstRoom->width = 11;
+    firstRoom->height = 11;
+    firstRoom->door_count = 4;
     //...
 }

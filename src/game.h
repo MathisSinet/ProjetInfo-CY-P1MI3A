@@ -10,6 +10,15 @@ The part of the code not related to display.
 
 #include "settings.h"
 
+typedef enum
+{
+    RESERVED = -1, //reserved space for a roow which door was already generated
+    VOID = 0,
+    WALL = 1,
+    DOOR = 2,
+}
+GridConst;
+
 //Coordinates structure, with x and y
 typedef struct Coordinates
 {
@@ -32,6 +41,7 @@ typedef struct Player
     int32_t xp;
     int32_t atk;
     int32_t def;
+    Co loc;
 }
 Player;
 
@@ -50,6 +60,10 @@ typedef struct Room
     uint8_t height;
 
     uint8_t door_count;
+    struct Room **door_north;
+    struct Room **door_east;
+    struct Room **door_south;
+    struct Room **door_west;
 }
 Room;
 
@@ -70,7 +84,10 @@ typedef struct Region
     uint16_t allocated_rooms;
 
     //coordinated in grid of the zero
-    Co zero; 
+    Co zero;
+
+    //death timer
+    int deathtimer;
 }
 Region;
 
@@ -78,10 +95,14 @@ Region;
 Co coordinates(int16_t, int16_t);
 
 //generates a random number with the region's seed
-uint32_t new_rand(Region*); 
+uint32_t new_rand(Region*);
+//Generates a random number between min and max inclusive using the region's seed
+uint32_t randint(Region*, uint32_t, uint32_t);
+
+//allocates memory for a room, stores it in the region and returns a pointer to it
+Room *allocate_room(Region*);
+void init_room(Room*);
 
 //initializes a new map
 void initial_map(Region*);
 
-//allocates a room
-void allocate_room(Region*, uint16_t, uint16_t);

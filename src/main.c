@@ -7,8 +7,12 @@ int main(int argc, char **argv)
     srand(time(NULL));
     rand();
 
+    initscr();
+
     initial_map(&reg);
     HelloWorld();
+    
+    endwin();
     
     return 0;
 }

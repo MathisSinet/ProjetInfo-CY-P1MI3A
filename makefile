@@ -3,6 +3,7 @@
 DIR = src
 BUILD = build
 EXEC = $(BUILD)/CosmicYonder
+CC = gcc
 
 #Soucre list
 
@@ -11,17 +12,17 @@ OBJ = $(patsubst $(DIR)/%.c,$(BUILD)/%.o,$(SRC))
 
 #Compiler flags
 
-CFLAGS = -Wall
+CFLAGS = -Wall -lcurses
 
 #Targets
 
 all: $(EXEC)
 
 $(BUILD)/%.o: $(DIR)/%.c $(DIR)/%.h $(DIR)/settings.h | $(BUILD)
-	gcc $(CFLAGS) -c $< -o $@
+	$(CC) -c $< -o $@ $(CFLAGS)
 
 $(EXEC): $(OBJ)
-	gcc $(CFLAGS) $^ -o $@
+	$(CC) $^ -o $@ $(CFLAGS)
 
 $(BUILD):
 	mkdir -p $(BUILD)/
