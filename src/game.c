@@ -74,7 +74,10 @@ void reserve_box(Region *reg, Co corner)
     {
         for (int y=corner.y; y<corner.y+RESERVE_HEIGHT; y++)
         {
-            *get_from_grid(reg, x, y) = RESERVED;
+            if (*get_from_grid(reg, x, y) == VOID)
+            {
+                *get_from_grid(reg, x, y) = RESERVED;
+            }
         }
     }
 }
@@ -92,10 +95,10 @@ int reserve_room(Region* reg, Room* room, Pole pole)
     switch (pole)
     {
     case NORTH:
-        corner.x = room->corner.x + room->door_north.dist - 1;
+        corner.x = room->corner.x + room->door_north.dist - RESERVE_WIDTH/2;
         corner.y = room->corner.y - RESERVE_HEIGHT + 1;
         //fprintf(stderr, "room corner %d,%d, dist:%d\n", room->corner.x, room->corner.y, room->door_north.dist);
-        if (!is_free_box(reg, corner, RESERVE_WIDTH, RESERVE_HEIGHT))
+        if (!is_free_box(reg, corner, RESERVE_WIDTH, RESERVE_HEIGHT-1))
         {
             return 0;
         }
@@ -106,12 +109,112 @@ int reserve_room(Region* reg, Room* room, Pole pole)
         newroom->door_south.to = &room;
         newroom->door_south.exists = true;
         break;
+
+    case EAST:
+        corner.x = room->corner.x + room->width - 1;
+        corner.y = room->corner.y + room->door_east.dist - RESERVE_HEIGHT/2;
+        //fprintf(stderr, "room corner %d,%d, dist:%d\n", room->corner.x, room->corner.y, room->door_north.dist);
+        if (!is_free_box(reg, coordinates(corner.x+1, corner.y), RESERVE_WIDTH-1, RESERVE_HEIGHT))
+        {
+            return 0;
+        }
+        reserve_box(reg, corner);
+        newroom = allocate_room(reg);
+        init_room(newroom);
+        room->door_east.to = &newroom;
+        newroom->door_west.to = &room;
+        newroom->door_west.exists = true;
+        break;
+
+    case SOUTH:
+        corner.x = room->corner.x + room->door_south.dist - RESERVE_WIDTH/2;
+        corner.y = room->corner.y + room->height - 1;
+        //fprintf(stderr, "room corner %d,%d, dist:%d\n", room->corner.x, room->corner.y, room->door_north.dist);
+        if (!is_free_box(reg, coordinates(corner.x, corner.y+1), RESERVE_WIDTH, RESERVE_HEIGHT-1))
+        {
+            return 0;
+        }
+        reserve_box(reg, corner);
+        newroom = allocate_room(reg);
+        init_room(newroom);
+        room->door_south.to = &newroom;
+        newroom->door_north.to = &room;
+        newroom->door_north.exists = true;
+        break;
+
+    case WEST:
+        corner.x = room->corner.x - RESERVE_HEIGHT + 1;
+        corner.y = room->corner.y + room->door_west.dist - RESERVE_HEIGHT/2;
+        //fprintf(stderr, "room corner %d,%d, dist:%d\n", room->corner.x, room->corner.y, room->door_north.dist);
+        if (!is_free_box(reg, corner, RESERVE_WIDTH-1, RESERVE_HEIGHT))
+        {
+            return 0;
+        }
+        reserve_box(reg, corner);
+        newroom = allocate_room(reg);
+        init_room(newroom);
+        room->door_west.to = &newroom;
+        newroom->door_east.to = &room;
+        newroom->door_east.exists = true;
+        break;
     
     default:
         break;
     }
 
     return 1;
+}
+
+void wall_room(Region *reg, Room *room)
+{
+    //upper wall
+    for (int dx=0; dx<room->width; dx++)
+    {
+        if (dx == room->door_north.dist)
+        {
+            *get_from_grid(reg, room->corner.x + dx, room->corner.y) = DOOR;
+        }
+        else
+        {
+            *get_from_grid(reg, room->corner.x + dx, room->corner.y) = WALL;
+        }
+    }
+    //lower wall
+    for (int dx=0; dx<room->width; dx++)
+    {
+        if (dx == room->door_south.dist)
+        {
+            *get_from_grid(reg, room->corner.x + dx, room->corner.y + room->height-1) = DOOR;
+        }
+        else
+        {
+            *get_from_grid(reg, room->corner.x + dx, room->corner.y + room->height-1) = WALL;
+        }
+    }
+    //eastern wall
+    for (int dy=0; dy<room->height; dy++)
+    {
+        if (dy == room->door_east.dist)
+        {
+            *get_from_grid(reg, room->corner.x + room->width-1,  room->corner.y + dy) = DOOR;
+        }
+        else
+        {
+            *get_from_grid(reg, room->corner.x + room->width-1, room->corner.y + dy) = WALL;
+        }
+    }
+    //western wall
+    for (int dy=0; dy<room->height; dy++)
+    {
+        if (dy == room->door_west.dist)
+        {
+            *get_from_grid(reg, room->corner.x, room->corner.y + dy) = DOOR;
+        }
+        else
+        {
+            *get_from_grid(reg, room->corner.x, room->corner.y + dy) = WALL;
+        }
+    }
 }
 
 void initial_map(Region* reg)
@@ -147,30 +250,27 @@ void initial_map(Region* reg)
 
     //First room initialisation
     Room *firstRoom = allocate_room(reg);
-    firstRoom->width = 11;
-    firstRoom->height = 11;
+    firstRoom->width = 13;
+    firstRoom->height = 7;
+    firstRoom->corner.x = -6;
+    firstRoom->corner.y = -3;
     firstRoom->door_count = 4;
     
     firstRoom->door_north.exists = true;
-    firstRoom->door_north.dist = randint(reg, 1, 9);
+    firstRoom->door_north.dist = randint(reg, 1, 11);
     reserve_room(reg, firstRoom, NORTH);
 
     firstRoom->door_east.exists = true;
-    firstRoom->door_east.dist = randint(reg, 1, 9);
-    firstRoom->door_south.exists = true;
-    firstRoom->door_south.dist = randint(reg, 1, 9);
-    firstRoom->door_west.exists = true;
-    firstRoom->door_west.dist = randint(reg, 1, 9);
+    firstRoom->door_east.dist = randint(reg, 1, 5);
+    reserve_room(reg, firstRoom, EAST);
 
-    for (int dx=0; dx<firstRoom->width; dx++)
-    {
-        if (dx == firstRoom->door_north.dist)
-        {
-            *get_from_grid(reg, firstRoom->corner.x + dx, firstRoom->corner.y) = DOOR;
-        }
-        else
-        {
-            *get_from_grid(reg, firstRoom->corner.x + dx, firstRoom->corner.y) = WALL;
-        }
-    }
+    firstRoom->door_south.exists = true;
+    firstRoom->door_south.dist = randint(reg, 1, 11);
+    reserve_room(reg, firstRoom, SOUTH);
+
+    firstRoom->door_west.exists = true;
+    firstRoom->door_west.dist = randint(reg, 1, 5);
+    reserve_room(reg, firstRoom, WEST);
+
+    wall_room(reg, firstRoom);
 }

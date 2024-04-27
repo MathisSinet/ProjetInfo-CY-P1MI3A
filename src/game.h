@@ -132,6 +132,7 @@ bool is_free_box(Region*, Co, uint16_t, uint16_t);
 void reserve_box(Region*, Co);
 //reserves space for a room (1:success, 0:failure)
 int reserve_room(Region*, Room*, Pole);
+void wall_room(Region*, Room*);
 
 //initializes a new map
 void initial_map(Region*);
