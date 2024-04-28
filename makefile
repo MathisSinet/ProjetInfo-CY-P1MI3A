@@ -7,7 +7,7 @@ CC = gcc
 
 #Soucre list
 
-SRC = $(wildcard src/*.c)
+SRC = $(wildcard $(DIR)/*.c)
 OBJ = $(patsubst $(DIR)/%.c,$(BUILD)/%.o,$(SRC))
 
 #Compiler flags
@@ -27,11 +27,17 @@ $(EXEC): $(OBJ)
 $(BUILD):
 	mkdir -p $(BUILD)/
 
+#Clean the build directory
+
 clean:
 	rm -rf $(BUILD)
 
+#Touch every source file
+
 touch:
 	touch src/*
+
+#Run the program
 
 run: $(EXEC)
 	$(EXEC)

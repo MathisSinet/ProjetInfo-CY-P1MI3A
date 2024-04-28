@@ -127,11 +127,14 @@ int8_t *get_from_grid(Region*, int32_t, int32_t);
 Room *allocate_room(Region*);
 //initialises a non-generated room with no doors 
 void init_room(Room*);
+
 //used by reserve_room
 bool is_free_box(Region*, Co, uint16_t, uint16_t);
 void reserve_box(Region*, Co);
 //reserves space for a room (1:success, 0:failure)
 int reserve_room(Region*, Room*, Pole);
+
+//creates the walls of the room in the grid
 void wall_room(Region*, Room*);
 
 //initializes a new map
