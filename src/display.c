@@ -7,11 +7,49 @@ void HelloWorld()
     getch();
 }
 
+int MainMenu()
+{
+    uint8_t cursor = 0;
+    int chr;
+    clear();
+    mvprintw(0,0,"Bienvenue dans le jeu !");
+    mvprintw(1,0, "Appuyez sur entrée pour sélectionner ou sur les flèches pour vous déplacer");
+    mvprintw(2,0, "  : Nouvelle partie");
+    mvprintw(3,0, "  : Charger une partie");
+    mvprintw(4,0, "  : Quitter le jeu");
+    mvprintw(cursor+2, 0, "X");
+    while(true)
+    {
+        refresh();
+        chr = getch();
+        switch (chr)
+        {
+            case '\n':
+            case '\r':
+            case KEY_ENTER:
+                return cursor;
+            case KEY_DOWN:
+                mvprintw(cursor+2, 0, " ");
+                cursor = (cursor+1)%3;
+                mvprintw(cursor+2, 0, "X");
+                break;
+            case KEY_UP:
+                mvprintw(cursor+2, 0, " ");
+                cursor = (cursor+2)%3;
+                mvprintw(cursor+2, 0, "X");
+                break;
+            default:
+                mvprintw(5,0,"%d",chr);
+        }
+    }
+}
+
 void init_debug_print(Region *reg)
 {
     int w,h;
     getmaxyx(stdscr, h, w);
-    printw("w=%d,h=%d", w, h);
+    clear();
+    mvprintw(0,0,"w=%d,h=%d", w, h);
     refresh();
     getch();
     clear();
