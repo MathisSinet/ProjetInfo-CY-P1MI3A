@@ -248,7 +248,7 @@ void initial_map(Region* reg)
         }
     }
 
-    //First room initialisation
+    //First room initialization
     Room *firstRoom = allocate_room(reg);
     firstRoom->width = 13;
     firstRoom->height = 7;

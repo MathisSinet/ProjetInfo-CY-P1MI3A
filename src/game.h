@@ -15,7 +15,7 @@ The part of the code not related to display.
 
 typedef enum
 {
-    RESERVED = -1, //reserved space for a roow which door was already generated
+    RESERVED = -1, //reserved space for a room which door was already generated
     VOID = 0,
     WALL = 1,
     DOOR = 2,
@@ -118,14 +118,14 @@ Co coordinates(int16_t, int16_t);
 
 //generates a random number with the region's seed
 uint32_t new_rand(Region*);
-//Generates a random number between min and max inclusive using the region's seed
+//Generates a random number between min and max included using the region's seed
 int32_t randint(Region*, int32_t, int32_t);
 
 int8_t *get_from_grid(Region*, int32_t, int32_t);
 
 //allocates memory for a room, stores it in the region and returns a pointer to it
 Room *allocate_room(Region*);
-//initialises a non-generated room with no doors 
+//initializes a non-generated room with no doors 
 void init_room(Room*);
 
 //used by reserve_room
