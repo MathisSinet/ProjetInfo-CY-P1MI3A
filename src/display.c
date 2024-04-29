@@ -7,6 +7,37 @@ void HelloWorld()
     getch();
 }
 
+
+void getusrstr(int y, int x, char *buffer, int max_len, bool(*validatefunc)(int))
+{
+    int len=0;
+    int chr;
+
+    while(true)
+    {
+        chr = getch();
+
+        if (len > 0 && (chr == KEY_ENTER || chr == '\n' || chr == '\r'))
+        {
+            break;
+        }
+
+        if (len > 0 && (chr == KEY_BACKSPACE || chr == KEY_DC))
+        {
+            buffer[--len] = '\0';
+            mvaddstr(y, x+len, " ");
+            move(y, x+len);
+        }
+
+        if ((*validatefunc)(chr) && len < max_len-1)
+        {
+            buffer[len++] = (char) chr;
+            mvaddnstr(y, x, buffer, len);
+        }
+    }
+}
+
+
 int MainMenu()
 {
     uint8_t cursor = 0;

@@ -14,6 +14,8 @@
 
 //test
 void HelloWorld();
+//Dynamic way to asks for the user string in curses
+void getusrstr(int, int, char*, int, bool(*)(int));
 //Main Menu Loop
 int MainMenu();
 

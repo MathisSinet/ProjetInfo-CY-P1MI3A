@@ -114,6 +114,7 @@ Region;
 //Coordinates builder
 Co coordinates(int16_t, int16_t);
 
+bool is_digit(int);
 bool is_valid_playername_char(int);
 //generates a random number with the region's seed
 uint32_t new_rand(Region*);

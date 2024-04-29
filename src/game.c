@@ -8,10 +8,14 @@ Co coordinates(int16_t x, int16_t y)
     return ret;
 }
 
+bool is_digit(int chr)
+{
+    return (chr >= '0' && chr <= '9');
+}
 bool is_valid_playername_char(int chr)
 {
     return (
-        (chr >= '0' && chr <= '9') ||
+        is_digit(chr) ||
         (chr >= 'a' && chr <= 'z') ||
         (chr >= 'A' && chr <= 'Z') ||
         chr == '_'
