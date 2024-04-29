@@ -8,6 +8,16 @@ Co coordinates(int16_t x, int16_t y)
     return ret;
 }
 
+bool is_valid_playername_char(int chr)
+{
+    return (
+        (chr >= '0' && chr <= '9') ||
+        (chr >= 'a' && chr <= 'z') ||
+        (chr >= 'A' && chr <= 'Z') ||
+        chr == '_'
+    );
+}
+
 uint32_t new_rand(Region* r)
 {
     //before implementation of custom number generator, use rand
@@ -70,9 +80,9 @@ bool is_free_box(Region *reg, Co corner, uint16_t width, uint16_t height)
 }
 void reserve_box(Region *reg, Co corner)
 {
-    for (int x=corner.x; x<corner.x+RESERVE_WIDTH; x++)
+    for (int x=corner.x; x<corner.x+MIN_ROOM_WIDTH; x++)
     {
-        for (int y=corner.y; y<corner.y+RESERVE_HEIGHT; y++)
+        for (int y=corner.y; y<corner.y+MIN_ROOM_HEIGHT; y++)
         {
             if (*get_from_grid(reg, x, y) == VOID)
             {
@@ -95,10 +105,10 @@ int reserve_room(Region* reg, Room* room, Pole pole)
     switch (pole)
     {
     case NORTH:
-        corner.x = room->corner.x + room->door_north.dist - RESERVE_WIDTH/2;
-        corner.y = room->corner.y - RESERVE_HEIGHT + 1;
+        corner.x = room->corner.x + room->door_north.dist - MIN_ROOM_WIDTH/2;
+        corner.y = room->corner.y - MIN_ROOM_HEIGHT + 1;
         //fprintf(stderr, "room corner %d,%d, dist:%d\n", room->corner.x, room->corner.y, room->door_north.dist);
-        if (!is_free_box(reg, corner, RESERVE_WIDTH, RESERVE_HEIGHT-1))
+        if (!is_free_box(reg, corner, MIN_ROOM_WIDTH, MIN_ROOM_HEIGHT-1))
         {
             return 0;
         }
@@ -112,9 +122,9 @@ int reserve_room(Region* reg, Room* room, Pole pole)
 
     case EAST:
         corner.x = room->corner.x + room->width - 1;
-        corner.y = room->corner.y + room->door_east.dist - RESERVE_HEIGHT/2;
+        corner.y = room->corner.y + room->door_east.dist - MIN_ROOM_HEIGHT/2;
         //fprintf(stderr, "room corner %d,%d, dist:%d\n", room->corner.x, room->corner.y, room->door_north.dist);
-        if (!is_free_box(reg, coordinates(corner.x+1, corner.y), RESERVE_WIDTH-1, RESERVE_HEIGHT))
+        if (!is_free_box(reg, coordinates(corner.x+1, corner.y), MIN_ROOM_WIDTH-1, MIN_ROOM_HEIGHT))
         {
             return 0;
         }
@@ -127,10 +137,10 @@ int reserve_room(Region* reg, Room* room, Pole pole)
         break;
 
     case SOUTH:
-        corner.x = room->corner.x + room->door_south.dist - RESERVE_WIDTH/2;
+        corner.x = room->corner.x + room->door_south.dist - MIN_ROOM_WIDTH/2;
         corner.y = room->corner.y + room->height - 1;
         //fprintf(stderr, "room corner %d,%d, dist:%d\n", room->corner.x, room->corner.y, room->door_north.dist);
-        if (!is_free_box(reg, coordinates(corner.x, corner.y+1), RESERVE_WIDTH, RESERVE_HEIGHT-1))
+        if (!is_free_box(reg, coordinates(corner.x, corner.y+1), MIN_ROOM_WIDTH, MIN_ROOM_HEIGHT-1))
         {
             return 0;
         }
@@ -143,10 +153,10 @@ int reserve_room(Region* reg, Room* room, Pole pole)
         break;
 
     case WEST:
-        corner.x = room->corner.x - RESERVE_HEIGHT + 1;
-        corner.y = room->corner.y + room->door_west.dist - RESERVE_HEIGHT/2;
+        corner.x = room->corner.x - MIN_ROOM_HEIGHT + 1;
+        corner.y = room->corner.y + room->door_west.dist - MIN_ROOM_HEIGHT/2;
         //fprintf(stderr, "room corner %d,%d, dist:%d\n", room->corner.x, room->corner.y, room->door_north.dist);
-        if (!is_free_box(reg, corner, RESERVE_WIDTH-1, RESERVE_HEIGHT))
+        if (!is_free_box(reg, corner, MIN_ROOM_WIDTH-1, MIN_ROOM_HEIGHT))
         {
             return 0;
         }
@@ -250,26 +260,26 @@ void initial_map(Region* reg)
 
     //First room initialization
     Room *firstRoom = allocate_room(reg);
-    firstRoom->width = 13;
-    firstRoom->height = 7;
-    firstRoom->corner.x = -6;
-    firstRoom->corner.y = -3;
+    firstRoom->width = INIT_ROOM_WIDTH;
+    firstRoom->height = INIT_ROOM_HEIGHT;
+    firstRoom->corner.x = -INIT_ROOM_WIDTH/2;
+    firstRoom->corner.y = -INIT_ROOM_HEIGHT/2;
     firstRoom->door_count = 4;
     
     firstRoom->door_north.exists = true;
-    firstRoom->door_north.dist = randint(reg, 1, 11);
+    firstRoom->door_north.dist = randint(reg, MIN_ROOM_WIDTH/2, INIT_ROOM_WIDTH-(MIN_ROOM_WIDTH/2)-1);
     reserve_room(reg, firstRoom, NORTH);
 
     firstRoom->door_east.exists = true;
-    firstRoom->door_east.dist = randint(reg, 1, 5);
+    firstRoom->door_east.dist = randint(reg, MIN_ROOM_HEIGHT/2, INIT_ROOM_HEIGHT-(MIN_ROOM_HEIGHT/2)-1);
     reserve_room(reg, firstRoom, EAST);
 
     firstRoom->door_south.exists = true;
-    firstRoom->door_south.dist = randint(reg, 1, 11);
+    firstRoom->door_south.dist = randint(reg, MIN_ROOM_WIDTH/2, INIT_ROOM_WIDTH-(MIN_ROOM_WIDTH/2)-1);
     reserve_room(reg, firstRoom, SOUTH);
 
     firstRoom->door_west.exists = true;
-    firstRoom->door_west.dist = randint(reg, 1, 5);
+    firstRoom->door_west.dist = randint(reg, MIN_ROOM_HEIGHT/2, INIT_ROOM_HEIGHT-(MIN_ROOM_HEIGHT/2)-1);
     reserve_room(reg, firstRoom, WEST);
 
     wall_room(reg, firstRoom);

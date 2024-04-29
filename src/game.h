@@ -10,8 +10,6 @@ The part of the code not related to display.
 
 #include "settings.h"
 
-#define RESERVE_WIDTH 3
-#define RESERVE_HEIGHT 3
 
 typedef enum
 {
@@ -116,6 +114,7 @@ Region;
 //Coordinates builder
 Co coordinates(int16_t, int16_t);
 
+bool is_valid_playername_char(int);
 //generates a random number with the region's seed
 uint32_t new_rand(Region*);
 //Generates a random number between min and max included using the region's seed

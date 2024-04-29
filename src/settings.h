@@ -7,6 +7,12 @@ Definitions of the balance parameters of the game.
 #define MAX_ROOM_WIDTH 20
 #define MAX_ROOM_HEIGHT 8
 
+#define INIT_ROOM_WIDTH 17
+#define INIT_ROOM_HEIGHT 11
+
+#define MIN_ROOM_WIDTH 5
+#define MIN_ROOM_HEIGHT 5
+
 #define MAX_PLAYER_NAME_COUNT 35
 #define MAX_INVENTORY_SIZE 5
 
