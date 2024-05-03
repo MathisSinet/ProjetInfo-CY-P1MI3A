@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     Region reg;
     Player pl;
 
-    setlocale(LC_ALL, "fr_FR.UTF-8");
+    setlocale(LC_ALL, "");
     srand(time(NULL));
     rand();
 

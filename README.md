@@ -14,3 +14,7 @@ Fait par le trinôme A
 Pour compiler la solution, utiliser `make`.
 
 Pour exécuter la solution, utiliser `make run`.
+
+## Bibliothèques utilisées
+
+`ncursesw`

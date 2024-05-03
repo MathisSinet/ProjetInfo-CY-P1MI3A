@@ -12,7 +12,7 @@ OBJ = $(patsubst $(DIR)/%.c,$(BUILD)/%.o,$(SRC))
 
 #Compiler flags
 
-CFLAGS = -Wall -lncurses
+CFLAGS = -Wall -lncursesw
 
 #Targets
 

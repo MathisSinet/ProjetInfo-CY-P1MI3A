@@ -44,7 +44,8 @@ int MainMenu()
     int chr;
     clear();
     mvprintw(0,0,"Bienvenue dans le jeu !");
-    mvprintw(1,0, "Appuyez sur entrée pour sélectionner ou sur les flèches pour vous déplacer");
+    addwstr(L" 👽");
+    mvaddwstr(1,0, L"Appuyez sur entrée pour sélectionner ou sur les flèches pour vous déplacer");
     mvprintw(2,0, "  : Nouvelle partie");
     mvprintw(3,0, "  : Charger une partie");
     mvprintw(4,0, "  : Quitter le jeu");
