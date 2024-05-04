@@ -203,7 +203,7 @@ void wall_room(Region *reg, Room *room)
     //upper wall
     for (int dx=0; dx<room->width; dx++)
     {
-        if (dx == room->door_north.dist)
+        if (room->door_north.exists && dx == room->door_north.dist)
         {
             *get_from_grid(reg, room->corner.x + dx, room->corner.y) = DOOR;
         }
@@ -215,7 +215,7 @@ void wall_room(Region *reg, Room *room)
     //lower wall
     for (int dx=0; dx<room->width; dx++)
     {
-        if (dx == room->door_south.dist)
+        if (room->door_south.exists && dx == room->door_south.dist)
         {
             *get_from_grid(reg, room->corner.x + dx, room->corner.y + room->height-1) = DOOR;
         }
@@ -227,7 +227,7 @@ void wall_room(Region *reg, Room *room)
     //eastern wall
     for (int dy=0; dy<room->height; dy++)
     {
-        if (dy == room->door_east.dist)
+        if (room->door_east.exists && dy == room->door_east.dist)
         {
             *get_from_grid(reg, room->corner.x + room->width-1,  room->corner.y + dy) = DOOR;
         }
@@ -239,7 +239,7 @@ void wall_room(Region *reg, Room *room)
     //western wall
     for (int dy=0; dy<room->height; dy++)
     {
-        if (dy == room->door_west.dist)
+        if (room->door_west.exists && dy == room->door_west.dist)
         {
             *get_from_grid(reg, room->corner.x, room->corner.y + dy) = DOOR;
         }
@@ -317,7 +317,7 @@ void initial_map(Region* reg, Player *pl)
 void generate_room(Region *reg, Room* from, Pole dir)
 {
     Room *newroom;
-    int width, height;
+    int width, height, diff;
     width = randint(reg, MIN_ROOM_WIDTH, MAX_ROOM_WIDTH);
     height = randint(reg, MIN_ROOM_HEIGHT, MAX_ROOM_HEIGHT);
     switch (dir)
@@ -325,21 +325,51 @@ void generate_room(Region *reg, Room* from, Pole dir)
     case NORTH:
         newroom = from->door_north.to;
         unreserve_box(reg, newroom->corner);
+        diff = randint(reg, 0, width - MIN_ROOM_WIDTH);
+        newroom->width = width;
+        newroom->height = height;
+        newroom->corner.x -= diff;
+        newroom->corner.y = from->corner.y - height + 1;
+        while (!is_free_box(reg, newroom->corner, diff+MIN_ROOM_WIDTH, MIN_ROOM_HEIGHT-1))
+        {
+            diff--;
+            newroom->corner.x++;
+            newroom->width--;
+        }
+        while (!is_free_box(reg, newroom->corner, newroom->width, MIN_ROOM_HEIGHT-1))
+        {
+            newroom->width--;
+        }
+        while (!is_free_box(reg, newroom->corner, newroom->width, newroom->height-1))
+        {
+            newroom->corner.y++;
+            newroom->height--;
+        }
+
+        newroom->door_south.exists = true;
+        newroom->door_south.dist = diff + MIN_ROOM_WIDTH/2;
+        newroom->door_south.to = from;
+
+        newroom->is_generated = true;
+        wall_room(reg, newroom);
         break;
 
     case EAST:
         newroom = from->door_east.to;
         unreserve_box(reg, newroom->corner);
+        diff = randint(reg, 0, height - MIN_ROOM_HEIGHT);
         break;
 
     case SOUTH:
         newroom = from->door_south.to;
         unreserve_box(reg, newroom->corner);
+        diff = randint(reg, 0, width - MIN_ROOM_WIDTH);
         break;
 
     case WEST:
         newroom = from->door_west.to;
         unreserve_box(reg, newroom->corner);
+        diff = randint(reg, 0, height - MIN_ROOM_HEIGHT);
         break;
     }
 }
@@ -378,24 +408,30 @@ void playermove(Region *reg, Player *pl, Pole dir)
             {
                 generate_room(reg, pl->currentroom, dir);
             }
+            pl->currentroom = pl->currentroom->door_north.to;
+            pl->loc.y -= 2;
             break;
         case EAST:
             if (!pl->currentroom->door_east.to->is_generated)
             {
                 generate_room(reg, pl->currentroom, dir);
             }
+            pl->currentroom = pl->currentroom->door_east.to;
             break;
         case SOUTH:
             if (!pl->currentroom->door_south.to->is_generated)
             {
                 generate_room(reg, pl->currentroom, dir);
             }
+            pl->currentroom = pl->currentroom->door_south.to;
+            pl->loc.y += 2;
             break;
         case WEST:
             if (!pl->currentroom->door_west.to->is_generated)
             {
                 generate_room(reg, pl->currentroom, dir);
             }
+            pl->currentroom = pl->currentroom->door_west.to;
             break;
         
         default:
