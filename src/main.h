@@ -4,3 +4,4 @@
 void pexit(int);
 //New game procedure
 void NewGame(Region*, Player*);
+void Game(Region*, Player*);

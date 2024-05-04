@@ -96,6 +96,20 @@ void reserve_box(Region *reg, Co corner)
     }
 }
 
+void unreserve_box(Region* reg, Co corner)
+{
+    for (int x=corner.x; x<corner.x+MIN_ROOM_WIDTH; x++)
+    {
+        for (int y=corner.y; y<corner.y+MIN_ROOM_HEIGHT; y++)
+        {
+            if (*get_from_grid(reg, x, y) == RESERVED)
+            {
+                *get_from_grid(reg, x, y) = VOID;
+            }
+        }
+    }
+}
+
 int reserve_room(Region* reg, Room* room, Pole pole)
 {
     Co corner;
@@ -287,4 +301,62 @@ void initial_map(Region* reg)
     reserve_room(reg, firstRoom, WEST);
 
     wall_room(reg, firstRoom);
+
+    reg->deathtimer = DEFAULT_DEATH_TIMER;
+}
+
+
+void generate_room(Region *reg, Room* from, Pole dir)
+{
+    Room *newroom;
+    switch (dir)
+    {
+    case NORTH:
+        newroom = *from->door_north.to;
+        /* code */
+        break;
+
+    case EAST:
+        newroom = *from->door_east.to;
+        break;
+
+    case SOUTH:
+        newroom = *from->door_south.to;
+        break;
+
+    case WEST:
+        newroom = *from->door_west.to;
+        break;
+    }
+}
+
+
+void playermove(Region *reg, Player *pl, Pole dir)
+{
+    Co newco = pl->loc;
+    int dest_content;
+    switch (dir)
+    {
+    case NORTH:
+        newco.y--;
+        break;
+    case EAST:
+        newco.x++;
+        break;
+    case SOUTH:
+        newco.y++;
+        break;
+    case WEST:
+        newco.x--;
+    }
+
+    dest_content = *get_from_grid(reg, newco.x, newco.y);
+    if (dest_content == VOID)
+    {
+        pl->loc = newco;
+    }
+    if (dest_content == DOOR)
+    {
+        
+    }
 }

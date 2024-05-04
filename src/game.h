@@ -112,31 +112,35 @@ typedef struct Region
 Region;
 
 //Coordinates builder
-Co coordinates(int16_t, int16_t);
+Co coordinates(int16_t x, int16_t y);
 
-bool is_digit(int);
-bool is_valid_playername_char(int);
+bool is_digit(int chr);
+bool is_valid_playername_char(int chr);
 //generates a random number with the region's seed
-uint32_t new_rand(Region*);
+uint32_t new_rand(Region* r);
 //Generates a random number between min and max included using the region's seed
-int32_t randint(Region*, int32_t, int32_t);
+int32_t randint(Region* reg, int32_t min, int32_t max);
 
-int8_t *get_from_grid(Region*, int32_t, int32_t);
+int8_t *get_from_grid(Region* reg, int32_t x, int32_t y);
 
 //allocates memory for a room, stores it in the region and returns a pointer to it
-Room *allocate_room(Region*);
+Room *allocate_room(Region* r);
 //initializes a non-generated room with no doors 
-void init_room(Room*);
+void init_room(Room* room);
 
 //used by reserve_room
-bool is_free_box(Region*, Co, uint16_t, uint16_t);
-void reserve_box(Region*, Co);
+bool is_free_box(Region* reg, Co corner, uint16_t width, uint16_t height);
+void reserve_box(Region* reg, Co corner);
+void unreserve_box(Region* reg, Co corner);
 //reserves space for a room (1:success, 0:failure)
-int reserve_room(Region*, Room*, Pole);
+int reserve_room(Region* reg, Room* room, Pole pole);
 
 //creates the walls of the room in the grid
-void wall_room(Region*, Room*);
+void wall_room(Region* reg, Room* room);
 
 //initializes a new map
-void initial_map(Region*);
+void initial_map(Region* reg);
 
+void generate_room(Region *reg, Room* from, Pole dir);
+
+void playermove(Region *reg, Player *pl, Pole dir);

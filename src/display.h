@@ -20,4 +20,4 @@ void getusrstr(int, int, char*, int, bool(*)(int));
 //Main Menu Loop
 int MainMenu();
 
-void init_debug_print(Region*);
+void init_debug_print(Region* reg, Player* pl);

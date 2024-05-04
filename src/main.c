@@ -33,7 +33,50 @@ void NewGame(Region *reg, Player *pl)
     }
 
     initial_map(reg);
-    init_debug_print(reg);
+}
+
+void Game(Region *reg, Player *pl)
+{
+    int ch;
+    nodelay(stdscr, true);
+    init_debug_print(reg, pl);
+    while (true)
+    {
+        ch = getch();
+        switch (ch)
+        {
+            case 'z':
+            case KEY_UP:
+                playermove(reg, pl, NORTH);
+                break;
+            case 'q':
+            case KEY_LEFT:
+                playermove(reg, pl, WEST);
+                break;
+            case 's':
+            case KEY_DOWN:
+                playermove(reg, pl, SOUTH);
+                break;
+            case 'd':
+            case KEY_RIGHT:
+                playermove(reg, pl, EAST);
+                break;
+        }
+        if (ch != ERR)
+        {
+            init_debug_print(reg, pl);
+        }
+        if (reg->deathtimer <= 0)
+        {
+            //game over
+            break;
+        }
+        if (ch == 'q')
+        {
+            break;
+        }
+    }
+    nodelay(stdscr, false);
 }
 
 int main(int argc, char **argv)
@@ -55,6 +98,7 @@ int main(int argc, char **argv)
     {
         case MAIN_MENU_NEW:
             NewGame(&reg, &pl);
+            Game(&reg, &pl);
             break;
         case MAIN_MENU_QUIT:
             pexit(EXIT_SUCCESS);

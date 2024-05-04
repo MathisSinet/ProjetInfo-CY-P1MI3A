@@ -76,20 +76,17 @@ int MainMenu()
     }
 }
 
-void init_debug_print(Region *reg)
+void init_debug_print(Region *reg, Player *pl)
 {
     int w,h;
+    int row=0;
     getmaxyx(stdscr, h, w);
     clear();
-    mvprintw(0,0,"w=%d,h=%d", w, h);
-    refresh();
-    getch();
-    clear();
-    refresh();
-    for (int y=-h/2; y<h/2; y++)
+    mvprintw(row++, 0, "x=%d, y=%d", pl->loc.x, pl->loc.y);
+    for (int y=pl->loc.y-h/2; y<pl->loc.y+h/2; y++)
     {
-        move(y+h/2,0);
-        for (int x=-w/2; x<w/2; x++)
+        move(row++,0);
+        for (int x=pl->loc.x-w/2; x<pl->loc.x+w/2; x++)
         {
             if (
                 reg->zero.x + x < 0 || 
@@ -100,7 +97,7 @@ void init_debug_print(Region *reg)
                 printw(" ");
                 continue;
             }
-            if(x==0 && y==0)
+            if(x==pl->loc.x && y==pl->loc.y)
             {
                 printw("C");
                 continue;
