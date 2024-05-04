@@ -7,6 +7,7 @@ The part of the code not related to display.
 #include <stdint.h>
 #include <stdbool.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "settings.h"
 
@@ -52,7 +53,7 @@ typedef struct Player
     int32_t atk;
     int32_t def;
     Co loc;
-    struct Room **currentroom;
+    struct Room *currentroom;
 }
 Player;
 
@@ -61,7 +62,7 @@ typedef struct Door
 {
     bool exists;
     uint16_t dist;
-    struct Room **to;
+    struct Room *to;
 }
 Door;
 
@@ -69,7 +70,8 @@ Door;
 typedef struct Room
 {
     //is the room generated
-    bool is_generated; 
+    bool is_generated;
+    uint32_t index;
 
     //coordinates of the top-left corner of the room
     Co corner;
@@ -139,7 +141,7 @@ int reserve_room(Region* reg, Room* room, Pole pole);
 void wall_room(Region* reg, Room* room);
 
 //initializes a new map
-void initial_map(Region* reg);
+void initial_map(Region* reg, Player *pl);
 
 void generate_room(Region *reg, Room* from, Pole dir);
 

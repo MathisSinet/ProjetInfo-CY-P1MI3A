@@ -5,6 +5,12 @@ void pexit(int __status)
     endwin();
     exit(__status);
 }
+void segfault()
+{
+    endwin();
+    printf("---Erreur de segmentation---\n");
+    exit(EXIT_FAILURE);
+}
 
 void NewGame(Region *reg, Player *pl)
 {
@@ -32,17 +38,21 @@ void NewGame(Region *reg, Player *pl)
         reg->seed = rand();
     }
 
-    initial_map(reg);
+    initial_map(reg, pl);
 }
 
 void Game(Region *reg, Player *pl)
 {
     int ch;
-    nodelay(stdscr, true);
     init_debug_print(reg, pl);
+    nodelay(stdscr, true);
     while (true)
     {
         ch = getch();
+        if (ch == 'w')
+        {
+            break;
+        }
         switch (ch)
         {
             case 'z':
@@ -71,10 +81,6 @@ void Game(Region *reg, Player *pl)
             //game over
             break;
         }
-        if (ch == 'q')
-        {
-            break;
-        }
     }
     nodelay(stdscr, false);
 }
@@ -87,6 +93,8 @@ int main(int argc, char **argv)
     setlocale(LC_ALL, "");
     srand(time(NULL));
     rand();
+    signal(SIGSEGV, &segfault);
+
 
     initscr(); //initialises curses mode
     cbreak();

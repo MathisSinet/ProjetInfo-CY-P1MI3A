@@ -52,6 +52,7 @@ Room *allocate_room(Region* r)
         perror("Room allocation failed\n");
         exit(EXIT_FAILURE);
     }
+    r->roomlist[index]->index = index;
     return r->roomlist[index];
 }
 void init_room(Room* room)
@@ -133,8 +134,9 @@ int reserve_room(Region* reg, Room* room, Pole pole)
         reserve_box(reg, corner);
         newroom = allocate_room(reg);
         init_room(newroom);
-        room->door_north.to = &newroom;
-        newroom->door_south.to = &room;
+        room->door_north.to = newroom;
+        newroom->corner = corner;
+        newroom->door_south.to = room;
         newroom->door_south.exists = true;
         break;
 
@@ -149,8 +151,9 @@ int reserve_room(Region* reg, Room* room, Pole pole)
         reserve_box(reg, corner);
         newroom = allocate_room(reg);
         init_room(newroom);
-        room->door_east.to = &newroom;
-        newroom->door_west.to = &room;
+        room->door_east.to = newroom;
+        newroom->corner = corner;
+        newroom->door_west.to = room;
         newroom->door_west.exists = true;
         break;
 
@@ -165,8 +168,9 @@ int reserve_room(Region* reg, Room* room, Pole pole)
         reserve_box(reg, corner);
         newroom = allocate_room(reg);
         init_room(newroom);
-        room->door_south.to = &newroom;
-        newroom->door_north.to = &room;
+        room->door_south.to = newroom;
+        newroom->corner = corner;
+        newroom->door_north.to = room;
         newroom->door_north.exists = true;
         break;
 
@@ -181,8 +185,9 @@ int reserve_room(Region* reg, Room* room, Pole pole)
         reserve_box(reg, corner);
         newroom = allocate_room(reg);
         init_room(newroom);
-        room->door_west.to = &newroom;
-        newroom->door_east.to = &room;
+        room->door_west.to = newroom;
+        newroom->corner = corner;
+        newroom->door_east.to = room;
         newroom->door_east.exists = true;
         break;
     
@@ -245,7 +250,7 @@ void wall_room(Region *reg, Room *room)
     }
 }
 
-void initial_map(Region* reg)
+void initial_map(Region* reg, Player *pl)
 {
     //Room list initialisation
     reg->allocated_rooms = 0;
@@ -303,29 +308,38 @@ void initial_map(Region* reg)
     wall_room(reg, firstRoom);
 
     reg->deathtimer = DEFAULT_DEATH_TIMER;
+
+    pl->currentroom = firstRoom;
+    pl->loc = coordinates(0,0);
 }
 
 
 void generate_room(Region *reg, Room* from, Pole dir)
 {
     Room *newroom;
+    int width, height;
+    width = randint(reg, MIN_ROOM_WIDTH, MAX_ROOM_WIDTH);
+    height = randint(reg, MIN_ROOM_HEIGHT, MAX_ROOM_HEIGHT);
     switch (dir)
     {
     case NORTH:
-        newroom = *from->door_north.to;
-        /* code */
+        newroom = from->door_north.to;
+        unreserve_box(reg, newroom->corner);
         break;
 
     case EAST:
-        newroom = *from->door_east.to;
+        newroom = from->door_east.to;
+        unreserve_box(reg, newroom->corner);
         break;
 
     case SOUTH:
-        newroom = *from->door_south.to;
+        newroom = from->door_south.to;
+        unreserve_box(reg, newroom->corner);
         break;
 
     case WEST:
-        newroom = *from->door_west.to;
+        newroom = from->door_west.to;
+        unreserve_box(reg, newroom->corner);
         break;
     }
 }
@@ -357,6 +371,36 @@ void playermove(Region *reg, Player *pl, Pole dir)
     }
     if (dest_content == DOOR)
     {
+        switch (dir)
+        {
+        case NORTH:
+            if (!pl->currentroom->door_north.to->is_generated)
+            {
+                generate_room(reg, pl->currentroom, dir);
+            }
+            break;
+        case EAST:
+            if (!pl->currentroom->door_east.to->is_generated)
+            {
+                generate_room(reg, pl->currentroom, dir);
+            }
+            break;
+        case SOUTH:
+            if (!pl->currentroom->door_south.to->is_generated)
+            {
+                generate_room(reg, pl->currentroom, dir);
+            }
+            break;
+        case WEST:
+            if (!pl->currentroom->door_west.to->is_generated)
+            {
+                generate_room(reg, pl->currentroom, dir);
+            }
+            break;
+        
+        default:
+            break;
+        }
         
     }
 }

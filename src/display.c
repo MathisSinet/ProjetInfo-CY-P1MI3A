@@ -121,7 +121,4 @@ void init_debug_print(Region *reg, Player *pl)
             }
         }
     }
-
-    refresh();
-    getch();
 }
