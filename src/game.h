@@ -143,6 +143,7 @@ void wall_room(Region* reg, Room* room);
 //initializes a new map
 void initial_map(Region* reg, Player *pl);
 
+//generates a room when a player enters it for the first time
 void generate_room(Region *reg, Room* from, Pole dir);
 
 void playermove(Region *reg, Player *pl, Pole dir);
