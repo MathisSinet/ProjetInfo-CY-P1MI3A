@@ -13,11 +13,22 @@
 
 //Use nodelay(stdscr, true) to prevent delay using getch (returns ERR if no key is pressed)
 
-//test
-void HelloWorld();
-//Dynamic way to asks for the user string in curses
-void getusrstr(int, int, char*, int, bool(*)(int));
-//Main Menu Loop
-int MainMenu();
+typedef struct DisplayInfo
+{
+    int width;
+    int height;
+    WINDOW *box1;
+    WINDOW *box2;
+    WINDOW *box3;
+}
+DisplayInfo;
 
-void init_debug_print(Region* reg, Player* pl);
+void initcurses(DisplayInfo *di);
+void endcurses(DisplayInfo *di);
+void new_wclear(WINDOW *win);
+//Dynamic way to asks for the user string in curses
+void getusrstr(WINDOW*, int, int, char*, int, bool(*)(int));
+//Main Menu Loop
+int MainMenu(DisplayInfo *di);
+
+void init_debug_print(DisplayInfo *di, Region* reg, Player* pl);

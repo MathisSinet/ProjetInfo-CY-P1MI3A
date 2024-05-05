@@ -1,8 +1,8 @@
 #include "main.h"
 
-void pexit(int __status)
+void pexit(DisplayInfo *di, int __status)
 {
-    endwin();
+    endcurses(di);
     exit(__status);
 }
 void segfault()
@@ -12,24 +12,24 @@ void segfault()
     exit(EXIT_FAILURE);
 }
 
-void NewGame(Region *reg, Player *pl)
+void NewGame(DisplayInfo *di, Region *reg, Player *pl)
 {
     char buffer[20] = {'\0'};
     int x,y;
 
-    clear();
+    new_wclear(di->box1);
     curs_set(1);
     
     //asks for player name
     for(int i=0; i<MAX_PLAYER_NAME_COUNT; i++){pl->name[i] = '\0';}
-    mvprintw(0,0, "Entrez le nom du joueur : ");
-    getyx(stdscr, y, x);
-    getusrstr(y, x, pl->name, MAX_PLAYER_NAME_COUNT, &is_valid_playername_char);
+    mvwprintw(di->box1,1,2, "Entrez le nom du joueur : ");
+    getyx(di->box1, y, x);
+    getusrstr(di->box1, y, x, pl->name, MAX_PLAYER_NAME_COUNT, &is_valid_playername_char);
 
     //asks for the seed
-    mvprintw(1,0, "Entrez la seed : ");
-    getyx(stdscr, y, x);
-    getusrstr(y, x, buffer, 20, &is_digit);
+    mvwprintw(di->box1,2,2, "Entrez la seed : ");
+    getyx(di->box1, y, x);
+    getusrstr(di->box1, y, x, buffer, 20, &is_digit);
 
     curs_set(0);
 
@@ -41,14 +41,14 @@ void NewGame(Region *reg, Player *pl)
     initial_map(reg, pl);
 }
 
-void Game(Region *reg, Player *pl)
+void Game(DisplayInfo *di, Region *reg, Player *pl)
 {
     int ch;
-    init_debug_print(reg, pl);
-    nodelay(stdscr, true);
+    init_debug_print(di, reg, pl);
+    nodelay(di->box1, true);
     while (true)
     {
-        ch = getch();
+        ch = wgetch(di->box1);
         if (ch == 'w')
         {
             break;
@@ -74,7 +74,7 @@ void Game(Region *reg, Player *pl)
         }
         if (ch != ERR)
         {
-            init_debug_print(reg, pl);
+            init_debug_print(di, reg, pl);
         }
         if (reg->deathtimer <= 0)
         {
@@ -82,13 +82,14 @@ void Game(Region *reg, Player *pl)
             break;
         }
     }
-    nodelay(stdscr, false);
+    nodelay(di->box1, false);
 }
 
 int main(int argc, char **argv)
 {
     Region reg;
     Player pl;
+    DisplayInfo di;
 
     setlocale(LC_ALL, "");
     srand(time(NULL));
@@ -96,26 +97,22 @@ int main(int argc, char **argv)
     signal(SIGSEGV, &segfault);
 
 
-    initscr(); //initialises curses mode
-    cbreak();
-    noecho();
-    keypad(stdscr, true);
-    curs_set(0);
+    initcurses(&di);
 
-    switch (MainMenu())
+    switch (MainMenu(&di))
     {
         case MAIN_MENU_NEW:
-            NewGame(&reg, &pl);
-            Game(&reg, &pl);
+            NewGame(&di, &reg, &pl);
+            Game(&di, &reg, &pl);
             break;
         case MAIN_MENU_QUIT:
-            pexit(EXIT_SUCCESS);
+            pexit(&di, EXIT_SUCCESS);
             break;
         default:
             break;
     }
     
-    endwin();
+    endcurses(&di);
     
     return 0;
 }

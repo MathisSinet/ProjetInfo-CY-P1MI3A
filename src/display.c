@@ -1,21 +1,46 @@
 #include "display.h"
 
-void HelloWorld()
+void initcurses(DisplayInfo *di)
 {
-    printw("Hello world!\n");
-    refresh();
-    getch();
+    initscr(); //initialises curses mode
+    cbreak();
+    noecho();
+    curs_set(0);
+
+    getmaxyx(stdscr, di->height, di->width);
+    di->box1 = newwin(di->height-8, di->width-30, 0, 0);
+    di->box2 = newwin(8, di->width-30, di->height-8, 0);
+    di->box3 = newwin(di->height, 30, 0, di->width-30);
+
+    keypad(di->box1, true);
+
+    box(di->box1, 0, 0);
+    box(di->box2, 0, 0);
+    box(di->box3, 0, 0);
 }
 
+void new_wclear(WINDOW *win)
+{
+    wclear(win);
+    box(win, 0, 0);
+}
 
-void getusrstr(int y, int x, char *buffer, int max_len, bool(*validatefunc)(int))
+void endcurses(DisplayInfo *di)
+{
+    delwin(di->box1);
+    delwin(di->box2);
+    delwin(di->box3);
+    endwin();
+}
+
+void getusrstr(WINDOW *win, int y, int x, char *buffer, int max_len, bool(*validatefunc)(int))
 {
     int len=0;
     int chr;
 
     while(true)
     {
-        chr = getch();
+        chr = wgetch(win);
 
         if (len > 0 && (chr == KEY_ENTER || chr == '\n' || chr == '\r'))
         {
@@ -25,35 +50,35 @@ void getusrstr(int y, int x, char *buffer, int max_len, bool(*validatefunc)(int)
         if (len > 0 && (chr == KEY_BACKSPACE || chr == KEY_DC))
         {
             buffer[--len] = '\0';
-            mvaddstr(y, x+len, " ");
-            move(y, x+len);
+            mvwaddstr(win, y, x+len, " ");
+            wmove(win, y, x+len);
         }
 
         if ((*validatefunc)(chr) && len < max_len-1)
         {
             buffer[len++] = (char) chr;
-            mvaddnstr(y, x, buffer, len);
+            mvwaddnstr(win, y, x, buffer, len);
         }
     }
 }
 
 
-int MainMenu()
+int MainMenu(DisplayInfo *di)
 {
     uint8_t cursor = 0;
     int chr;
     clear();
-    mvprintw(0,0,"Bienvenue dans le jeu !");
-    addwstr(L" 👽");
-    mvaddwstr(1,0, L"Appuyez sur entrée pour sélectionner ou sur les flèches pour vous déplacer");
-    mvprintw(2,0, "  : Nouvelle partie");
-    mvprintw(3,0, "  : Charger une partie");
-    mvprintw(4,0, "  : Quitter le jeu");
-    mvprintw(cursor+2, 0, "X");
+    mvwprintw(di->box1, 1,2,"Bienvenue dans le jeu !");
+    waddwstr(di->box1, L" 👽");
+    mvwaddwstr(di->box1, 2,2, L"Appuyez sur entrée pour sélectionner ou sur les flèches pour vous déplacer");
+    mvwprintw(di->box1,3,2, "  : Nouvelle partie");
+    mvwprintw(di->box1,4,2, "  : Charger une partie");
+    mvwprintw(di->box1,5,2, "  : Quitter le jeu");
+    mvwprintw(di->box1, cursor+3, 2, "X");
     while(true)
     {
-        refresh();
-        chr = getch();
+        wrefresh(di->box1);
+        chr = wgetch(di->box1);
         switch (chr)
         {
             case '\n':
@@ -61,31 +86,32 @@ int MainMenu()
             case KEY_ENTER:
                 return cursor;
             case KEY_DOWN:
-                mvprintw(cursor+2, 0, " ");
+                mvwprintw(di->box1,cursor+3, 2, " ");
                 cursor = (cursor+1)%3;
-                mvprintw(cursor+2, 0, "X");
+                mvwprintw(di->box1,cursor+3, 2, "X");
                 break;
             case KEY_UP:
-                mvprintw(cursor+2, 0, " ");
+                mvwprintw(di->box1,cursor+3, 2, " ");
                 cursor = (cursor+2)%3;
-                mvprintw(cursor+2, 0, "X");
+                mvwprintw(di->box1,cursor+3, 2, "X");
                 break;
             default:
-                mvprintw(5,0,"%d",chr);
+                mvwprintw(di->box1,6,2,"%d",chr);
         }
     }
 }
 
-void init_debug_print(Region *reg, Player *pl)
+void init_debug_print(DisplayInfo *di,Region *reg, Player *pl)
 {
     int w,h;
-    int row=0;
-    getmaxyx(stdscr, h, w);
-    clear();
-    mvprintw(row++, 0, "x=%d, y=%d", pl->loc.x, pl->loc.y);
+    int row=1;
+    getmaxyx(di->box1, h, w);
+    h-=3; w-=2;
+    new_wclear(di->box1);
+    mvwprintw(di->box1, row++, 2, "x=%d, y=%d", pl->loc.x, pl->loc.y);
     for (int y=pl->loc.y-h/2; y<pl->loc.y+h/2; y++)
     {
-        move(row++,0);
+        wmove(di->box1, row++,1);
         for (int x=pl->loc.x-w/2; x<pl->loc.x+w/2; x++)
         {
             if (
@@ -94,27 +120,27 @@ void init_debug_print(Region *reg, Player *pl)
                 reg->zero.y + y < 0 || 
                 reg->zero.y + y >reg->grid_height)
             {
-                printw(" ");
+                wprintw(di->box1, " ");
                 continue;
             }
             if(x==pl->loc.x && y==pl->loc.y)
             {
-                printw("C");
+                wprintw(di->box1, "C");
                 continue;
             }
             switch (*get_from_grid(reg, x, y))
             {
             case VOID:
-                printw(" ");
+                wprintw(di->box1, " ");
                 break;
             case RESERVED:
-                printw("R");
+                wprintw(di->box1, "R");
                 break;
             case WALL:
-                printw("W");
+                wprintw(di->box1, "W");
                 break;
             case DOOR:
-                printw("D");
+                wprintw(di->box1, "D");
                 break;
             default:
                 break;

@@ -290,19 +290,19 @@ void initial_map(Region* reg, Player *pl)
     firstRoom->door_count = 4;
     
     firstRoom->door_north.exists = true;
-    firstRoom->door_north.dist = randint(reg, MIN_ROOM_WIDTH/2, INIT_ROOM_WIDTH-(MIN_ROOM_WIDTH/2)-1);
+    firstRoom->door_north.dist = randint(reg, MIN_ROOM_WIDTH/2+1, INIT_ROOM_WIDTH-(MIN_ROOM_WIDTH/2)-2);
     reserve_room(reg, firstRoom, NORTH);
 
     firstRoom->door_east.exists = true;
-    firstRoom->door_east.dist = randint(reg, MIN_ROOM_HEIGHT/2, INIT_ROOM_HEIGHT-(MIN_ROOM_HEIGHT/2)-1);
+    firstRoom->door_east.dist = randint(reg, MIN_ROOM_HEIGHT/2+1, INIT_ROOM_HEIGHT-(MIN_ROOM_HEIGHT/2)-2);
     reserve_room(reg, firstRoom, EAST);
 
     firstRoom->door_south.exists = true;
-    firstRoom->door_south.dist = randint(reg, MIN_ROOM_WIDTH/2, INIT_ROOM_WIDTH-(MIN_ROOM_WIDTH/2)-1);
+    firstRoom->door_south.dist = randint(reg, MIN_ROOM_WIDTH/2+1, INIT_ROOM_WIDTH-(MIN_ROOM_WIDTH/2)-2);
     reserve_room(reg, firstRoom, SOUTH);
 
     firstRoom->door_west.exists = true;
-    firstRoom->door_west.dist = randint(reg, MIN_ROOM_HEIGHT/2, INIT_ROOM_HEIGHT-(MIN_ROOM_HEIGHT/2)-1);
+    firstRoom->door_west.dist = randint(reg, MIN_ROOM_HEIGHT/2+1, INIT_ROOM_HEIGHT-(MIN_ROOM_HEIGHT/2)-2);
     reserve_room(reg, firstRoom, WEST);
 
     firstRoom->is_generated = true;
@@ -319,8 +319,8 @@ void generate_room(Region *reg, Room* from, Pole dir)
 {
     Room *newroom;
     int width, height, diff;
-    width = randint(reg, MIN_ROOM_WIDTH, MAX_ROOM_WIDTH);
-    height = randint(reg, MIN_ROOM_HEIGHT, MAX_ROOM_HEIGHT);
+    width = randint(reg, MIN_ROOM_WIDTH+2, MAX_ROOM_WIDTH);
+    height = randint(reg, MIN_ROOM_HEIGHT+2, MAX_ROOM_HEIGHT);
     switch (dir)
     {
     case NORTH:
@@ -351,6 +351,11 @@ void generate_room(Region *reg, Room* from, Pole dir)
         newroom->door_south.dist = diff + MIN_ROOM_WIDTH/2;
         newroom->door_south.to = from;
 
+        if (newroom->width > MIN_ROOM_WIDTH+3)
+        {
+            newroom->door_north.dist = randint(reg, MIN_ROOM_WIDTH/2+1, newroom->width-(MIN_ROOM_WIDTH/2)-2);
+            newroom->door_north.exists = reserve_room(reg, newroom, NORTH);
+        }
         newroom->is_generated = true;
         wall_room(reg, newroom);
         break;

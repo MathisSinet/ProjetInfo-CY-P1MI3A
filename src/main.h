@@ -2,8 +2,8 @@
 #include <signal.h>
 
 //Exits the program while calling endwin()
-void pexit(int);
+void pexit(DisplayInfo*, int);
 void segfault();
 //New game procedure
-void NewGame(Region*, Player*);
-void Game(Region*, Player*);
+void NewGame(DisplayInfo *, Region*, Player*);
+void Game(DisplayInfo*, Region*, Player*);
