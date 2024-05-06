@@ -250,6 +250,95 @@ void wall_room(Region *reg, Room *room)
     }
 }
 
+
+void extend_grid(Region* reg, Pole dir)
+{
+    int8_t **newgrid;
+    int8_t *newcol;
+
+    switch(dir)
+    {
+        case NORTH:
+            reg->grid_height *= 2;
+            reg->zero = coordinates(reg->zero.x, reg->zero.y + reg->grid_height / 2);
+            for (int8_t **column = reg->grid; column < reg->grid+reg->grid_width; column++)
+            {
+                newcol = realloc(*column, reg->grid_height * sizeof(int8_t));
+                if (!newcol)
+                {
+                    perror("Map allocation failed\n");
+                    raise(SIGABRT);
+                }
+                *column = newcol;
+                for (int8_t *p1=*column, *p2=*column+reg->grid_height/2; p2 < *column+reg->grid_height; p1++,p2++)
+                {
+                    *p2 = *p1;
+                    *p1 = VOID;
+                }
+            }
+            break;
+        case SOUTH:
+            reg->grid_height *= 2;
+            for (int8_t **column = reg->grid; column < reg->grid+reg->grid_width; column++)
+            {
+                newcol = realloc(*column, reg->grid_height * sizeof(int8_t));
+                if (!newcol)
+                {
+                    perror("Map allocation failed\n");
+                    raise(SIGABRT);
+                }
+                *column = newcol;
+                for (int8_t *p = *column + reg->grid_height/2; p<*column+reg->grid_height; p++)
+                {
+                    *p = VOID;
+                }
+            }
+            break;
+        case EAST:
+            reg->grid_width *= 2;
+            newgrid = realloc(reg->grid, reg->grid_width * sizeof(int8_t*));
+            if (!newgrid)
+            {
+                perror("Map allocation failed : grid extension to the right\n");
+                raise(SIGABRT);
+            }
+            reg->grid = newgrid;
+            for (int8_t **column = reg->grid+reg->grid_width/2; column < reg->grid+reg->grid_width; column++)
+            {
+                *column = calloc(reg->grid_height, sizeof(int8_t));
+                if(!*column)
+                {
+                    perror("Map allocation failed\n");
+                    raise(SIGABRT);
+                }
+            }
+            break;
+        case WEST:
+            reg->grid_width *= 2;
+            reg->zero = coordinates(reg->zero.x + reg->grid_width/2, reg->zero.y);
+            newgrid = realloc(reg->grid, reg->grid_width * sizeof(int8_t*));
+            if (!newgrid)
+            {
+                perror("Map allocation failed\n");
+                raise(SIGABRT);
+            }
+            reg->grid = newgrid;
+            for (int8_t **col1=reg->grid, **col2=reg->grid+reg->grid_width/2; col2<reg->grid+reg->grid_width; col1++,col2++)
+            {
+                *col2 = *col1;
+                *col1 = calloc(reg->grid_height, sizeof(int8_t));
+                if(!*col1)
+                {
+                    perror("Map allocation failed\n");
+                    raise(SIGABRT);
+                }
+            }
+            break;
+    }
+}
+
+
+
 void initial_map(Region* reg, Player *pl)
 {
     //Room list initialisation
@@ -268,7 +357,7 @@ void initial_map(Region* reg, Player *pl)
     if (!reg->grid)
     {
         perror("Map allocation failed\n");
-        exit(EXIT_FAILURE);
+        raise(SIGABRT);
     }
     //Row allocation
     for (int8_t **column = reg->grid; column < reg->grid+reg->grid_width; column++)
@@ -277,7 +366,7 @@ void initial_map(Region* reg, Player *pl)
         if(!*column)
         {
             perror("Map allocation failed\n");
-            exit(EXIT_FAILURE);
+            raise(SIGABRT);
         }
     }
 
@@ -319,18 +408,23 @@ void generate_room(Region *reg, Room* from, Pole dir)
 {
     Room *newroom;
     int width, height, diff;
-    width = randint(reg, MIN_ROOM_WIDTH+2, MAX_ROOM_WIDTH);
-    height = randint(reg, MIN_ROOM_HEIGHT+2, MAX_ROOM_HEIGHT);
+    width = randint(reg, MIN_ROOM_WIDTH+4, MAX_ROOM_WIDTH);
+    height = randint(reg, MIN_ROOM_HEIGHT+4, MAX_ROOM_HEIGHT);
     switch (dir)
     {
     case NORTH:
+        //grid extension?
+        if (reg->zero.y + from->corner.y < 3 * MAX_ROOM_HEIGHT)
+        {
+            extend_grid(reg, NORTH);
+        }
+
         newroom = from->door_north.to;
         unreserve_box(reg, newroom->corner);
         diff = randint(reg, 0, width - MIN_ROOM_WIDTH);
         newroom->width = width;
         newroom->height = height;
         newroom->corner.x -= diff;
-        newroom->corner.y = from->corner.y - height + 1;
         while (!is_free_box(reg, newroom->corner, diff+MIN_ROOM_WIDTH, MIN_ROOM_HEIGHT-1))
         {
             diff--;
@@ -341,6 +435,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
         {
             newroom->width--;
         }
+        newroom->corner.y = from->corner.y - height + 1;
         while (!is_free_box(reg, newroom->corner, newroom->width, newroom->height-1))
         {
             newroom->corner.y++;
@@ -360,14 +455,21 @@ void generate_room(Region *reg, Room* from, Pole dir)
         wall_room(reg, newroom);
         break;
 
+
     case EAST:
+        //grid extension?
+        if (reg->zero.x + from->corner.x + from->width > reg->grid_width - 3*MAX_ROOM_WIDTH)
+        {
+            extend_grid(reg, EAST);
+        }
+
+
         newroom = from->door_east.to;
         unreserve_box(reg, newroom->corner);
         diff = randint(reg, 0, height - MIN_ROOM_HEIGHT);
         newroom->width = width;
         newroom->height = height;
         newroom->corner.y -= diff;
-        newroom->corner.x = from->corner.x + from->width - 1;
         while (!is_free_box(reg, coordinates(newroom->corner.x+1, newroom->corner.y), MIN_ROOM_WIDTH-1, diff+MIN_ROOM_HEIGHT))
         {
             diff--;
@@ -378,6 +480,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
         {
             newroom->height--;
         }
+        newroom->corner.x = from->corner.x + from->width - 1;
         while (!is_free_box(reg, coordinates(newroom->corner.x+1, newroom->corner.y), newroom->width-1, newroom->height))
         {
             newroom->width--;
@@ -387,18 +490,29 @@ void generate_room(Region *reg, Room* from, Pole dir)
         newroom->door_west.dist = diff + MIN_ROOM_WIDTH/2;
         newroom->door_west.to = from;
 
+        if (newroom->height > MIN_ROOM_HEIGHT+3)
+        {
+            newroom->door_east.dist = randint(reg, MIN_ROOM_HEIGHT/2+1, newroom->height-(MIN_ROOM_HEIGHT/2)-2);
+            newroom->door_east.exists = reserve_room(reg, newroom, EAST);
+        }
         newroom->is_generated = true;
         wall_room(reg, newroom);
         break;
 
     case SOUTH:
+        //grid extension?
+        if (reg->zero.y + from->corner.y + from->height > reg->grid_height - 3*MAX_ROOM_HEIGHT)
+        {
+            extend_grid(reg, SOUTH);
+        }
+
+
         newroom = from->door_south.to;
         unreserve_box(reg, newroom->corner);
         diff = randint(reg, 0, width - MIN_ROOM_WIDTH);
         newroom->width = width;
         newroom->height = height;
         newroom->corner.x -= diff;
-        newroom->corner.y = from->corner.y + from->height - 1;
         while (!is_free_box(reg, coordinates(newroom->corner.x, newroom->corner.y+1), diff+MIN_ROOM_WIDTH, MIN_ROOM_HEIGHT-1))
         {
             diff--;
@@ -409,6 +523,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
         {
             newroom->width--;
         }
+        newroom->corner.y = from->corner.y + from->height - 1;
         while (!is_free_box(reg, coordinates(newroom->corner.x, newroom->corner.y+1), newroom->width, newroom->height-1))
         {
             newroom->height--;
@@ -418,18 +533,29 @@ void generate_room(Region *reg, Room* from, Pole dir)
         newroom->door_north.dist = diff + MIN_ROOM_WIDTH/2;
         newroom->door_north.to = from;
 
+        if (newroom->width > MIN_ROOM_WIDTH+3)
+        {
+            newroom->door_south.dist = randint(reg, MIN_ROOM_WIDTH/2+1, newroom->width-(MIN_ROOM_WIDTH/2)-2);
+            newroom->door_south.exists = reserve_room(reg, newroom, SOUTH);
+        }
         newroom->is_generated = true;
         wall_room(reg, newroom);
         break;
 
     case WEST:
+        //grid extension?
+        if (reg->zero.x + from->corner.x < 3 * MAX_ROOM_WIDTH)
+        {
+            extend_grid(reg, WEST);
+        }
+
+
         newroom = from->door_west.to;
         unreserve_box(reg, newroom->corner);
         diff = randint(reg, 0, height - MIN_ROOM_HEIGHT);
         newroom->width = width;
         newroom->height = height;
         newroom->corner.y -= diff;
-        newroom->corner.x = from->corner.x - width + 1;
         while (!is_free_box(reg, newroom->corner, MIN_ROOM_WIDTH-1, diff+MIN_ROOM_HEIGHT))
         {
             diff--;
@@ -440,6 +566,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
         {
             newroom->height--;
         }
+        newroom->corner.x = from->corner.x - width + 1;
         while (!is_free_box(reg, newroom->corner, newroom->width-1, newroom->height))
         {
             newroom->corner.x++;
@@ -450,6 +577,11 @@ void generate_room(Region *reg, Room* from, Pole dir)
         newroom->door_east.dist = diff + MIN_ROOM_WIDTH/2;
         newroom->door_east.to = from;
 
+        if (newroom->height > MIN_ROOM_HEIGHT+3)
+        {
+            newroom->door_west.dist = randint(reg, MIN_ROOM_HEIGHT/2+1, newroom->height-(MIN_ROOM_HEIGHT/2)-2);
+            newroom->door_west.exists = reserve_room(reg, newroom, WEST);
+        }
         newroom->is_generated = true;
         wall_room(reg, newroom);
         break;

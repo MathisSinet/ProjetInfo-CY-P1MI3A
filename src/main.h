@@ -1,5 +1,4 @@
 #include "display.h"
-#include <signal.h>
 
 //Exits the program while calling endwin()
 void pexit(DisplayInfo*, int);

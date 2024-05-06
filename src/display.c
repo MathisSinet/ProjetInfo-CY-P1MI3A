@@ -108,7 +108,7 @@ void init_debug_print(DisplayInfo *di,Region *reg, Player *pl)
     getmaxyx(di->box1, h, w);
     h-=3; w-=2;
     new_wclear(di->box1);
-    mvwprintw(di->box1, row++, 2, "x=%d, y=%d", pl->loc.x, pl->loc.y);
+    mvwprintw(di->box1, row++, 2, "x=%d, y=%d, grid width=%d, grid height=%d", pl->loc.x, pl->loc.y, reg->grid_width, reg->grid_height);
     for (int y=pl->loc.y-h/2; y<pl->loc.y+h/2; y++)
     {
         wmove(di->box1, row++,1);

@@ -11,6 +11,13 @@ void segfault()
     printf("---Erreur de segmentation---\n");
     exit(EXIT_FAILURE);
 }
+void aborthandler()
+{
+    sleep(1);
+    endwin();
+    printf("---Aborted---\n");
+    exit(EXIT_FAILURE);
+}
 
 void NewGame(DisplayInfo *di, Region *reg, Player *pl)
 {
@@ -95,6 +102,7 @@ int main(int argc, char **argv)
     srand(time(NULL));
     rand();
     signal(SIGSEGV, &segfault);
+    signal(SIGABRT, &aborthandler);
 
 
     initcurses(&di);

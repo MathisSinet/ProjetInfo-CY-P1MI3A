@@ -8,6 +8,7 @@ The part of the code not related to display.
 #include <stdbool.h>
 #include <time.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include "settings.h"
 
@@ -139,6 +140,8 @@ int reserve_room(Region* reg, Room* room, Pole pole);
 
 //creates the walls of the room in the grid
 void wall_room(Region* reg, Room* room);
+
+void extend_grid(Region* reg, Pole dir);
 
 //initializes a new map
 void initial_map(Region* reg, Player *pl);
