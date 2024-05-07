@@ -21,7 +21,7 @@ void initcurses(DisplayInfo *di)
 
 void new_wclear(WINDOW *win)
 {
-    wclear(win);
+    werase(win);
     box(win, 0, 0);
 }
 
@@ -67,7 +67,7 @@ int MainMenu(DisplayInfo *di)
 {
     uint8_t cursor = 0;
     int chr;
-    clear();
+    erase();
     mvwprintw(di->box1, 1,2,"Bienvenue dans le jeu !");
     waddwstr(di->box1, L" 👽");
     mvwaddwstr(di->box1, 2,2, L"Appuyez sur entrée pour sélectionner ou sur les flèches pour vous déplacer");
