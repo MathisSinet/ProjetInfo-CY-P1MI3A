@@ -116,7 +116,7 @@ int reserve_room(Region* reg, Room* room, Pole pole)
     Co corner;
     Room *newroom;
 
-    if (reg->allocated_rooms == MAX_ROOM_COUNT)
+    if (reg->allocated_rooms == MAX_ROOM_COUNT) 
     {
         return 0;
     }
@@ -425,26 +425,24 @@ void generate_room(Region *reg, Room* from, Pole dir)
         newroom->width = width;
         newroom->height = height;
         newroom->corner.x -= diff;
-        while (!is_free_box(reg, newroom->corner, diff+MIN_ROOM_WIDTH, MIN_ROOM_HEIGHT-1))
+        while (!is_free_box(reg, newroom->corner, diff+MIN_ROOM_WIDTH, MIN_ROOM_HEIGHT-1)) //first resizing
         {
             diff--;
             newroom->corner.x++;
             newroom->width--;
         }
-        while (!is_free_box(reg, newroom->corner, newroom->width, MIN_ROOM_HEIGHT-1))
+        while (!is_free_box(reg, newroom->corner, newroom->width, MIN_ROOM_HEIGHT-1)) //second resizing
         {
             newroom->width--;
         }
         newroom->corner.y = from->corner.y - height + 1;
-        while (!is_free_box(reg, newroom->corner, newroom->width, newroom->height-1))
+        while (!is_free_box(reg, newroom->corner, newroom->width, newroom->height-1)) //third resizing
         {
             newroom->corner.y++;
             newroom->height--;
         }
 
-        newroom->door_south.exists = true;
         newroom->door_south.dist = diff + MIN_ROOM_WIDTH/2;
-        newroom->door_south.to = from;
 
         if (newroom->width > MIN_ROOM_WIDTH+3)
         {
@@ -486,9 +484,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
             newroom->width--;
         }
 
-        newroom->door_west.exists = true;
         newroom->door_west.dist = diff + MIN_ROOM_WIDTH/2;
-        newroom->door_west.to = from;
 
         if (newroom->height > MIN_ROOM_HEIGHT+3)
         {
@@ -529,9 +525,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
             newroom->height--;
         }
 
-        newroom->door_north.exists = true;
         newroom->door_north.dist = diff + MIN_ROOM_WIDTH/2;
-        newroom->door_north.to = from;
 
         if (newroom->width > MIN_ROOM_WIDTH+3)
         {
@@ -573,9 +567,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
             newroom->width--;
         }
 
-        newroom->door_east.exists = true;
         newroom->door_east.dist = diff + MIN_ROOM_WIDTH/2;
-        newroom->door_east.to = from;
 
         if (newroom->height > MIN_ROOM_HEIGHT+3)
         {

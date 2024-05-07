@@ -62,7 +62,7 @@ Player;
 typedef struct Door
 {
     bool exists;
-    uint16_t dist;
+    uint16_t dist; //distance from the left wall or top wall
     struct Room *to;
 }
 Door;
@@ -140,7 +140,7 @@ int reserve_room(Region* reg, Room* room, Pole pole);
 
 //creates the walls of the room in the grid
 void wall_room(Region* reg, Room* room);
-
+//extends allocated memory for the grid
 void extend_grid(Region* reg, Pole dir);
 
 //initializes a new map
@@ -148,5 +148,5 @@ void initial_map(Region* reg, Player *pl);
 
 //generates a room when a player enters it for the first time
 void generate_room(Region *reg, Room* from, Pole dir);
-
+//handles the movement of a player
 void playermove(Region *reg, Player *pl, Pole dir);
