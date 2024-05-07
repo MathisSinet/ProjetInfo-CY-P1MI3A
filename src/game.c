@@ -1,5 +1,8 @@
 #include "game.h"
 
+/*__________BASIC FUNCTIONS__________*/
+
+//Coordinates builder
 Co coordinates(int16_t x, int16_t y)
 {
     Co ret;
@@ -8,10 +11,12 @@ Co coordinates(int16_t x, int16_t y)
     return ret;
 }
 
+//Returns true if the given chr is a digit
 bool is_digit(int chr)
 {
     return (chr >= '0' && chr <= '9');
 }
+//Returns true if the given chr is a valid player name char
 bool is_valid_playername_char(int chr)
 {
     return (
@@ -22,27 +27,35 @@ bool is_valid_playername_char(int chr)
     );
 }
 
+//Generates a random uint32 with the region's seed
 uint32_t new_rand(Region* r)
 {
-    //before implementation of custom number generator, use rand
     r->seed = RAND_A * r->seed + RAND_C;
     return r->seed;
 }
 
+//Generates a random integer between min and max included using the region's seed
 int32_t randint(Region *r, int32_t min, int32_t max)
 {
     return new_rand(r) % (max-min+1) + min;
 }
 
+//returns a pointer to the space on the grid with given coordinates
+//returns NULL if the coordinates are invalid
 int8_t* get_from_grid(Region* reg, int32_t x, int32_t y)
 {
-    //ATTENTION SEGFAULT
-    //fprintf(stderr, "\nCalling get_from_grid... ");
-    //fprintf(stderr, "x=%d,y=%d... ",x,y);
-    //fprintf(stderr, "zero x=%d,y=%d",reg->zero.x, reg->zero.y);
-    return reg->grid[reg->zero.x + x] + reg->zero.y + y;
+    int32_t nx = reg->zero.x + x;
+    int32_t ny = reg->zero.y + y;
+    if(nx<0 || ny<0 || nx>reg->grid_width || ny>reg->grid_height)
+    {
+        return NULL;
+    }
+    return reg->grid[nx] + ny;
 }
 
+//Allocates a room on the region's room list
+//The newly-created room has only its index initialized
+//This function does not check if the max number of rooms is exceded
 Room *allocate_room(Region* r)
 {
     int index = r->allocated_rooms++;
@@ -55,6 +68,8 @@ Room *allocate_room(Region* r)
     r->roomlist[index]->index = index;
     return r->roomlist[index];
 }
+
+//Initializes a non-generated room
 void init_room(Room* room)
 {
     room->is_generated = false;
@@ -69,6 +84,8 @@ void init_room(Room* room)
     room->door_west.to = NULL;
 }
 
+//Returns true if the region of the grid given by a corner, width and height is free
+//i.e. it contains only VOID
 bool is_free_box(Region *reg, Co corner, uint16_t width, uint16_t height)
 {
     for (int x=corner.x; x<corner.x+width; x++)
@@ -83,6 +100,10 @@ bool is_free_box(Region *reg, Co corner, uint16_t width, uint16_t height)
     }
     return true;
 }
+
+//Declares space in the region for a future room to be generated when the player
+//enters a door
+//This function uses MIN_ROOM_WIDTH and MIN_ROOM_HEIGHT
 void reserve_box(Region *reg, Co corner)
 {
     for (int x=corner.x; x<corner.x+MIN_ROOM_WIDTH; x++)
@@ -97,6 +118,9 @@ void reserve_box(Region *reg, Co corner)
     }
 }
 
+
+//Removes the reservation of a room previously done by reserve_room
+//so that the space is VOID again to create the room
 void unreserve_box(Region* reg, Co corner)
 {
     for (int x=corner.x; x<corner.x+MIN_ROOM_WIDTH; x++)
@@ -111,6 +135,11 @@ void unreserve_box(Region* reg, Co corner)
     }
 }
 
+//This function tries to reserve a room in the grid, from a given room and a given door pole
+//return value : true if successful, false if failure
+//If successful, the reserved room has the entry door marked as existing and pointing to the previous prrom
+//The exit door in the previous room points to the new room
+//The corner of the new room matches the corner of the reservation
 int reserve_room(Region* reg, Room* room, Pole pole)
 {
     Co corner;

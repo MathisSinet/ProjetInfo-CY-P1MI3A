@@ -112,7 +112,7 @@ void init_debug_print(DisplayInfo *di,Region *reg, Player *pl)
     for (int y=pl->loc.y-h/2; y<pl->loc.y+h/2; y++)
     {
         wmove(di->box1, row++,1);
-        for (int x=pl->loc.x-w/2; x<pl->loc.x+w/2; x++)
+        for (int x=pl->loc.x-w/4; x<pl->loc.x+w/4; x++)
         {
             if (
                 reg->zero.x + x < 0 || 
@@ -120,27 +120,27 @@ void init_debug_print(DisplayInfo *di,Region *reg, Player *pl)
                 reg->zero.y + y < 0 || 
                 reg->zero.y + y >reg->grid_height)
             {
-                wprintw(di->box1, " ");
+                wprintw(di->box1, "  ");
                 continue;
             }
             if(x==pl->loc.x && y==pl->loc.y)
             {
-                wprintw(di->box1, "C");
+                waddwstr(di->box1, L"ඞ ");
                 continue;
             }
             switch (*get_from_grid(reg, x, y))
             {
             case VOID:
-                wprintw(di->box1, " ");
+                wprintw(di->box1, "  ");
                 break;
             case RESERVED:
-                wprintw(di->box1, "R");
+                wprintw(di->box1, "RR");
                 break;
             case WALL:
-                wprintw(di->box1, "W");
+                waddwstr(di->box1, L"🧱");
                 break;
             case DOOR:
-                wprintw(di->box1, "D");
+                waddwstr(di->box1, L"🚪");
                 break;
             default:
                 break;
