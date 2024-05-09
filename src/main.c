@@ -7,6 +7,7 @@ void pexit(DisplayInfo *di, int __status)
 }
 void segfault()
 {
+    sleep(1);
     endwin();
     printf("---Erreur de segmentation---\n");
     exit(EXIT_FAILURE);
@@ -31,7 +32,7 @@ void NewGame(DisplayInfo *di, Region *reg, Player *pl)
     for(int i=0; i<MAX_PLAYER_NAME_COUNT; i++){pl->name[i] = '\0';}
     mvwprintw(di->box1,1,2, "Entrez le nom du joueur : ");
     getyx(di->box1, y, x);
-    getusrstr(di->box1, y, x, pl->name, MAX_PLAYER_NAME_COUNT, &is_valid_playername_char);
+    getusrstr(di->box1, y, x, pl->name, MAX_PLAYER_NAME_COUNT-1, &is_valid_playername_char);
 
     //asks for the seed
     mvwprintw(di->box1,2,2, "Entrez la seed : ");
@@ -44,7 +45,7 @@ void NewGame(DisplayInfo *di, Region *reg, Player *pl)
     {
         reg->seed = rand();
     }
-
+    
     initial_map(reg, pl);
 }
 
@@ -52,6 +53,7 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
 {
     int ch;
     init_debug_print(di, reg, pl);
+    display_ui(reg, pl, di->box3);
     nodelay(di->box1, true);
     while (true)
     {
@@ -82,6 +84,7 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
         if (ch != ERR)
         {
             init_debug_print(di, reg, pl);
+            display_ui(reg, pl, di->box3);
         }
         if (reg->deathtimer <= 0)
         {

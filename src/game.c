@@ -53,6 +53,28 @@ int8_t* get_from_grid(Region* reg, int32_t x, int32_t y)
     return reg->grid[nx] + ny;
 }
 
+Item getitem(ItemIndex index, char *name)
+{
+    Item item;
+    switch(index)
+    {
+        case ITEM_BASE_WEAPON: //base WEAPON
+            if(name!=NULL){strcpy(name, "[Aucune]");}
+            item.name = name;
+            item.symb = L' ';
+            item.type = WEAPON;
+            item.stat1 = 0.0;
+            item.stat2 = 0.0;
+            break;
+        case ITEM_HEAL1:
+            if(name!=NULL){strcpy(name, "Pansement");}
+            item.name = name;
+            item.symb = ITEM_HEAL1_SYMB;
+            break;
+    }
+    return item;
+}
+
 
 /*__________MAP GENERATION FUNCTIONS__________*/
 
@@ -86,6 +108,8 @@ void init_room(Room* room)
     room->door_south.to = NULL;
     room->door_west.exists = false;
     room->door_west.to = NULL;
+
+    room->isitem = false;
 }
 
 //Returns true if the region of the grid given by a corner, width and height is free
@@ -408,6 +432,7 @@ void initial_map(Region* reg, Player *pl)
 
     //First room initialization
     Room *firstRoom = allocate_room(reg);
+    init_room(firstRoom);
     firstRoom->width = INIT_ROOM_WIDTH;
     firstRoom->height = INIT_ROOM_HEIGHT;
     firstRoom->corner.x = -INIT_ROOM_WIDTH/2;
@@ -432,11 +457,19 @@ void initial_map(Region* reg, Player *pl)
 
     firstRoom->is_generated = true;
     wall_room(reg, firstRoom);
-
+    
+    //Player initialization
     reg->deathtimer = DEFAULT_DEATH_TIMER;
 
     pl->currentroom = firstRoom;
     pl->loc = coordinates(0,0);
+    pl->xp = 0;
+    pl->hp = 10;
+    pl->atk = 10;
+    pl->def = 10;
+
+
+    pl->weapon = ITEM_BASE_WEAPON;
 }
 
 
@@ -566,6 +599,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
         newroom->is_generated = true;
         wall_room(reg, newroom);
+        fill_room(reg, newroom);
         break;
 
 
@@ -611,6 +645,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
         newroom->is_generated = true;
         wall_room(reg, newroom);
+        fill_room(reg, newroom);
         break;
 
     case SOUTH:
@@ -654,6 +689,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
         newroom->is_generated = true;
         wall_room(reg, newroom);
+        fill_room(reg, newroom);
         break;
 
     case WEST:
@@ -698,10 +734,22 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
         newroom->is_generated = true;
         wall_room(reg, newroom);
+        fill_room(reg, newroom);
         break;
     }
 }
 
+
+
+void fill_room(Region *reg, Room *room)
+{
+    if (room->width > 6 && room->height > 6 && randint(reg, 0, 100) < 20)
+    {
+        room->isitem = true;
+        room->itemloc = coordinates(room->corner.x + randint(reg, 1, room->width-2), room->corner.y + randint(reg, 1, room->height-2));
+        room->item = ITEM_HEAL1;
+    }
+}
 
 /*__________PLAYER'S ACTIONS__________*/
 

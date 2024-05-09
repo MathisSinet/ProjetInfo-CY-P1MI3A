@@ -2,7 +2,7 @@
 Definitions of the balance parameters of the game.
 */
 
-#define MAX_ROOM_COUNT 50
+#define MAX_ROOM_COUNT 75
 
 #define MAX_ROOM_WIDTH 35
 #define MAX_ROOM_HEIGHT 19
@@ -15,10 +15,12 @@ Definitions of the balance parameters of the game.
 
 #define SIDE_DOORS_PROBABILITY 55
 
-#define MAX_PLAYER_NAME_COUNT 35
+#define MAX_PLAYER_NAME_COUNT 28
 #define MAX_INVENTORY_SIZE 5
 
 #define DEFAULT_DEATH_TIMER 600
+
+#define ITEM_NAME_SIZE 15
 
 /*
 Constants used by the random number generator.
