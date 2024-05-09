@@ -1,6 +1,4 @@
-/*
-Definitions of the balance parameters of the game.
-*/
+/*__________ROOM GENERATION PARAMETERS__________*/
 
 #define MAX_ROOM_COUNT 75
 
@@ -15,16 +13,17 @@ Definitions of the balance parameters of the game.
 
 #define SIDE_DOORS_PROBABILITY 55
 
+/*__________MEMORY PARAMETERS__________*/
+
 #define MAX_PLAYER_NAME_COUNT 28
 #define MAX_INVENTORY_SIZE 5
+#define ITEM_NAME_SIZE 15
+
+/*__________BALANCE CHANGES__________*/
 
 #define DEFAULT_DEATH_TIMER 600
 
-#define ITEM_NAME_SIZE 15
-
-/*
-Constants used by the random number generator.
-*/
+/*__________RANDOM NUMBER GENERATOR SETTINGS__________*/
 
 #define RAND_A 157
 #define RAND_C 221

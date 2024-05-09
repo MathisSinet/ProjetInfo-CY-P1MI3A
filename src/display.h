@@ -1,8 +1,8 @@
+/*
+DISPLAY CODE FOR THE GAME
+*/
+
 #define _XOPEN_SOURCE 700
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdio.h>
 #include <ncursesw/ncurses.h>
 #include <locale.h>
 #include "game.h"

@@ -327,7 +327,7 @@ void extend_grid(Region* reg, Pole dir)
                 if (!newcol)
                 {
                     perror("Map allocation failed\n");
-                    raise(SIGABRT);
+                    abort();
                 }
                 *column = newcol;
                 for (int8_t *p1=*column, *p2=*column+reg->grid_height/2; p2 < *column+reg->grid_height; p1++,p2++)
@@ -345,7 +345,7 @@ void extend_grid(Region* reg, Pole dir)
                 if (!newcol)
                 {
                     perror("Map allocation failed\n");
-                    raise(SIGABRT);
+                    abort();
                 }
                 *column = newcol;
                 for (int8_t *p = *column + reg->grid_height/2; p<*column+reg->grid_height; p++)
@@ -360,7 +360,7 @@ void extend_grid(Region* reg, Pole dir)
             if (!newgrid)
             {
                 perror("Map allocation failed : grid extension to the right\n");
-                raise(SIGABRT);
+                abort();
             }
             reg->grid = newgrid;
             for (int8_t **column = reg->grid+reg->grid_width/2; column < reg->grid+reg->grid_width; column++)
@@ -369,7 +369,7 @@ void extend_grid(Region* reg, Pole dir)
                 if(!*column)
                 {
                     perror("Map allocation failed\n");
-                    raise(SIGABRT);
+                    abort();
                 }
             }
             break;
@@ -380,7 +380,7 @@ void extend_grid(Region* reg, Pole dir)
             if (!newgrid)
             {
                 perror("Map allocation failed\n");
-                raise(SIGABRT);
+                abort();
             }
             reg->grid = newgrid;
             for (int8_t **col1=reg->grid, **col2=reg->grid+reg->grid_width/2; col2<reg->grid+reg->grid_width; col1++,col2++)
@@ -390,7 +390,7 @@ void extend_grid(Region* reg, Pole dir)
                 if(!*col1)
                 {
                     perror("Map allocation failed\n");
-                    raise(SIGABRT);
+                    abort();
                 }
             }
             break;
@@ -417,7 +417,7 @@ void initial_map(Region* reg, Player *pl)
     if (!reg->grid)
     {
         perror("Map allocation failed\n");
-        raise(SIGABRT);
+        abort();
     }
     //Row allocation
     for (int8_t **column = reg->grid; column < reg->grid+reg->grid_width; column++)
@@ -426,7 +426,7 @@ void initial_map(Region* reg, Player *pl)
         if(!*column)
         {
             perror("Map allocation failed\n");
-            raise(SIGABRT);
+            abort();
         }
     }
 
@@ -740,7 +740,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
 }
 
 
-
+//Fills the room with potential items
 void fill_room(Region *reg, Room *room)
 {
     if (room->width > 6 && room->height > 6 && randint(reg, 0, 100) < 20)
@@ -754,6 +754,7 @@ void fill_room(Region *reg, Room *room)
 /*__________PLAYER'S ACTIONS__________*/
 
 
+//Tries to move the player in the corresponding direction
 void playermove(Region *reg, Player *pl, Pole dir)
 {
     Co newco = pl->loc;

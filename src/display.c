@@ -1,5 +1,7 @@
 #include "display.h"
 
+
+//Sleeps for the given number of microseconds
 void us_sleep(uint64_t us)
 {
     struct timespec ts;
@@ -8,9 +10,10 @@ void us_sleep(uint64_t us)
     nanosleep(&ts, &ts);
 }
 
+//Initialises the user interface
 void initcurses(DisplayInfo *di)
 {
-    initscr(); //initialises curses mode
+    initscr(); 
     cbreak();
     noecho();
     curs_set(0);
@@ -130,7 +133,7 @@ int MainMenu(DisplayInfo *di)
 {
     uint8_t cursor = 0;
     int chr;
-    erase();
+    new_wclear(di->box1);
     mvwprintw(di->box1, 1,2,"Bienvenue dans le jeu !");
     waddwstr(di->box1, L" 👽");
     mvwaddwstr(di->box1, 2,2, L"Appuyez sur entrée pour sélectionner ou sur les flèches pour vous déplacer");
@@ -138,7 +141,7 @@ int MainMenu(DisplayInfo *di)
     mvwprintw(di->box1,4,5, "Charger une partie");
     mvwprintw(di->box1,5,5, "Quitter le jeu");
     //mvwadd_wch(di->box1,cursor+3, 2, WACS_RARROW);
-    mvwaddwstr(di->box1,cursor+3, 2, L"▶️");
+    mvwaddwstr(di->box1, cursor+3, 2, L"▶");
     while(true)
     {
         wrefresh(di->box1);
@@ -150,16 +153,16 @@ int MainMenu(DisplayInfo *di)
             case KEY_ENTER:
                 return cursor;
             case KEY_DOWN:
-                mvwprintw(di->box1,cursor+3, 2, " ");
+                mvwprintw(di->box1,cursor+3, 2, "  ");
                 cursor = (cursor+1)%3;
                 //mvwadd_wch(di->box1,cursor+3, 2, WACS_RARROW);
-                mvwaddwstr(di->box1,cursor+3, 2, L"▶️");
+                mvwaddwstr(di->box1,cursor+3, 2, L"▶");
                 break;
             case KEY_UP:
-                mvwprintw(di->box1,cursor+3, 2, " ");
+                mvwprintw(di->box1,cursor+3, 2, "  ");
                 cursor = (cursor+2)%3;
                 //mvwadd_wch(di->box1,cursor+3, 2, WACS_RARROW);
-                mvwaddwstr(di->box1,cursor+3, 2, L"▶️");
+                mvwaddwstr(di->box1,cursor+3, 2, L"▶");
                 break;
             default:
                 mvwprintw(di->box1,6,2,"%d",chr);
