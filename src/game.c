@@ -53,6 +53,10 @@ int8_t* get_from_grid(Region* reg, int32_t x, int32_t y)
     return reg->grid[nx] + ny;
 }
 
+
+/*__________MAP GENERATION FUNCTIONS__________*/
+
+
 //Allocates a room on the region's room list
 //The newly-created room has only its index initialized
 //This function does not check if the max number of rooms is exceded
@@ -137,7 +141,7 @@ void unreserve_box(Region* reg, Co corner)
 
 //This function tries to reserve a room in the grid, from a given room and a given door pole
 //return value : true if successful, false if failure
-//If successful, the reserved room has the entry door marked as existing and pointing to the previous prrom
+//If successful, the reserved room has the entry door marked as existing and pointing to the previous room
 //The exit door in the previous room points to the new room
 //The corner of the new room matches the corner of the reservation
 int reserve_room(Region* reg, Room* room, Pole pole)
@@ -227,6 +231,8 @@ int reserve_room(Region* reg, Room* room, Pole pole)
     return 1;
 }
 
+
+//Creates the walls of the room in the grid, while also placing the doors
 void wall_room(Region *reg, Room *room)
 {
     //upper wall
@@ -280,6 +286,7 @@ void wall_room(Region *reg, Room *room)
 }
 
 
+//Doubles the allocated memory for the grid in the given direction
 void extend_grid(Region* reg, Pole dir)
 {
     int8_t **newgrid;
@@ -367,7 +374,7 @@ void extend_grid(Region* reg, Pole dir)
 }
 
 
-
+//Initializes the Region and Player structures for a new game
 void initial_map(Region* reg, Player *pl)
 {
     //Room list initialisation
@@ -433,6 +440,81 @@ void initial_map(Region* reg, Player *pl)
 }
 
 
+//Places side doors for a room generated from the north or the south
+void place_ew_side_doors(Region *reg, Room *room)
+{
+    if (room->height > MIN_ROOM_HEIGHT+3)
+    {
+        if (randint(reg, 0, 100) < SIDE_DOORS_PROBABILITY)
+        {
+            room->door_west.dist = randint(reg, MIN_ROOM_HEIGHT/2+1, room->height-(MIN_ROOM_HEIGHT/2)-2);
+            if (is_free_box(
+                reg,
+                coordinates(room->corner.x - MAX_ROOM_WIDTH, room->corner.y + room->door_west.dist - MIN_ROOM_HEIGHT/2),
+                MAX_ROOM_WIDTH-1,
+                MIN_ROOM_HEIGHT
+                )
+            )
+            {
+                room->door_west.exists = reserve_room(reg, room, WEST);
+            }
+        }
+        if (randint(reg, 0, 100) < SIDE_DOORS_PROBABILITY)
+        {
+            room->door_east.dist = randint(reg, MIN_ROOM_HEIGHT/2+1, room->height-(MIN_ROOM_HEIGHT/2)-2);
+            if (is_free_box(
+                reg,
+                coordinates(room->corner.x + room->width, room->corner.y + room->door_east.dist - MIN_ROOM_HEIGHT/2),
+                MAX_ROOM_WIDTH-1,
+                MIN_ROOM_HEIGHT
+                )
+            )
+            {
+                room->door_east.exists = reserve_room(reg, room, EAST);
+            }
+        }
+    }
+}
+
+
+//Places side doors for a room generated from the west or the east
+void place_ns_side_doors(Region *reg, Room *room)
+{
+    if (room->width > MIN_ROOM_WIDTH+3)
+    {
+        if (randint(reg, 0, 100) < SIDE_DOORS_PROBABILITY)
+        {
+            room->door_north.dist = randint(reg, MIN_ROOM_WIDTH/2+1, room->width-(MIN_ROOM_WIDTH/2)-2);
+            if (is_free_box(
+                reg,
+                coordinates(room->corner.x + room->door_north.dist - MIN_ROOM_WIDTH/2, room->corner.y - MAX_ROOM_HEIGHT),
+                MAX_ROOM_HEIGHT,
+                MAX_ROOM_HEIGHT-1
+                )
+            )
+            {
+                room->door_north.exists = reserve_room(reg, room, NORTH);
+            }
+        }
+        if (randint(reg, 0, 100) < SIDE_DOORS_PROBABILITY)
+        {
+            room->door_south.dist = randint(reg, MIN_ROOM_WIDTH/2+1, room->width-(MIN_ROOM_WIDTH/2)-2);
+            if (is_free_box(
+                reg,
+                coordinates(room->corner.x + room->door_south.dist - MIN_ROOM_WIDTH/2, room->corner.y + room->height),
+                MAX_ROOM_HEIGHT,
+                MAX_ROOM_HEIGHT-1
+                )
+            )
+            {
+                room->door_south.exists = reserve_room(reg, room, SOUTH);
+            }
+        }
+    }
+}
+
+
+//Generates the room when a players enters it for the first time
 void generate_room(Region *reg, Room* from, Pole dir)
 {
     Room *newroom;
@@ -473,11 +555,15 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
         newroom->door_south.dist = diff + MIN_ROOM_WIDTH/2;
 
+        //attempts to place doors
+
         if (newroom->width > MIN_ROOM_WIDTH+3)
         {
             newroom->door_north.dist = randint(reg, MIN_ROOM_WIDTH/2+1, newroom->width-(MIN_ROOM_WIDTH/2)-2);
             newroom->door_north.exists = reserve_room(reg, newroom, NORTH);
         }
+        place_ew_side_doors(reg, newroom);
+
         newroom->is_generated = true;
         wall_room(reg, newroom);
         break;
@@ -520,6 +606,9 @@ void generate_room(Region *reg, Room* from, Pole dir)
             newroom->door_east.dist = randint(reg, MIN_ROOM_HEIGHT/2+1, newroom->height-(MIN_ROOM_HEIGHT/2)-2);
             newroom->door_east.exists = reserve_room(reg, newroom, EAST);
         }
+        place_ns_side_doors(reg, newroom);
+
+
         newroom->is_generated = true;
         wall_room(reg, newroom);
         break;
@@ -561,6 +650,8 @@ void generate_room(Region *reg, Room* from, Pole dir)
             newroom->door_south.dist = randint(reg, MIN_ROOM_WIDTH/2+1, newroom->width-(MIN_ROOM_WIDTH/2)-2);
             newroom->door_south.exists = reserve_room(reg, newroom, SOUTH);
         }
+        place_ew_side_doors(reg, newroom);
+
         newroom->is_generated = true;
         wall_room(reg, newroom);
         break;
@@ -603,11 +694,16 @@ void generate_room(Region *reg, Room* from, Pole dir)
             newroom->door_west.dist = randint(reg, MIN_ROOM_HEIGHT/2+1, newroom->height-(MIN_ROOM_HEIGHT/2)-2);
             newroom->door_west.exists = reserve_room(reg, newroom, WEST);
         }
+        place_ns_side_doors(reg, newroom);
+
         newroom->is_generated = true;
         wall_room(reg, newroom);
         break;
     }
 }
+
+
+/*__________PLAYER'S ACTIONS__________*/
 
 
 void playermove(Region *reg, Player *pl, Pole dir)

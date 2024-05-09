@@ -146,6 +146,10 @@ void extend_grid(Region* reg, Pole dir);
 //initializes a new map
 void initial_map(Region* reg, Player *pl);
 
+
+void place_ew_side_doors(Region *reg, Room *room);
+void place_ns_side_doors(Region *reg, Room *room);
+
 //generates a room when a player enters it for the first time
 void generate_room(Region *reg, Room* from, Pole dir);
 //handles the movement of a player

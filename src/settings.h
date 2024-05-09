@@ -13,6 +13,8 @@ Definitions of the balance parameters of the game.
 #define MIN_ROOM_WIDTH 5
 #define MIN_ROOM_HEIGHT 5
 
+#define SIDE_DOORS_PROBABILITY 55
+
 #define MAX_PLAYER_NAME_COUNT 35
 #define MAX_INVENTORY_SIZE 5
 
