@@ -88,9 +88,16 @@ void init_gameui(DisplayInfo *di)
 }
 void end_gameui(DisplayInfo *di)
 {
+    wclear(di->box1);
+    wclear(di->box2);
+    wclear(di->box3);
+    wrefresh(di->box1);
+    wrefresh(di->box2);
+    wrefresh(di->box3);
     delwin(di->box1);
     delwin(di->box2);
     delwin(di->box3);
+    refresh();
 }
 
 void endcurses(DisplayInfo *di)

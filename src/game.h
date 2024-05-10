@@ -155,6 +155,8 @@ int32_t randint(Region* reg, int32_t min, int32_t max);
 int8_t *get_from_grid(Region* reg, int32_t x, int32_t y);
 Item getitem(ItemIndex index, char *name);
 
+void reg_memfree(Region *reg);
+
 //allocates memory for a room, stores it in the region and returns a pointer to it
 Room *allocate_room(Region* r);
 //initializes a non-generated room with no doors 

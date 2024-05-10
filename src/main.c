@@ -105,6 +105,7 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
         }
     }
     nodelay(di->box1, false);
+    reg_memfree(reg);
 }
 
 int main(int argc, char **argv)
@@ -123,20 +124,26 @@ int main(int argc, char **argv)
     initcurses(&di);
 
     init_mainmenu(&di);
-    switch (MainMenu(&di))
+    while(true)
     {
-        case MAIN_MENU_NEW:
-            NewGame(&di, &reg, &pl);
-            end_mainmenu(&di);
-            init_gameui(&di);
-            Game(&di, &reg, &pl);
-            break;
-        case MAIN_MENU_QUIT:
-            pexit(&di, EXIT_SUCCESS);
-            break;
-        default:
-            break;
+        switch (MainMenu(&di))
+        {
+            case MAIN_MENU_NEW:
+                NewGame(&di, &reg, &pl);
+                end_mainmenu(&di);
+                init_gameui(&di);
+                Game(&di, &reg, &pl);
+                end_gameui(&di);
+                init_mainmenu(&di);
+                break;
+            case MAIN_MENU_QUIT:
+                pexit(&di, EXIT_SUCCESS);
+                break;
+            default:
+                break;
+        }
     }
+    
     
     endcurses(&di);
     

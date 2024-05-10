@@ -75,6 +75,19 @@ Item getitem(ItemIndex index, char *name)
     return item;
 }
 
+//frees the allocated memory in the region
+void reg_memfree(Region *reg)
+{
+    for (Room **room=reg->roomlist; room<reg->roomlist + MAX_ROOM_COUNT; room++)
+    {
+        free(*room);
+    }
+    for (int8_t **column = reg->grid; column < reg->grid+reg->grid_width; column++)
+    {
+        free(*column);
+    }
+    free(reg->grid);
+}
 
 /*__________MAP GENERATION FUNCTIONS__________*/
 
@@ -614,7 +627,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
         if (newroom->width > MIN_ROOM_WIDTH+2)
         {
-            newroom->door_north.dist = randint(reg, 1, newroom->width-2);
+            newroom->door_north.dist = randint(reg, 2, newroom->width-3);
             newroom->door_north.exists = reserve_room(reg, newroom, NORTH);
         }
         place_ew_side_doors(reg, newroom);
@@ -658,7 +671,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
         if (newroom->height > MIN_ROOM_HEIGHT+2)
         {
-            newroom->door_east.dist = randint(reg, 1, newroom->height-2);
+            newroom->door_east.dist = randint(reg, 2, newroom->height-3);
             newroom->door_east.exists = reserve_room(reg, newroom, EAST);
         }
         place_ns_side_doors(reg, newroom);
@@ -703,7 +716,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
         if (newroom->width > MIN_ROOM_WIDTH+2)
         {
-            newroom->door_south.dist = randint(reg, 1, newroom->width-2);
+            newroom->door_south.dist = randint(reg, 2, newroom->width-3);
             newroom->door_south.exists = reserve_room(reg, newroom, SOUTH);
         }
         place_ew_side_doors(reg, newroom);
@@ -748,7 +761,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
         if (newroom->height > MIN_ROOM_HEIGHT+2)
         {
-            newroom->door_west.dist = randint(reg, 1, newroom->height-2);
+            newroom->door_west.dist = randint(reg, 2, newroom->height-3);
             newroom->door_west.exists = reserve_room(reg, newroom, WEST);
         }
         place_ns_side_doors(reg, newroom);
