@@ -22,22 +22,24 @@ void aborthandler()
 
 void NewGame(DisplayInfo *di, Region *reg, Player *pl)
 {
+    WINDOW *win = di->box2;
+
     char buffer[20] = {'\0'};
     int x,y;
 
-    new_wclear(di->box1);
+    new_wclear(win);
     curs_set(1);
     
     //asks for player name
     for(int i=0; i<MAX_PLAYER_NAME_COUNT; i++){pl->name[i] = '\0';}
-    mvwprintw(di->box1,1,2, "Entrez le nom du joueur : ");
-    getyx(di->box1, y, x);
-    getusrstr(di->box1, y, x, pl->name, MAX_PLAYER_NAME_COUNT-1, &is_valid_playername_char);
+    mvwprintw(win,1,2, "Entrez le nom du joueur : ");
+    getyx(win, y, x);
+    getusrstr(win, y, x, pl->name, MAX_PLAYER_NAME_COUNT, &is_valid_playername_char);
 
     //asks for the seed
-    mvwprintw(di->box1,2,2, "Entrez la seed : ");
-    getyx(di->box1, y, x);
-    getusrstr(di->box1, y, x, buffer, 20, &is_digit);
+    mvwprintw(win,2,2, "Entrez la seed : ");
+    getyx(win, y, x);
+    getusrstr(win, y, x, buffer, 20, &is_digit);
 
     curs_set(0);
 
@@ -52,8 +54,9 @@ void NewGame(DisplayInfo *di, Region *reg, Player *pl)
 void Game(DisplayInfo *di, Region *reg, Player *pl)
 {
     int ch;
-    init_debug_print(di, reg, pl);
-    display_ui(reg, pl, di->box3);
+    update_map(di, reg, pl);
+    wrefresh(di->box2); //temp
+    right_panel_update(reg, pl, di->box3);
     nodelay(di->box1, true);
     while (true)
     {
@@ -80,11 +83,20 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
             case KEY_RIGHT:
                 playermove(reg, pl, EAST);
                 break;
+
+            case 'c':
+                show_controls(di);
+                break;
         }
         if (ch != ERR)
         {
-            init_debug_print(di, reg, pl);
-            display_ui(reg, pl, di->box3);
+            update_map(di, reg, pl);
+            right_panel_update(reg, pl, di->box3);
+        }
+        if (pl->hp <= 0)
+        {
+            //game over
+            break;
         }
         if (reg->deathtimer <= 0)
         {
@@ -110,10 +122,13 @@ int main(int argc, char **argv)
 
     initcurses(&di);
 
+    init_mainmenu(&di);
     switch (MainMenu(&di))
     {
         case MAIN_MENU_NEW:
             NewGame(&di, &reg, &pl);
+            end_mainmenu(&di);
+            init_gameui(&di);
             Game(&di, &reg, &pl);
             break;
         case MAIN_MENU_QUIT:

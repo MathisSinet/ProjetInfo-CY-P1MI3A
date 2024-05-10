@@ -15,7 +15,7 @@
 
 /*__________MEMORY PARAMETERS__________*/
 
-#define MAX_PLAYER_NAME_COUNT 28
+#define MAX_PLAYER_NAME_COUNT 27
 #define MAX_INVENTORY_SIZE 5
 #define ITEM_NAME_SIZE 15
 

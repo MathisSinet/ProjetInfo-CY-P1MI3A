@@ -11,10 +11,15 @@ DISPLAY CODE FOR THE GAME
 #define MAIN_MENU_LOAD 1
 #define MAIN_MENU_QUIT 2
 
-#define CY_RED 1
-#define CY_BLUE 2
-
 //Use nodelay(stdscr, true) to prevent delay using getch (returns ERR if no key is pressed)
+
+typedef enum
+{
+    CY_RED = 1,
+    CY_BLUE = 2,
+    CY_CYAN = 3
+}
+ColorPair;
 
 typedef struct DisplayInfo
 {
@@ -27,14 +32,22 @@ typedef struct DisplayInfo
 DisplayInfo;
 
 void us_sleep(uint64_t us);
+void new_wclear(WINDOW *win);
 
 void initcurses(DisplayInfo *di);
+
+void init_mainmenu(DisplayInfo *di);
+void end_mainmenu(DisplayInfo *di);
+void init_gameui(DisplayInfo *di);
+void end_gameui(DisplayInfo *di);
+
 void endcurses(DisplayInfo *di);
-void new_wclear(WINDOW *win);
+
 //Dynamic way to asks for the user string in curses
 void getusrstr(WINDOW*, int, int, char*, int, bool(*)(int));
 //Main Menu Loop
 int MainMenu(DisplayInfo *di);
 
-void display_ui(Region *reg, Player *pl, WINDOW *win);
-void init_debug_print(DisplayInfo *di, Region* reg, Player* pl);
+void right_panel_update(Region *reg, Player *pl, WINDOW *win);
+void show_controls(DisplayInfo *di);
+void update_map(DisplayInfo *di, Region* reg, Player* pl);

@@ -9,6 +9,12 @@ void us_sleep(uint64_t us)
     ts.tv_nsec = (us%1000000) * 1000;
     nanosleep(&ts, &ts);
 }
+//Erases the content of the window and recreates the box
+void new_wclear(WINDOW *win)
+{
+    werase(win);
+    box(win, 0, 0);
+}
 
 //Initialises the user interface
 void initcurses(DisplayInfo *di)
@@ -19,31 +25,79 @@ void initcurses(DisplayInfo *di)
     curs_set(0);
 
     getmaxyx(stdscr, di->height, di->width);
-    di->box1 = newwin(di->height-8, di->width-30, 0, 0);
-    di->box2 = newwin(8, di->width-30, di->height-8, 0);
-    di->box3 = newwin(di->height, 30, 0, di->width-30);
 
-    keypad(di->box1, true);
     start_color();
     init_pair(CY_RED, COLOR_RED, COLOR_BLACK);
     init_pair(CY_BLUE, COLOR_BLUE, COLOR_BLACK);
+    init_pair(CY_CYAN, COLOR_CYAN, COLOR_BLACK);
+}
 
+//Initializes the main menu interface
+void init_mainmenu(DisplayInfo *di)
+{
+    // Load ASCII art
+    char *ascii_art =
+        "::::::::    ::::::::    ::::::::    ::::    ::::   :::::::::::  ::::::::        :::   :::   ::::::::   ::::    :::  :::::::::   ::::::::::  :::::::::  \n"
+        ":+:    :+:  :+:     :+:  :+:    :+:  +:+:+: :+:+:+      :+:     :+:    :+:       :+:   :+:  :+:    :+:  :+:+:   :+:  :+:    :+:  :+:         :+:    :+: \n"
+        "+:+         +:+     +:+  +:+         +:+ +:+:+ +:+      +:+     +:+               +:+ +:+   +:+    +:+  :+:+:+  +:+  +:+    +:+  +:+         +:+    +:+ \n"
+        "+#+         +#+     +:+  +#++:++#++  +#+  +:+  +#+      +#+     +#+                +#++:    +#+    +:+  +#+ +:+ +#+  +#+    +:+  +#++:++#    +#++:++#:  \n"
+        "+#+         +#+     +#+         +#+  +#+       +#+      +#+     +#+                 +#+     +#+    +#+  +#+  +#+#+#  +#+    +#+  +#+         +#+    +#+ \n"
+        "#+#    #+#  #+#     #+#  #+#    #+#  #+#       #+#      #+#     #+#    #+#          #+#     #+#    #+#  #+#   #+# #  +#    #+#   #+#         #+#    #+# \n"
+        " ########    ########    ########    ###       ###  ###########  ########           ###      ########   ###    ####  #########   ##########  ###    ### \n";
+
+    // Calculate the number of lines in the ASCII art
+    int num_lines = 12;
+    int num_char_line = 151;
+    // Calculate position to center ASCII horizontally
+    int start_x = (di->width - num_char_line) / 2;
+
+    // Generate a new box for ASCII ART
+    di->box1 = newwin(num_lines + 2, num_char_line, 3, start_x);
+
+    // Print ASCII art
+    wattron(di->box1, COLOR_PAIR(CY_CYAN));
+    mvwprintw(di->box1, 1, 1, "%s", ascii_art);
+    wattroff(di->box1, COLOR_PAIR(CY_CYAN));
+    wrefresh(di->box1);
+
+    di->box2 = newwin(4*(di->height - 15)/5, 4*di->width/5, 18, di->width/10);
+    keypad(di->box2, true);
+    box(di->box2, 0, 0);
+}
+
+//Ends the main menu interface
+void end_mainmenu(DisplayInfo *di)
+{
+    delwin(di->box1);
+    delwin(di->box2);
+    refresh();
+}
+
+//Initializes the game interface
+void init_gameui(DisplayInfo *di)
+{
+    di->box1 = newwin(di->height-8, di->width-30, 0, 0); //top left panel
+    di->box2 = newwin(8, di->width-30, di->height-8, 0); //bottom left panel
+    di->box3 = newwin(di->height, 30, 0, di->width-30); //right panel
+    keypad(di->box1, true);
+    keypad(di->box2, true);
+    keypad(di->box3, true);
     box(di->box1, 0, 0);
     box(di->box2, 0, 0);
     box(di->box3, 0, 0);
 }
-
-void new_wclear(WINDOW *win)
-{
-    werase(win);
-    box(win, 0, 0);
-}
-
-void endcurses(DisplayInfo *di)
+void end_gameui(DisplayInfo *di)
 {
     delwin(di->box1);
     delwin(di->box2);
     delwin(di->box3);
+}
+
+void endcurses(DisplayInfo *di)
+{
+    //delwin(di->box1);
+    //delwin(di->box2);
+    //delwin(di->box3);
     endwin();
 }
 
@@ -77,7 +131,52 @@ void getusrstr(WINDOW *win, int y, int x, char *buffer, int max_len, bool(*valid
 }
 
 
-void display_ui(Region *reg, Player *pl, WINDOW *win)
+//Main menu loop. Returns an integer corresponding to the user's choice
+int MainMenu(DisplayInfo *di)
+{
+    WINDOW *win = di->box2;
+    uint8_t cursor = 0;
+    int chr;
+    new_wclear(win);
+    mvwprintw(win, 1,2,"Bienvenue dans le jeu !");
+    waddwstr(win, L" 👽");
+    mvwaddwstr(win, 2,2, L"Appuyez sur entrée pour sélectionner ou sur les flèches pour vous déplacer");
+    mvwprintw(win,3,5, "Nouvelle partie");
+    mvwprintw(win,4,5, "Charger une partie");
+    mvwprintw(win,5,5, "Quitter le jeu");
+
+    mvwaddwstr(win, 7,2, L"En jeu, utilisez la touche C pour accéder aux contrôles");
+    
+    mvwaddwstr(win, cursor+3, 2, L"▶");
+    while(true)
+    {
+        wrefresh(win);
+        chr = wgetch(win);
+        switch (chr)
+        {
+            case '\n':
+            case '\r':
+            case KEY_ENTER:
+                return cursor;
+            case KEY_DOWN:
+                mvwprintw(win,cursor+3, 2, "  ");
+                cursor = (cursor+1)%3;
+                mvwaddwstr(win,cursor+3, 2, L"▶");
+                break;
+            case KEY_UP:
+                mvwprintw(win,cursor+3, 2, "  ");
+                cursor = (cursor+2)%3;
+                mvwaddwstr(win,cursor+3, 2, L"▶");
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+
+//Updates the right panel
+void right_panel_update(Region *reg, Player *pl, WINDOW *win)
 {
     char itemname[15];
     Item item;
@@ -129,48 +228,21 @@ void display_ui(Region *reg, Player *pl, WINDOW *win)
 }
 
 
-int MainMenu(DisplayInfo *di)
+void show_controls(DisplayInfo *di)
 {
-    uint8_t cursor = 0;
-    int chr;
-    new_wclear(di->box1);
-    mvwprintw(di->box1, 1,2,"Bienvenue dans le jeu !");
-    waddwstr(di->box1, L" 👽");
-    mvwaddwstr(di->box1, 2,2, L"Appuyez sur entrée pour sélectionner ou sur les flèches pour vous déplacer");
-    mvwprintw(di->box1,3,5, "Nouvelle partie");
-    mvwprintw(di->box1,4,5, "Charger une partie");
-    mvwprintw(di->box1,5,5, "Quitter le jeu");
-    //mvwadd_wch(di->box1,cursor+3, 2, WACS_RARROW);
-    mvwaddwstr(di->box1, cursor+3, 2, L"▶");
-    while(true)
-    {
-        wrefresh(di->box1);
-        chr = wgetch(di->box1);
-        switch (chr)
-        {
-            case '\n':
-            case '\r':
-            case KEY_ENTER:
-                return cursor;
-            case KEY_DOWN:
-                mvwprintw(di->box1,cursor+3, 2, "  ");
-                cursor = (cursor+1)%3;
-                //mvwadd_wch(di->box1,cursor+3, 2, WACS_RARROW);
-                mvwaddwstr(di->box1,cursor+3, 2, L"▶");
-                break;
-            case KEY_UP:
-                mvwprintw(di->box1,cursor+3, 2, "  ");
-                cursor = (cursor+2)%3;
-                //mvwadd_wch(di->box1,cursor+3, 2, WACS_RARROW);
-                mvwaddwstr(di->box1,cursor+3, 2, L"▶");
-                break;
-            default:
-                mvwprintw(di->box1,6,2,"%d",chr);
-        }
-    }
+    WINDOW *win = di->box2;
+    new_wclear(win);
+    mvwaddwstr(win, 1, 2, L"ZQSD ou flèches directionnelles : se déplacer");
+    mvwaddwstr(win, 2, 2, L"W : quitter le jeu");
+    mvwaddwstr(win, 3, 2, L"Appuyez sur une touche pour reprendre la partie...");
+    wgetch(win);
+    new_wclear(win);
+    wrefresh(win);
 }
 
-void init_debug_print(DisplayInfo *di,Region *reg, Player *pl)
+
+//Updates the display of the map
+void update_map(DisplayInfo *di,Region *reg, Player *pl)
 {
     int w,h;
     int row=1;

@@ -547,6 +547,28 @@ void place_ns_side_doors(Region *reg, Room *room)
 }
 
 
+//Returns true if the given room (top-left corner, width, height) is creatable, while allowing 'room' to overlap
+bool newroom_valid_space(Region *reg, Room *room, Co corner, uint16_t width, uint16_t height)
+{
+    for (int x=corner.x; x<corner.x+width; x++)
+    {
+        for (int y=corner.y; y<corner.y+height; y++)
+        {
+            if (x >= room->corner.x && x < room->corner.x + room->width
+                && y >= room->corner.y && y < room->corner.y + room->height)
+            {
+                continue;
+            }
+            if (*get_from_grid(reg, x, y) != VOID)
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+
 //Generates the room when a players enters it for the first time
 void generate_room(Region *reg, Room* from, Pole dir)
 {
@@ -569,18 +591,18 @@ void generate_room(Region *reg, Room* from, Pole dir)
         newroom->width = width;
         newroom->height = height;
         newroom->corner.x -= diff;
-        while (!is_free_box(reg, newroom->corner, diff+MIN_ROOM_WIDTH, MIN_ROOM_HEIGHT-1)) //first resizing
+        while (!newroom_valid_space(reg, from, newroom->corner, diff+MIN_ROOM_WIDTH, MIN_ROOM_HEIGHT)) //first resizing
         {
             diff--;
             newroom->corner.x++;
             newroom->width--;
         }
-        while (!is_free_box(reg, newroom->corner, newroom->width, MIN_ROOM_HEIGHT-1)) //second resizing
+        while (!newroom_valid_space(reg, from, newroom->corner, newroom->width, MIN_ROOM_HEIGHT)) //second resizing
         {
             newroom->width--;
         }
         newroom->corner.y = from->corner.y - height + 1;
-        while (!is_free_box(reg, newroom->corner, newroom->width, newroom->height-1)) //third resizing
+        while (!newroom_valid_space(reg, from, newroom->corner, newroom->width, newroom->height)) //third resizing
         {
             newroom->corner.y++;
             newroom->height--;
@@ -590,9 +612,9 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
         //attempts to place doors
 
-        if (newroom->width > MIN_ROOM_WIDTH+3)
+        if (newroom->width > MIN_ROOM_WIDTH+2)
         {
-            newroom->door_north.dist = randint(reg, MIN_ROOM_WIDTH/2+1, newroom->width-(MIN_ROOM_WIDTH/2)-2);
+            newroom->door_north.dist = randint(reg, 1, newroom->width-2);
             newroom->door_north.exists = reserve_room(reg, newroom, NORTH);
         }
         place_ew_side_doors(reg, newroom);
@@ -610,34 +632,33 @@ void generate_room(Region *reg, Room* from, Pole dir)
             extend_grid(reg, EAST);
         }
 
-
         newroom = from->door_east.to;
         unreserve_box(reg, newroom->corner);
         diff = randint(reg, 0, height - MIN_ROOM_HEIGHT);
         newroom->width = width;
         newroom->height = height;
         newroom->corner.y -= diff;
-        while (!is_free_box(reg, coordinates(newroom->corner.x+1, newroom->corner.y), MIN_ROOM_WIDTH-1, diff+MIN_ROOM_HEIGHT))
+        while (!newroom_valid_space(reg, from, newroom->corner, MIN_ROOM_WIDTH, diff+MIN_ROOM_HEIGHT))
         {
             diff--;
             newroom->corner.y++;
             newroom->height--;
         }
-        while (!is_free_box(reg, coordinates(newroom->corner.x+1, newroom->corner.y), MIN_ROOM_WIDTH-1, newroom->height))
+        while (!newroom_valid_space(reg, from, newroom->corner, MIN_ROOM_WIDTH, newroom->height))
         {
             newroom->height--;
         }
         newroom->corner.x = from->corner.x + from->width - 1;
-        while (!is_free_box(reg, coordinates(newroom->corner.x+1, newroom->corner.y), newroom->width-1, newroom->height))
+        while (!newroom_valid_space(reg, from, newroom->corner, newroom->width, newroom->height))
         {
             newroom->width--;
         }
 
         newroom->door_west.dist = diff + MIN_ROOM_WIDTH/2;
 
-        if (newroom->height > MIN_ROOM_HEIGHT+3)
+        if (newroom->height > MIN_ROOM_HEIGHT+2)
         {
-            newroom->door_east.dist = randint(reg, MIN_ROOM_HEIGHT/2+1, newroom->height-(MIN_ROOM_HEIGHT/2)-2);
+            newroom->door_east.dist = randint(reg, 1, newroom->height-2);
             newroom->door_east.exists = reserve_room(reg, newroom, EAST);
         }
         place_ns_side_doors(reg, newroom);
@@ -662,27 +683,27 @@ void generate_room(Region *reg, Room* from, Pole dir)
         newroom->width = width;
         newroom->height = height;
         newroom->corner.x -= diff;
-        while (!is_free_box(reg, coordinates(newroom->corner.x, newroom->corner.y+1), diff+MIN_ROOM_WIDTH, MIN_ROOM_HEIGHT-1))
+        while (!newroom_valid_space(reg, from, newroom->corner, diff+MIN_ROOM_WIDTH, MIN_ROOM_HEIGHT))
         {
             diff--;
             newroom->corner.x++;
             newroom->width--;
         }
-        while (!is_free_box(reg, coordinates(newroom->corner.x, newroom->corner.y+1), newroom->width, MIN_ROOM_HEIGHT-1))
+        while (!newroom_valid_space(reg, from, newroom->corner, newroom->width, MIN_ROOM_HEIGHT))
         {
             newroom->width--;
         }
         newroom->corner.y = from->corner.y + from->height - 1;
-        while (!is_free_box(reg, coordinates(newroom->corner.x, newroom->corner.y+1), newroom->width, newroom->height-1))
+        while (!newroom_valid_space(reg, from, newroom->corner, newroom->width, newroom->height))
         {
             newroom->height--;
         }
 
         newroom->door_north.dist = diff + MIN_ROOM_WIDTH/2;
 
-        if (newroom->width > MIN_ROOM_WIDTH+3)
+        if (newroom->width > MIN_ROOM_WIDTH+2)
         {
-            newroom->door_south.dist = randint(reg, MIN_ROOM_WIDTH/2+1, newroom->width-(MIN_ROOM_WIDTH/2)-2);
+            newroom->door_south.dist = randint(reg, 1, newroom->width-2);
             newroom->door_south.exists = reserve_room(reg, newroom, SOUTH);
         }
         place_ew_side_doors(reg, newroom);
@@ -706,18 +727,18 @@ void generate_room(Region *reg, Room* from, Pole dir)
         newroom->width = width;
         newroom->height = height;
         newroom->corner.y -= diff;
-        while (!is_free_box(reg, newroom->corner, MIN_ROOM_WIDTH-1, diff+MIN_ROOM_HEIGHT))
+        while (!newroom_valid_space(reg, from, newroom->corner, MIN_ROOM_WIDTH, diff+MIN_ROOM_HEIGHT))
         {
             diff--;
             newroom->corner.y++;
             newroom->height--;
         }
-        while (!is_free_box(reg, newroom->corner, MIN_ROOM_WIDTH-1, newroom->height))
+        while (!newroom_valid_space(reg, from, newroom->corner, MIN_ROOM_WIDTH, newroom->height))
         {
             newroom->height--;
         }
         newroom->corner.x = from->corner.x - width + 1;
-        while (!is_free_box(reg, newroom->corner, newroom->width-1, newroom->height))
+        while (!newroom_valid_space(reg, from, newroom->corner, newroom->width, newroom->height))
         {
             newroom->corner.x++;
             newroom->width--;
@@ -725,9 +746,9 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
         newroom->door_east.dist = diff + MIN_ROOM_WIDTH/2;
 
-        if (newroom->height > MIN_ROOM_HEIGHT+3)
+        if (newroom->height > MIN_ROOM_HEIGHT+2)
         {
-            newroom->door_west.dist = randint(reg, MIN_ROOM_HEIGHT/2+1, newroom->height-(MIN_ROOM_HEIGHT/2)-2);
+            newroom->door_west.dist = randint(reg, 1, newroom->height-2);
             newroom->door_west.exists = reserve_room(reg, newroom, WEST);
         }
         place_ns_side_doors(reg, newroom);
