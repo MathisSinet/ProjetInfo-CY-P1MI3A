@@ -51,6 +51,35 @@ void NewGame(DisplayInfo *di, Region *reg, Player *pl)
     initial_map(reg, pl);
 }
 
+
+bool loadSave(DisplayInfo *di, Region *reg, Player *pl)
+{
+    WINDOW *win = di->box2;
+    char buffer[MAX_PLAYER_NAME_COUNT] = {'\0'};
+    int x,y;
+
+    new_wclear(win);
+    curs_set(1);
+
+    for(int i=0; i<MAX_PLAYER_NAME_COUNT; i++){pl->name[i] = '\0';}
+    mvwprintw(win, 1, 2, "Entrez le nom du joueur : ");
+    getyx(win, y, x);
+    getusrstr(win, y, x, buffer, MAX_PLAYER_NAME_COUNT, &is_valid_playername_char);
+
+    curs_set(0);
+
+    if (load(buffer, reg, pl))
+    {
+        return true;
+    }
+
+    mvwaddwstr(win, 2, 2, L"Désolé, la sauvegarde n'a pas pu être chargée");
+    mvwaddstr(win, 3, 2, "Appuyez sur une touche pour revenir au menu principal");
+    wgetch(win);
+    return false;
+}
+
+
 void Game(DisplayInfo *di, Region *reg, Player *pl)
 {
     int ch;
@@ -61,7 +90,7 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
     while (true)
     {
         ch = wgetch(di->box1);
-        if (ch == 'w')
+        if (ch == 'x')
         {
             break;
         }
@@ -87,6 +116,8 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
             case 'c':
                 show_controls(di);
                 break;
+            case 'w':
+                save_ui(di, reg, pl);
         }
         if (ch != ERR)
         {
@@ -135,6 +166,16 @@ int main(int argc, char **argv)
                 Game(&di, &reg, &pl);
                 end_gameui(&di);
                 init_mainmenu(&di);
+                break;
+            case MAIN_MENU_LOAD:
+                if (loadSave(&di, &reg, &pl))
+                {
+                    end_mainmenu(&di);
+                    init_gameui(&di);
+                    Game(&di, &reg, &pl);
+                    end_gameui(&di);
+                    init_mainmenu(&di);
+                }
                 break;
             case MAIN_MENU_QUIT:
                 pexit(&di, EXIT_SUCCESS);

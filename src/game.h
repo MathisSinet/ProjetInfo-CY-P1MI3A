@@ -12,6 +12,7 @@ The part of the code not related to display.
 #include <signal.h>
 
 #include "settings.h"
+#define GAME_MODULE_INCLUDED
 
 #define ITEM_HEAL1_SYMB L'🩹'
 
@@ -104,7 +105,6 @@ typedef struct Room
     //room height, walls included
     uint8_t height;
 
-    uint8_t door_count;
     Door door_north;
     Door door_east;
     Door door_south;
@@ -112,7 +112,7 @@ typedef struct Room
 
     //item
     bool isitem;
-    uint8_t item;
+    ItemIndex item;
     Co itemloc;
 }
 Room;

@@ -240,13 +240,46 @@ void show_controls(DisplayInfo *di)
     WINDOW *win = di->box2;
     new_wclear(win);
     mvwaddwstr(win, 1, 2, L"ZQSD ou flèches directionnelles : se déplacer");
-    mvwaddwstr(win, 2, 2, L"W : quitter le jeu");
-    mvwaddwstr(win, 3, 2, L"Appuyez sur une touche pour reprendre la partie...");
+    mvwaddwstr(win, 2, 2, L"X : quitter le jeu sans sauvegarder");
+    mvwaddwstr(win, 3, 2, L"W : sauvegarder le jeu");
+    mvwaddwstr(win, 4, 2, L"Appuyez sur une touche pour reprendre la partie...");
     wgetch(win);
     new_wclear(win);
     wrefresh(win);
 }
 
+
+void save_ui(DisplayInfo *di, Region *reg, Player *pl)
+{
+    WINDOW *win = di->box2;
+    FILE *savefile;
+    new_wclear(win);
+    char path[MAX_PLAYER_NAME_COUNT+20];
+    sprintf(path, "saves/%s", pl->name);
+    if (true/*access(path, W_OK)*/)
+    {
+        mvwaddwstr(win, 1, 2, L"Voulez-vous sauvegarder ? O/N");
+        if (wgetch(win) == 'o')
+        {
+            new_wclear(win);
+            if ((savefile = fopen(path, "wb")))
+            {
+                save(savefile, reg, pl);
+                fclose(savefile);
+                mvwprintw(win, 1, 2, "Sauvegarde dans %s", path);
+                mvwaddwstr(win, 2, 2, L"Appuyez sur une touche pour revenir au jeu");
+            }
+            else
+            {
+                mvwaddwstr(win, 2, 2, L"Une erreur s'est produite. Appuyez sur une touche pour revenir au jeu");
+            }
+            wgetch(win);
+        }
+    }
+
+    new_wclear(win);
+    wrefresh(win);
+}
 
 //Updates the display of the map
 void update_map(DisplayInfo *di,Region *reg, Player *pl)

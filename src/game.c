@@ -112,7 +112,6 @@ Room *allocate_room(Region* r)
 void init_room(Room* room)
 {
     room->is_generated = false;
-    room->door_count = 0;
     room->door_north.exists = false;
     room->door_north.to = NULL;
     room->door_east.exists = false;
@@ -450,7 +449,6 @@ void initial_map(Region* reg, Player *pl)
     firstRoom->height = INIT_ROOM_HEIGHT;
     firstRoom->corner.x = -INIT_ROOM_WIDTH/2;
     firstRoom->corner.y = -INIT_ROOM_HEIGHT/2;
-    firstRoom->door_count = 4;
     
     firstRoom->door_north.exists = true;
     firstRoom->door_north.dist = randint(reg, MIN_ROOM_WIDTH/2+1, INIT_ROOM_WIDTH-(MIN_ROOM_WIDTH/2)-2);
@@ -853,6 +851,5 @@ void playermove(Region *reg, Player *pl, Pole dir)
         default:
             break;
         }
-        
     }
 }

@@ -6,4 +6,5 @@ void segfault();
 void aborthandler();
 //New game procedure
 void NewGame(DisplayInfo *, Region*, Player*);
+bool loadSave(DisplayInfo *di, Region *reg, Player *pl);
 void Game(DisplayInfo*, Region*, Player*);

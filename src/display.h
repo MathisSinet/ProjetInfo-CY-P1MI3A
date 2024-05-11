@@ -5,7 +5,10 @@ DISPLAY CODE FOR THE GAME
 #define _XOPEN_SOURCE 700
 #include <ncursesw/ncurses.h>
 #include <locale.h>
-#include "game.h"
+#ifndef GAME_MODULE_INCLUDED
+    #include "game.h"
+#endif
+#include "save.h"
 
 #define MAIN_MENU_NEW 0
 #define MAIN_MENU_LOAD 1
@@ -50,4 +53,5 @@ int MainMenu(DisplayInfo *di);
 
 void right_panel_update(Region *reg, Player *pl, WINDOW *win);
 void show_controls(DisplayInfo *di);
+void save_ui(DisplayInfo *di, Region *reg, Player *pl);
 void update_map(DisplayInfo *di, Region* reg, Player* pl);
