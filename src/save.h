@@ -1,4 +1,4 @@
-#ifndef GAME_MODULE_INCLUDED
+#ifndef GAMEBASIC
     #include "game.h"
 #endif
 

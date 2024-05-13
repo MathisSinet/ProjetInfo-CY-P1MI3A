@@ -5,7 +5,7 @@ DISPLAY CODE FOR THE GAME
 #define _XOPEN_SOURCE 700
 #include <ncursesw/ncurses.h>
 #include <locale.h>
-#ifndef GAME_MODULE_INCLUDED
+#ifndef GAMEBASIC
     #include "game.h"
 #endif
 #include "save.h"
