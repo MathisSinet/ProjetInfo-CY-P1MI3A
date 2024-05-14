@@ -1,6 +1,4 @@
-#ifndef GAMEBASIC
-    #include "game.h"
-#endif
+#include "gamebasic.h"
 
 struct PlayerSave
 {

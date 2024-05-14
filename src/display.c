@@ -27,9 +27,9 @@ void initcurses(DisplayInfo *di)
     getmaxyx(stdscr, di->height, di->width);
 
     start_color();
-    init_pair(CY_RED, COLOR_RED, COLOR_BLACK);
-    init_pair(CY_BLUE, COLOR_BLUE, COLOR_BLACK);
-    init_pair(CY_CYAN, COLOR_CYAN, COLOR_BLACK);
+    init_pair(PAIR_RED, COLOR_RED, COLOR_BLACK);
+    init_pair(PAIR_BLUE, COLOR_BLUE, COLOR_BLACK);
+    init_pair(PAIR_CYAN, COLOR_CYAN, COLOR_BLACK);
 }
 
 //Initializes the main menu interface
@@ -55,9 +55,9 @@ void init_mainmenu(DisplayInfo *di)
     di->box1 = newwin(num_lines + 2, num_char_line, 3, start_x);
 
     // Print ASCII art
-    wattron(di->box1, COLOR_PAIR(CY_CYAN));
+    wattron(di->box1, COLOR_PAIR(PAIR_CYAN));
     mvwprintw(di->box1, 1, 1, "%s", ascii_art);
-    wattroff(di->box1, COLOR_PAIR(CY_CYAN));
+    wattroff(di->box1, COLOR_PAIR(PAIR_CYAN));
     wrefresh(di->box1);
 
     di->box2 = newwin(4*(di->height - 15)/5, 4*di->width/5, 18, di->width/10);
@@ -210,9 +210,9 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
     {
         if (pl->hp >= i)
         {
-            wattron(win, COLOR_PAIR(CY_RED));
+            wattron(win, COLOR_PAIR(PAIR_RED));
             mvwadd_wch(win, 3, 3+2*i, WACS_BLOCK);
-            wattroff(win, COLOR_PAIR(CY_RED));
+            wattroff(win, COLOR_PAIR(PAIR_RED));
         }
         else
         {
@@ -224,9 +224,9 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
     {
         if (pl->def >= i*10)
         {
-            wattron(win, COLOR_PAIR(CY_BLUE));
+            wattron(win, COLOR_PAIR(PAIR_BLUE));
             mvwadd_wch(win, 4, 4+2*i, WACS_BLOCK);
-            wattroff(win, COLOR_PAIR(CY_BLUE));
+            wattroff(win, COLOR_PAIR(PAIR_BLUE));
         }
         else
         {

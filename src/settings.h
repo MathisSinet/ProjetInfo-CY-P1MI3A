@@ -1,3 +1,6 @@
+#ifndef SETTINGS_HEADER
+#define SETTINGS_HEADER
+
 /*__________ROOM GENERATION PARAMETERS__________*/
 
 #define MAX_ROOM_COUNT 75
@@ -27,3 +30,5 @@
 
 #define RAND_A 157
 #define RAND_C 221
+
+#endif

@@ -2,9 +2,10 @@
 The part of the code not related to display.
 */
 
-#ifndef GAMEBASIC
-    #include "gamebasic.h"
-#endif
+#ifndef MAPGEN_HEADER
+#define MAPGEN_HEADER
+
+#include "gamebasic.h"
 
 //allocates memory for a room, stores it in the region and returns a pointer to it
 Room *allocate_room(Region* r);
@@ -34,3 +35,5 @@ bool newroom_valid_space(Region *reg, Room *source, Co corner, uint16_t width, u
 //generates a room when a player enters it for the first time
 void generate_room(Region *reg, Room* from, Pole dir);
 void fill_room(Region *reg, Room *room);
+
+#endif

@@ -5,10 +5,7 @@ DISPLAY CODE FOR THE GAME
 #define _XOPEN_SOURCE 700
 #include <ncursesw/ncurses.h>
 #include <locale.h>
-#ifndef GAMEBASIC
-    #include "game.h"
-#endif
-#include "save.h"
+#include "game.h"
 
 #define MAIN_MENU_NEW 0
 #define MAIN_MENU_LOAD 1
@@ -18,9 +15,9 @@ DISPLAY CODE FOR THE GAME
 
 typedef enum
 {
-    CY_RED = 1,
-    CY_BLUE = 2,
-    CY_CYAN = 3
+    PAIR_RED = 1,
+    PAIR_BLUE = 2,
+    PAIR_CYAN = 3
 }
 ColorPair;
 

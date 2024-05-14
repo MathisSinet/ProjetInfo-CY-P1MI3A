@@ -1,3 +1,4 @@
+#include "game.h"
 #include "display.h"
 
 //Exits the program while calling endwin()

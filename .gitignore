@@ -1,5 +1,4 @@
 .vscode
-*.o
 build/
 test/
 saves/

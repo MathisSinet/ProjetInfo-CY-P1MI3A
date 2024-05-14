@@ -1,3 +1,6 @@
+#ifndef GAMEBASIC_HEADER
+#define GAMEBASIC_HEADER
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -8,8 +11,6 @@
 #include <signal.h>
 
 #include "settings.h"
-
-#define GAMEBASIC
 
 typedef enum
 {
@@ -156,3 +157,5 @@ int32_t randint(Region* reg, int32_t min, int32_t max);
 int8_t *get_from_grid(Region* reg, int32_t x, int32_t y);
 
 void reg_memfree(Region *reg);
+
+#endif
