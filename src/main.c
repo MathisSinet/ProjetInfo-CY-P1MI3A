@@ -20,6 +20,7 @@ void aborthandler()
     exit(EXIT_FAILURE);
 }
 
+
 void NewGame(DisplayInfo *di, Region *reg, Player *pl)
 {
     WINDOW *win = di->box2;
@@ -31,7 +32,7 @@ void NewGame(DisplayInfo *di, Region *reg, Player *pl)
     curs_set(1);
     
     //asks for player name
-    for(int i=0; i<MAX_PLAYER_NAME_COUNT; i++){pl->name[i] = '\0';}
+    //for(int i=0; i<MAX_PLAYER_NAME_COUNT; i++){pl->name[i] = '\0';}
     mvwprintw(win,1,2, "Entrez le nom du joueur : ");
     getyx(win, y, x);
     getusrstr(win, y, x, pl->name, MAX_PLAYER_NAME_COUNT, &is_valid_playername_char);
@@ -90,33 +91,39 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
     while (true)
     {
         ch = wgetch(di->box1);
-        if (ch == 'x')
+        if (ch == 'x' || ch == 'X')
         {
             break;
         }
         switch (ch)
         {
             case 'z':
+            case 'Z':
             case KEY_UP:
                 playermove(reg, pl, NORTH);
                 break;
             case 'q':
+            case 'Q':
             case KEY_LEFT:
                 playermove(reg, pl, WEST);
                 break;
             case 's':
+            case 'S':
             case KEY_DOWN:
                 playermove(reg, pl, SOUTH);
                 break;
             case 'd':
+            case 'D':
             case KEY_RIGHT:
                 playermove(reg, pl, EAST);
                 break;
 
             case 'c':
+            case 'C':
                 show_controls(di);
                 break;
             case 'w':
+            case 'W':
                 save_ui(di, reg, pl);
         }
         if (ch != ERR)
@@ -138,6 +145,7 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
     nodelay(di->box1, false);
     reg_memfree(reg);
 }
+
 
 int main(int argc, char **argv)
 {

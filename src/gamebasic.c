@@ -40,7 +40,7 @@ int32_t randint(Region *r, int32_t min, int32_t max)
     return new_rand(r) % (max-min+1) + min;
 }
 
-//returns a pointer to the space on the grid with given coordinates
+//returns a pointer to the tile on the grid with given coordinates
 //returns NULL if the coordinates are invalid
 int8_t* get_from_grid(Region* reg, int32_t x, int32_t y)
 {

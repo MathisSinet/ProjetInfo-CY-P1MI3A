@@ -86,6 +86,7 @@ void init_gameui(DisplayInfo *di)
     box(di->box2, 0, 0);
     box(di->box3, 0, 0);
 }
+//Ends the game interface
 void end_gameui(DisplayInfo *di)
 {
     wclear(di->box1);
@@ -100,6 +101,7 @@ void end_gameui(DisplayInfo *di)
     refresh();
 }
 
+
 void endcurses(DisplayInfo *di)
 {
     //delwin(di->box1);
@@ -108,6 +110,14 @@ void endcurses(DisplayInfo *di)
     endwin();
 }
 
+
+//Let the user input a string of max_len on the window, stored in buffer
+/// @param win window where the input takes place
+/// @param y y coordinate of the first character
+/// @param x x coordinate of the first character
+/// @param buffer buffer where the input string will be stored
+/// @param max_len maximum len of the buffer
+/// @param validatefunc validate function of a character in the string
 void getusrstr(WINDOW *win, int y, int x, char *buffer, int max_len, bool(*validatefunc)(int))
 {
     int len=0;
@@ -119,6 +129,7 @@ void getusrstr(WINDOW *win, int y, int x, char *buffer, int max_len, bool(*valid
 
         if (len > 0 && (chr == KEY_ENTER || chr == '\n' || chr == '\r'))
         {
+            buffer[len] = '\0';
             break;
         }
 
@@ -235,6 +246,7 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
 }
 
 
+//Shows the controls in the bottom window
 void show_controls(DisplayInfo *di)
 {
     WINDOW *win = di->box2;
@@ -249,10 +261,12 @@ void show_controls(DisplayInfo *di)
 }
 
 
+//Save User Interface
 void save_ui(DisplayInfo *di, Region *reg, Player *pl)
 {
     WINDOW *win = di->box2;
     FILE *savefile;
+
     new_wclear(win);
     char path[MAX_PLAYER_NAME_COUNT+20];
     sprintf(path, "saves/%s", pl->name);
@@ -282,54 +296,55 @@ void save_ui(DisplayInfo *di, Region *reg, Player *pl)
 }
 
 //Updates the display of the map
-void update_map(DisplayInfo *di,Region *reg, Player *pl)
+void update_map(DisplayInfo *di, Region *reg, Player *pl)
 {
     int w,h;
     int row=1;
-    getmaxyx(di->box1, h, w);
+    int8_t *tile;
+    WINDOW *win = di->box1;
+
+    getmaxyx(win, h, w);
     h-=3; w-=2;
-    new_wclear(di->box1);
-    mvwprintw(di->box1, row++, 2, "x=%d, y=%d, grid width=%d, grid height=%d", pl->loc.x, pl->loc.y, reg->grid_width, reg->grid_height);
+    new_wclear(win);
+    mvwprintw(win, row++, 2, "x=%d, y=%d, grid width=%d, grid height=%d", pl->loc.x, pl->loc.y, reg->grid_width, reg->grid_height);
+    
     for (int y=pl->loc.y-h/2; y<pl->loc.y+h/2; y++)
     {
-        wmove(di->box1, row++,1);
+        wmove(win, row++,1);
         for (int x=pl->loc.x-w/4; x<pl->loc.x+w/4; x++)
         {
-            if (
-                reg->zero.x + x < 0 || 
-                reg->zero.x + x >= reg->grid_width || 
-                reg->zero.y + y < 0 || 
-                reg->zero.y + y >reg->grid_height)
+            tile = get_from_grid(reg, x, y);
+            if (!tile)
             {
-                wprintw(di->box1, "  ");
+                wprintw(win, "  ");
                 continue;
             }
             if(x==pl->loc.x && y==pl->loc.y)
             {
-                waddwstr(di->box1, L"ඞ ");
+                waddwstr(win, L"ඞ ");
                 continue;
             }
             if (pl->currentroom->isitem)
             {
                 if (x==pl->currentroom->itemloc.x && y==pl->currentroom->itemloc.y)
                 {
-                    wprintw(di->box1, "%lc", getitem(pl->currentroom->item, NULL).symb);
+                    wprintw(win, "%lc", getitem(pl->currentroom->item, NULL).symb);
                     continue;
                 }
             }
-            switch (*get_from_grid(reg, x, y))
+            switch (*tile)
             {
             case VOID:
-                wprintw(di->box1, "  ");
+                wprintw(win, "  ");
                 break;
             case RESERVED:
-                wprintw(di->box1, "RR");
+                wprintw(win, "RR");
                 break;
             case WALL:
-                waddwstr(di->box1, L"🧱");
+                waddwstr(win, L"🧱");
                 break;
             case DOOR:
-                waddwstr(di->box1, L"🚪");
+                waddwstr(win, L"🚪");
                 break;
             default:
                 break;

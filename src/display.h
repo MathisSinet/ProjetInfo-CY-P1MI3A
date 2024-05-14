@@ -47,7 +47,7 @@ void end_gameui(DisplayInfo *di);
 void endcurses(DisplayInfo *di);
 
 //Dynamic way to asks for the user string in curses
-void getusrstr(WINDOW*, int, int, char*, int, bool(*)(int));
+void getusrstr(WINDOW* win, int y, int x, char* buffer, int max_len, bool(*validatefunc)(int));
 //Main Menu Loop
 int MainMenu(DisplayInfo *di);
 
