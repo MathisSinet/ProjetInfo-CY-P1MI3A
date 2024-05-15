@@ -14,7 +14,7 @@
 #define MIN_ROOM_WIDTH 5
 #define MIN_ROOM_HEIGHT 5
 
-#define SIDE_DOORS_PROBABILITY 55
+#define SIDE_DOORS_PROBABILITY 550
 
 /*__________MEMORY PARAMETERS__________*/
 

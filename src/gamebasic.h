@@ -36,6 +36,7 @@ ItemType;
 typedef enum 
 {
     ITEM_HEAL1 = 0,
+    ITEM_SHIELD = 1,
     ITEM_BASE_WEAPON = 20,
     ITEM_WEAPON_STICKS = 21,
     ITEM_WEAPON_BOXING = 22,
@@ -59,8 +60,7 @@ typedef struct Item
     char *name;
     wchar_t symb;
     ItemType type;
-    float stat1;
-    float stat2;
+    uint32_t stat;
 }
 Item;
 
@@ -79,6 +79,7 @@ typedef struct Player
     ItemIndex weapon;
     ItemIndex armor;
     ItemIndex inv[MAX_INVENTORY_SIZE];
+    uint16_t inv_size;
     struct Room *currentroom;
 }
 Player;
@@ -152,6 +153,7 @@ bool is_valid_playername_char(int chr);
 uint32_t new_rand(Region* r);
 //Generates a random number between min and max included using the region's seed
 int32_t randint(Region* reg, int32_t min, int32_t max);
+bool randevent(Region *reg, uint32_t prob);
 
 
 int8_t *get_from_grid(Region* reg, int32_t x, int32_t y);

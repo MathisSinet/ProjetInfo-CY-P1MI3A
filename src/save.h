@@ -11,6 +11,7 @@ struct PlayerSave
     ItemIndex weapon;
     ItemIndex armor;
     ItemIndex inv[MAX_INVENTORY_SIZE];
+    uint16_t inv_size;
     uint32_t currentroom;
 };
 

@@ -389,9 +389,9 @@ void initial_map(Region* reg, Player *pl)
     pl->hp = 10;
     pl->atk = 10;
     pl->def = 10;
+    pl->inv_size = 0;
 
-
-    pl->weapon = ITEM_BASE_WEAPON;
+    pl->weapon = ITEM_WEAPON_SWORD;
 }
 
 
@@ -400,7 +400,7 @@ void place_ew_side_doors(Region *reg, Room *room)
 {
     if (room->height > MIN_ROOM_HEIGHT+3)
     {
-        if (randint(reg, 0, 100) < SIDE_DOORS_PROBABILITY)
+        if (randevent(reg, SIDE_DOORS_PROBABILITY))
         {
             room->door_west.dist = randint(reg, MIN_ROOM_HEIGHT/2+1, room->height-(MIN_ROOM_HEIGHT/2)-2);
             if (is_free_box(
@@ -414,7 +414,7 @@ void place_ew_side_doors(Region *reg, Room *room)
                 room->door_west.exists = reserve_room(reg, room, WEST);
             }
         }
-        if (randint(reg, 0, 100) < SIDE_DOORS_PROBABILITY)
+        if (randevent(reg, SIDE_DOORS_PROBABILITY))
         {
             room->door_east.dist = randint(reg, MIN_ROOM_HEIGHT/2+1, room->height-(MIN_ROOM_HEIGHT/2)-2);
             if (is_free_box(
@@ -437,7 +437,7 @@ void place_ns_side_doors(Region *reg, Room *room)
 {
     if (room->width > MIN_ROOM_WIDTH+3)
     {
-        if (randint(reg, 0, 100) < SIDE_DOORS_PROBABILITY)
+        if (randevent(reg, SIDE_DOORS_PROBABILITY))
         {
             room->door_north.dist = randint(reg, MIN_ROOM_WIDTH/2+1, room->width-(MIN_ROOM_WIDTH/2)-2);
             if (is_free_box(
@@ -451,7 +451,7 @@ void place_ns_side_doors(Region *reg, Room *room)
                 room->door_north.exists = reserve_room(reg, room, NORTH);
             }
         }
-        if (randint(reg, 0, 100) < SIDE_DOORS_PROBABILITY)
+        if (randevent(reg, SIDE_DOORS_PROBABILITY))
         {
             room->door_south.dist = randint(reg, MIN_ROOM_WIDTH/2+1, room->width-(MIN_ROOM_WIDTH/2)-2);
             if (is_free_box(
@@ -686,10 +686,17 @@ void generate_room(Region *reg, Room* from, Pole dir)
 //Fills the room with potential items
 void fill_room(Region *reg, Room *room)
 {
-    if (room->width > 6 && room->height > 6 && randint(reg, 0, 100) < 20)
+    if (room->width > 6 && room->height > 6 && randevent(reg, 200))
     {
         room->isitem = true;
         room->itemloc = coordinates(room->corner.x + randint(reg, 1, room->width-2), room->corner.y + randint(reg, 1, room->height-2));
         room->item = ITEM_HEAL1;
+        return;
+    }
+    if (room->width > 6 && room->height > 6 && randevent(reg, 120))
+    {
+        room->isitem = true;
+        room->itemloc = coordinates(room->corner.x + randint(reg, 1, room->width-2), room->corner.y + randint(reg, 1, room->height-2));
+        room->item = ITEM_SHIELD;
     }
 }

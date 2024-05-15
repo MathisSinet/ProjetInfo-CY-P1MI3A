@@ -165,7 +165,7 @@ int MainMenu(DisplayInfo *di)
 
     mvwaddwstr(win, 7,2, L"En jeu, utilisez la touche C pour accéder aux contrôles");
     
-    mvwaddwstr(win, cursor+3, 2, L"▶");
+    mvwaddwstr(win, cursor+3, 2, RARROW_SYMB);
     while(true)
     {
         wrefresh(win);
@@ -179,12 +179,12 @@ int MainMenu(DisplayInfo *di)
             case KEY_DOWN:
                 mvwprintw(win,cursor+3, 2, "  ");
                 cursor = (cursor+1)%3;
-                mvwaddwstr(win,cursor+3, 2, L"▶");
+                mvwaddwstr(win,cursor+3, 2, RARROW_SYMB);
                 break;
             case KEY_UP:
                 mvwprintw(win,cursor+3, 2, "  ");
                 cursor = (cursor+2)%3;
-                mvwaddwstr(win,cursor+3, 2, L"▶");
+                mvwaddwstr(win,cursor+3, 2, RARROW_SYMB);
                 break;
             default:
                 break;
@@ -242,7 +242,75 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
     wprintw(win, "%s %lc", item.name, item.symb);
     mvwprintw(win, 9, 2, "Inventaire :");
 
+    for (int i=0; i<pl->inv_size; i++)
+    {
+        item = getitem(pl->inv[i], itemname);
+        mvwprintw(win, 10+i, 4, "%s %lc", item.name, item.symb);
+    }
+
     wrefresh(win);
+}
+
+
+//Inventory
+void manage_inventory(Region *reg, Player *pl, DisplayInfo *di)
+{
+    WINDOW *win = di->box3;
+    int ch;
+    unsigned int cursor = 0;
+
+    if (pl->inv_size <= 0)
+    {
+        return;
+    }
+
+    mvwprintw(win, di->height-3, 2, "U : Utiliser l'objet");
+    mvwprintw(win, di->height-3, 2, "E : Fermer l'inventaire");
+    mvwprintw(win, di->height-2, 2, "A : Jeter l'objet");
+    mvwaddwstr(win, 10+cursor, 2, RARROW_SYMB);
+
+    while(true)
+    {
+        ch = wgetch(win);
+        if (ch == 'e' || ch == 'E')
+        {
+            break;
+        }
+        if (ch == 'a' || ch == 'A')
+        {
+            for (int i=cursor; i<pl->inv_size-1; i++)
+            {
+                pl->inv[i] = pl->inv[i+1];
+            }
+            pl->inv_size--;
+            if (pl->inv_size == 0)
+            {
+                break;
+            }
+            right_panel_update(reg, pl, win);
+            mvwaddwstr(win, 10+cursor, 2, RARROW_SYMB);
+            if (cursor == pl->inv_size)
+            {
+                mvwaddwstr(win, 10+cursor, 2, L"  ");
+                cursor = (cursor+pl->inv_size-1) % pl->inv_size;
+                mvwaddwstr(win, 10+cursor, 2, RARROW_SYMB);
+            }
+        }
+        if (ch == KEY_DOWN || ch == 's' || ch == 'S')
+        {
+            mvwaddwstr(win, 10+cursor, 2, L"  ");
+            cursor = (cursor+1) % pl->inv_size;
+            mvwaddwstr(win, 10+cursor, 2, RARROW_SYMB);
+        }
+        if (ch == KEY_UP || ch == 'z' || ch == 'Z')
+        {
+            mvwaddwstr(win, 10+cursor, 2, L"  ");
+            cursor = (cursor+pl->inv_size-1) % pl->inv_size;
+            mvwaddwstr(win, 10+cursor, 2, RARROW_SYMB);
+        }
+    }
+
+    right_panel_update(reg, pl, win);
 }
 
 
@@ -254,7 +322,8 @@ void show_controls(DisplayInfo *di)
     mvwaddwstr(win, 1, 2, L"ZQSD ou flèches directionnelles : se déplacer");
     mvwaddwstr(win, 2, 2, L"X : quitter le jeu sans sauvegarder");
     mvwaddwstr(win, 3, 2, L"W : sauvegarder le jeu");
-    mvwaddwstr(win, 4, 2, L"Appuyez sur une touche pour reprendre la partie...");
+    mvwaddwstr(win, 4, 2, L"E : ouvrir/fermer l'inventaire");
+    mvwaddwstr(win, 5, 2, L"Appuyez sur une touche pour reprendre la partie...");
     wgetch(win);
     new_wclear(win);
     wrefresh(win);
@@ -321,7 +390,7 @@ void update_map(DisplayInfo *di, Region *reg, Player *pl)
             }
             if(x==pl->loc.x && y==pl->loc.y)
             {
-                waddwstr(win, L"ඞ ");
+                waddwstr(win, CHARACTER_SYMB);
                 continue;
             }
             if (pl->currentroom->isitem)

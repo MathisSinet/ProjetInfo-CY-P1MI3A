@@ -11,6 +11,10 @@ DISPLAY CODE FOR THE GAME
 #define MAIN_MENU_LOAD 1
 #define MAIN_MENU_QUIT 2
 
+#define RARROW_SYMB L"▶"
+#define CHARACTER_SYMB L"ඞ "
+
+
 //Use nodelay(stdscr, true) to prevent delay using getch (returns ERR if no key is pressed)
 
 typedef enum
@@ -49,6 +53,9 @@ void getusrstr(WINDOW* win, int y, int x, char* buffer, int max_len, bool(*valid
 int MainMenu(DisplayInfo *di);
 
 void right_panel_update(Region *reg, Player *pl, WINDOW *win);
+void manage_inventory(Region *reg, Player *pl, DisplayInfo *di);
+
 void show_controls(DisplayInfo *di);
+
 void save_ui(DisplayInfo *di, Region *reg, Player *pl);
 void update_map(DisplayInfo *di, Region* reg, Player* pl);

@@ -125,6 +125,11 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
             case 'w':
             case 'W':
                 save_ui(di, reg, pl);
+                break;
+            case 'e':
+            case 'E':
+                manage_inventory(reg, pl, di);
+                break;
         }
         if (ch != ERR)
         {

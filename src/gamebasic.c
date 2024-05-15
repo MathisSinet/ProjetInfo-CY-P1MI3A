@@ -40,6 +40,12 @@ int32_t randint(Region *r, int32_t min, int32_t max)
     return new_rand(r) % (max-min+1) + min;
 }
 
+//Has a prob per thousand chance of returning true
+bool randevent(Region *reg, uint32_t prob)
+{
+    return randint(reg, 1, 1000) <= prob;
+}
+
 //returns a pointer to the tile on the grid with given coordinates
 //returns NULL if the coordinates are invalid
 int8_t* get_from_grid(Region* reg, int32_t x, int32_t y)

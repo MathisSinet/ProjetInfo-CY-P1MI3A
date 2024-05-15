@@ -19,6 +19,7 @@ int save(FILE *savefile, Region *reg, Player *pl)
     {
         playersave.inv[i] = pl->inv[i];
     }
+    playersave.inv_size = pl->inv_size;
     playersave.currentroom = pl->currentroom->index;
 
     regionsave.seed = reg->seed;
@@ -85,6 +86,7 @@ int load(char *name, Region *reg, Player *pl)
 {
     char path[MAX_PLAYER_NAME_COUNT+20];
     FILE *savefile;
+    
     Room *room;
 
     sprintf(path, "saves/%s", name);
@@ -204,6 +206,7 @@ int load(char *name, Region *reg, Player *pl)
     {
         pl->inv[i] = playersave.inv[i];
     }
+    pl->inv_size = playersave.inv_size;
     pl->currentroom = reg->roomlist[playersave.currentroom];
     return 1;
 }

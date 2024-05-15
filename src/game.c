@@ -25,6 +25,19 @@ void playermove(Region *reg, Player *pl, Pole dir)
     }
 
     dest_content = *get_from_grid(reg, newco.x, newco.y);
+
+    if (pl->currentroom->isitem)
+            {
+                if (pl->loc.x==pl->currentroom->itemloc.x && pl->loc.y==pl->currentroom->itemloc.y)
+                {
+                    if (pl->inv_size != MAX_INVENTORY_SIZE)
+                    {
+                        pl->inv[pl->inv_size++] = pl->currentroom->item;
+                        pl->currentroom->isitem = false;
+                    }
+                }
+            }
+
     if (dest_content == VOID)
     {
         pl->loc = newco;
