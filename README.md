@@ -1,7 +1,8 @@
 # ProjetInfo-CY-P1MI3A
 
-Projet d'informatique pour la fin de notre année en Pré ING 1
-Fait par le trinôme A
+Projet d'informatique pour la fin de notre année en Pré ING 1  
+Fait par le trinôme A  
+Sujet : Cosmic Yonder 
 
 ## Contributeurs
 
@@ -14,6 +15,8 @@ Fait par le trinôme A
 Pour compiler la solution, utiliser `make`.
 
 Pour exécuter la solution, utiliser `make run`.
+
+Pour nettoyer les fichiers de construction, utiliser `make clean`
 
 ## Bibliothèques utilisées
 
