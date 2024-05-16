@@ -264,7 +264,7 @@ void manage_inventory(Region *reg, Player *pl, DisplayInfo *di)
         return;
     }
 
-    mvwprintw(win, di->height-3, 2, "U : Utiliser l'objet");
+    mvwprintw(win, di->height-4, 2, "U : Utiliser l'objet");
     mvwprintw(win, di->height-3, 2, "E : Fermer l'inventaire");
     mvwprintw(win, di->height-2, 2, "A : Jeter l'objet");
     mvwaddwstr(win, 10+cursor, 2, RARROW_SYMB);
@@ -288,6 +288,9 @@ void manage_inventory(Region *reg, Player *pl, DisplayInfo *di)
                 break;
             }
             right_panel_update(reg, pl, win);
+            mvwprintw(win, di->height-4, 2, "U : Utiliser l'objet");
+            mvwprintw(win, di->height-3, 2, "E : Fermer l'inventaire");
+            mvwprintw(win, di->height-2, 2, "A : Jeter l'objet");
             mvwaddwstr(win, 10+cursor, 2, RARROW_SYMB);
             if (cursor == pl->inv_size)
             {
@@ -410,10 +413,10 @@ void update_map(DisplayInfo *di, Region *reg, Player *pl)
                 wprintw(win, "RR");
                 break;
             case WALL:
-                waddwstr(win, L"🧱");
+                waddwstr(win, WALL_SYMB);
                 break;
             case DOOR:
-                waddwstr(win, L"🚪");
+                waddwstr(win, DOOR_SYMB);
                 break;
             default:
                 break;

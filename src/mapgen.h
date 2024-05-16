@@ -1,5 +1,6 @@
 /*
-The part of the code not related to display.
+mapgen.h
+This header provides map generation functions
 */
 
 #ifndef MAPGEN_HEADER

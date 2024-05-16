@@ -39,11 +39,19 @@ void init_room(Room* room)
 //i.e. it contains only VOID
 bool is_free_box(Region *reg, Co corner, uint16_t width, uint16_t height)
 {
+    int8_t* tile;
+
     for (int x=corner.x; x<corner.x+width; x++)
     {
         for (int y=corner.y; y<corner.y+height; y++)
         {
-            if (*get_from_grid(reg, x, y) != VOID)
+            tile = get_from_grid(reg, x, y);
+            if (!tile)
+            {
+                perror("Invalid memory read in is_free_box");
+                abort();
+            }
+            if (*tile != VOID)
             {
                 return false;
             }
@@ -51,6 +59,7 @@ bool is_free_box(Region *reg, Co corner, uint16_t width, uint16_t height)
     }
     return true;
 }
+
 
 //Declares space in the region for a future room to be generated when the player
 //enters a door
@@ -391,7 +400,7 @@ void initial_map(Region* reg, Player *pl)
     pl->def = 10;
     pl->inv_size = 0;
 
-    pl->weapon = ITEM_WEAPON_SWORD;
+    pl->weapon = ITEM_BASE_WEAPON;
 }
 
 

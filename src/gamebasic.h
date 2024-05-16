@@ -113,10 +113,9 @@ typedef struct Room
     Door door_south;
     Door door_west;
 
-    //item
-    bool isitem;
-    ItemIndex item;
-    Co itemloc;
+    bool isitem; //If the room contains an item
+    ItemIndex item; //Item in the room
+    Co itemloc; //Coordinates of the item (relative to the zero)
 }
 Room;
 

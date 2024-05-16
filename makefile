@@ -9,6 +9,7 @@ CC = gcc
 #Soucre list
 
 SRC = $(wildcard $(DIR)/*.c)
+HEADERS = $(wildcard $(DIR)/*.h)
 OBJ = $(patsubst $(DIR)/%.c,$(BUILD)/%.o,$(SRC))
 
 #Compiler flags
@@ -19,7 +20,7 @@ CFLAGS = -Wall -lncursesw
 
 all: $(EXEC)
 
-$(BUILD)/%.o: $(DIR)/%.c $(DIR)/%.h $(DIR)/settings.h | $(BUILD)
+$(BUILD)/%.o: $(DIR)/%.c $(HEADERS) | $(BUILD)
 	$(CC) -c $< -o $@ $(CFLAGS)
 
 $(EXEC): $(OBJ) | $(SAVEDIR)

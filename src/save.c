@@ -1,11 +1,19 @@
 #include "save.h"
 
+//Saves the game to the given savefile
 int save(FILE *savefile, Region *reg, Player *pl)
 {
     PlayerSave playersave;
     RegionSave regionsave;
     RoomSave roomsave;
     Room *room;
+
+    if (!savefile)
+    {
+        return 0;
+    }
+
+    //Copying of the Player structure
 
     strcpy(playersave.name, pl->name);
     playersave.hp = pl->hp;
@@ -22,6 +30,8 @@ int save(FILE *savefile, Region *reg, Player *pl)
     playersave.inv_size = pl->inv_size;
     playersave.currentroom = pl->currentroom->index;
 
+    //Copying of the Region structure
+
     regionsave.seed = reg->seed;
     regionsave.grid_width = reg->grid_width;
     regionsave.grid_height = reg->grid_height;
@@ -29,17 +39,25 @@ int save(FILE *savefile, Region *reg, Player *pl)
     regionsave.zero = reg->zero;
     regionsave.deathtimer = reg->deathtimer;
 
+    //Locates the grid and room in the savefile
+
     regionsave.gridptr = sizeof(PlayerSave) + sizeof(RegionSave);
     regionsave.roomptr = regionsave.gridptr + regionsave.grid_width*regionsave.grid_height*sizeof(int8_t);
+
+    //Writes the Player and Region structures to the savefile
 
     rewind(savefile);
     fwrite(&playersave, sizeof(PlayerSave), 1, savefile);
     fwrite(&regionsave, sizeof(RegionSave), 1, savefile);
 
+    //Saves the grid
+
     for (int x=0; x<regionsave.grid_width; x++)
     {
         fwrite(reg->grid[x], sizeof(int8_t), regionsave.grid_height, savefile);
     }
+
+    //Saves the rooms
 
     for (Room **roomptr = reg->roomlist; roomptr<reg->roomlist+reg->allocated_rooms; roomptr++)
     {
@@ -79,15 +97,24 @@ int save(FILE *savefile, Region *reg, Player *pl)
 
         fwrite(&roomsave, sizeof(RoomSave), 1, savefile);
     }
+
     return 1;
 }
 
+
+//Tries to load a save with the given name
+/// @param name Player name, which is the same as the savefile name
+/// @param reg Region pointer where the save will be loaded
+/// @param pl Player pointer where the save will be loaded
+/// @return 1 : success ; 0 : failure
 int load(char *name, Region *reg, Player *pl)
 {
-    char path[MAX_PLAYER_NAME_COUNT+20];
+    char path[MAX_PLAYER_NAME_COUNT+20]; //file path
     FILE *savefile;
     
     Room *room;
+
+    //Tries to open the savefile
 
     sprintf(path, "saves/%s", name);
     savefile = fopen(path, "rb");
@@ -100,6 +127,8 @@ int load(char *name, Region *reg, Player *pl)
     RegionSave regionsave;
     RoomSave roomsave;
 
+    //Reads the Player and Region structures
+
     rewind(savefile);
     fread(&playersave, sizeof(PlayerSave), 1, savefile);
     fread(&regionsave, sizeof(RegionSave), 1, savefile);
@@ -109,6 +138,8 @@ int load(char *name, Region *reg, Player *pl)
     reg->allocated_rooms = regionsave.allocated_rooms;
     reg->zero = regionsave.zero;
     reg->deathtimer = regionsave.deathtimer;
+
+    //Loads the grid
 
     //Column allocation
     reg->grid = malloc(reg->grid_width * sizeof(int8_t*));
@@ -128,6 +159,10 @@ int load(char *name, Region *reg, Player *pl)
         }
         fread(*column, sizeof(int8_t), reg->grid_height, savefile);
     }
+
+    //Reads the rooms
+    //room.door_POLE.to is a temporary pointer as not all rooms have a pointer assigned to them yet
+
     for (Room **roomptr = reg->roomlist; roomptr < reg->roomlist+MAX_ROOM_COUNT; roomptr++)
     {
         if (roomptr < reg->roomlist + reg->allocated_rooms)
@@ -171,6 +206,8 @@ int load(char *name, Region *reg, Player *pl)
         }
     }
 
+    //Now that all rooms have an assigned pointer, we update the pointers of the doors
+
     for (Room **roomptr = reg->roomlist; roomptr < reg->roomlist+reg->allocated_rooms; roomptr++)
     {
         room = *roomptr;
@@ -193,6 +230,7 @@ int load(char *name, Region *reg, Player *pl)
         }
     }
 
+    //We now finish by reading the Player structure
 
     strcpy(pl->name, name);
     pl->hp = playersave.hp,
@@ -208,5 +246,6 @@ int load(char *name, Region *reg, Player *pl)
     }
     pl->inv_size = playersave.inv_size;
     pl->currentroom = reg->roomlist[playersave.currentroom];
+    
     return 1;
 }

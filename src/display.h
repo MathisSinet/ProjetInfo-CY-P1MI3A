@@ -13,6 +13,8 @@ DISPLAY CODE FOR THE GAME
 
 #define RARROW_SYMB L"▶"
 #define CHARACTER_SYMB L"ඞ "
+#define WALL_SYMB L"🧱"
+#define DOOR_SYMB L"🚪"
 
 
 //Use nodelay(stdscr, true) to prevent delay using getch (returns ERR if no key is pressed)

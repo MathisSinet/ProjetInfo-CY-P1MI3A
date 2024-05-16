@@ -1,3 +1,8 @@
+/*
+settings.h
+Header to define general constants used by the program
+*/
+
 #ifndef SETTINGS_HEADER
 #define SETTINGS_HEADER
 

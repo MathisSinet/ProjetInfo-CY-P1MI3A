@@ -1,5 +1,16 @@
+/*
+save.h
+This header contains stuctures and functions used by the game saving system
+*/
+
 #include "gamebasic.h"
 
+/*
+This section contains redefinition of structures found in  file gamebasic.h
+that remove pointers
+*/
+
+//Structure used to save the Player structure
 struct PlayerSave
 {
     char name[MAX_PLAYER_NAME_COUNT];
@@ -15,6 +26,7 @@ struct PlayerSave
     uint32_t currentroom;
 };
 
+//Structure used to save the Door structure
 struct DoorSave
 {
     bool exists;
@@ -22,6 +34,7 @@ struct DoorSave
     uint32_t to;
 };
 
+//Structure used to save the Room structure
 struct RoomSave
 {
     //is the room generated
@@ -47,6 +60,7 @@ struct RoomSave
     Co itemloc;
 };
 
+//Structure used to save the Region structure
 struct RegionSave
 {
     uint32_t seed;
@@ -68,10 +82,15 @@ struct RegionSave
     int deathtimer;
 };
 
+//Structure used to save the Player structure
 typedef struct PlayerSave PlayerSave;
+//Structure used to save the Door structure
 typedef struct DoorSave DoorSave;
+//Structure used to save the Room structure
 typedef struct RoomSave RoomSave;
+//Structure used to save the Region structure
 typedef struct RegionSave RegionSave;
+
 
 int save(FILE *savefile, Region *reg, Player *pl);
 int load(char *name, Region *reg, Player *pl);
