@@ -9,6 +9,8 @@ void playermove(Region *reg, Player *pl, Pole dir)
 {
     Co newco = pl->loc;
     int dest_content;
+
+    //stores in newco the new coordinate of the player
     switch (dir)
     {
     case NORTH:
@@ -24,8 +26,10 @@ void playermove(Region *reg, Player *pl, Pole dir)
         newco.x--;
     }
 
+    //content of the destination tile
     dest_content = *get_from_grid(reg, newco.x, newco.y);
 
+    //item pickup
     if (pl->currentroom->isitem)
             {
                 if (pl->loc.x==pl->currentroom->itemloc.x && pl->loc.y==pl->currentroom->itemloc.y)
@@ -38,10 +42,13 @@ void playermove(Region *reg, Player *pl, Pole dir)
                 }
             }
 
+    //allows movement if the destination square is empty
     if (dest_content == VOID)
     {
         pl->loc = newco;
     }
+
+    //code when the player enters a door
     if (dest_content == DOOR)
     {
         switch (dir)

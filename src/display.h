@@ -1,5 +1,6 @@
 /*
-DISPLAY CODE FOR THE GAME
+display.h
+Display features of the game
 */
 
 #define _XOPEN_SOURCE 700
@@ -19,6 +20,7 @@ DISPLAY CODE FOR THE GAME
 
 //Use nodelay(stdscr, true) to prevent delay using getch (returns ERR if no key is pressed)
 
+//Constants for color pairs
 typedef enum
 {
     PAIR_RED = 1,
@@ -27,6 +29,7 @@ typedef enum
 }
 ColorPair;
 
+//Structure for display information and window pointers
 typedef struct DisplayInfo
 {
     int width;

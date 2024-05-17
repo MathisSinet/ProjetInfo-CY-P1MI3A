@@ -9,6 +9,7 @@ void us_sleep(uint64_t us)
     ts.tv_nsec = (us%1000000) * 1000;
     nanosleep(&ts, &ts);
 }
+
 //Erases the content of the window and recreates the box
 void new_wclear(WINDOW *win)
 {
@@ -60,6 +61,7 @@ void init_mainmenu(DisplayInfo *di)
     wattroff(di->box1, COLOR_PAIR(PAIR_CYAN));
     wrefresh(di->box1);
 
+    // Bottom box
     di->box2 = newwin(4*(di->height - 15)/5, 4*di->width/5, 18, di->width/10);
     keypad(di->box2, true);
     box(di->box2, 0, 0);
@@ -155,15 +157,16 @@ int MainMenu(DisplayInfo *di)
     WINDOW *win = di->box2;
     uint8_t cursor = 0;
     int chr;
-    new_wclear(win);
-    mvwprintw(win, 1,2,"Bienvenue dans le jeu !");
-    waddwstr(win, L" 👽");
-    mvwaddwstr(win, 2,2, L"Appuyez sur entrée pour sélectionner ou sur les flèches pour vous déplacer");
-    mvwprintw(win,3,5, "Nouvelle partie");
-    mvwprintw(win,4,5, "Charger une partie");
-    mvwprintw(win,5,5, "Quitter le jeu");
 
-    mvwaddwstr(win, 7,2, L"En jeu, utilisez la touche C pour accéder aux contrôles");
+    new_wclear(win);
+    mvwprintw(win, 1, 2, "Bienvenue dans le jeu !");
+    waddwstr(win, L" 👽");
+    mvwaddwstr(win, 2, 2, L"Appuyez sur entrée pour sélectionner ou sur les flèches pour vous déplacer");
+    mvwprintw(win, 3, 5, "Nouvelle partie");
+    mvwprintw(win, 4, 5, "Charger une partie");
+    mvwprintw(win, 5, 5, "Quitter le jeu");
+
+    mvwaddwstr(win, 7 ,2, L"En jeu, utilisez la touche C pour accéder aux contrôles");
     
     mvwaddwstr(win, cursor+3, 2, RARROW_SYMB);
     while(true)
@@ -200,12 +203,14 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
     Item item;
 
     new_wclear(win);
+
+    //Player name
     wattron(win, A_BOLD);
     mvwaddstr(win, 1,2, pl->name);
     wattroff(win, A_BOLD);
 
+    //HP bar
     mvwaddstr(win, 3, 2, "PV ");
-    
     for (int i=1; i<=10; i++)
     {
         if (pl->hp >= i)
@@ -219,6 +224,8 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
             mvwadd_wch(win, 3, 3+2*i, WACS_BLOCK);
         }
     }
+
+    //Defense bar
     mvwaddstr(win, 4, 2, "DEF ");
     for (int i=1; i<=10; i++)
     {
@@ -234,14 +241,17 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
         }
     }
 
+    //Attack and score
     mvwprintw(win, 5, 2, "Attaque : %d", pl->atk);
     mvwprintw(win, 6, 2, "Score : %d", pl->xp);
     
+    //Weapon
     mvwprintw(win, 8, 2, "Arme : ");
     item = getitem(pl->weapon, itemname);
     wprintw(win, "%s %lc", item.name, item.symb);
     mvwprintw(win, 9, 2, "Inventaire :");
 
+    //Inventory
     for (int i=0; i<pl->inv_size; i++)
     {
         item = getitem(pl->inv[i], itemname);
@@ -252,13 +262,14 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
 }
 
 
-//Inventory
+//Inventory managment function
 void manage_inventory(Region *reg, Player *pl, DisplayInfo *di)
 {
     WINDOW *win = di->box3;
     int ch;
     unsigned int cursor = 0;
 
+    //This function does nothing if the inventory is empty
     if (pl->inv_size <= 0)
     {
         return;
@@ -272,21 +283,26 @@ void manage_inventory(Region *reg, Player *pl, DisplayInfo *di)
     while(true)
     {
         ch = wgetch(win);
+        //Close inventory
         if (ch == 'e' || ch == 'E')
         {
             break;
         }
+        //Drop item
         if (ch == 'a' || ch == 'A')
         {
+            //Removes the item from the inventory
             for (int i=cursor; i<pl->inv_size-1; i++)
             {
                 pl->inv[i] = pl->inv[i+1];
             }
             pl->inv_size--;
+            //If empty inventory, stop the inventory manager
             if (pl->inv_size == 0)
             {
                 break;
             }
+            //Display update
             right_panel_update(reg, pl, win);
             mvwprintw(win, di->height-4, 2, "U : Utiliser l'objet");
             mvwprintw(win, di->height-3, 2, "E : Fermer l'inventaire");
@@ -340,8 +356,10 @@ void save_ui(DisplayInfo *di, Region *reg, Player *pl)
     FILE *savefile;
 
     new_wclear(win);
+    //Sets the path
     char path[MAX_PLAYER_NAME_COUNT+20];
     sprintf(path, "saves/%s", pl->name);
+
     if (true/*access(path, W_OK)*/)
     {
         mvwaddwstr(win, 1, 2, L"Voulez-vous sauvegarder ? O/N");
@@ -353,11 +371,11 @@ void save_ui(DisplayInfo *di, Region *reg, Player *pl)
                 save(savefile, reg, pl);
                 fclose(savefile);
                 mvwprintw(win, 1, 2, "Sauvegarde dans %s", path);
-                mvwaddwstr(win, 2, 2, L"Appuyez sur une touche pour revenir au jeu");
+                mvwaddwstr(win, 2, 2, L"Appuyez sur une touche pour revenir au jeu...");
             }
             else
             {
-                mvwaddwstr(win, 2, 2, L"Une erreur s'est produite. Appuyez sur une touche pour revenir au jeu");
+                mvwaddwstr(win, 2, 2, L"Une erreur s'est produite. Appuyez sur une touche pour revenir au jeu...");
             }
             wgetch(win);
         }
@@ -401,6 +419,10 @@ void update_map(DisplayInfo *di, Region *reg, Player *pl)
                 if (x==pl->currentroom->itemloc.x && y==pl->currentroom->itemloc.y)
                 {
                     wprintw(win, "%lc", getitem(pl->currentroom->item, NULL).symb);
+                    if (pl->currentroom->item == ITEM_SHIELD)
+                    {
+                        wprintw(win, " ");
+                    }
                     continue;
                 }
             }

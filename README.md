@@ -2,7 +2,7 @@
 
 Projet d'informatique pour la fin de notre année en Pré ING 1  
 Fait par le trinôme A  
-Sujet : Cosmic Yonder 
+Sujet : Cosmic Yonder
 
 ## Contributeurs
 
