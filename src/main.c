@@ -62,6 +62,7 @@ bool loadSave(DisplayInfo *di, Region *reg, Player *pl)
     new_wclear(win);
     curs_set(1);
 
+    mvwaddwstr(win, 4, 2, L"⚠️  Les noms de joueur sont sensibles à la casse !");
     for(int i=0; i<MAX_PLAYER_NAME_COUNT; i++){pl->name[i] = '\0';}
     mvwprintw(win, 1, 2, "Entrez le nom du joueur : ");
     getyx(win, y, x);

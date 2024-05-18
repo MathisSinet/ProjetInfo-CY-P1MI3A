@@ -16,7 +16,7 @@ Pour compiler la solution, utiliser `make`.
 
 Pour exécuter la solution, utiliser `make run`.
 
-Pour nettoyer les fichiers de construction, utiliser `make clean`
+Pour nettoyer les fichiers de construction, utiliser `make clean`.
 
 ## Bibliothèques utilisées
 
