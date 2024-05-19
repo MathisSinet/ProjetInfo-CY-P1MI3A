@@ -1,14 +1,17 @@
 #include "game.h"
+#include "quest.h"
+#include "display.h"
 
 
 /*__________PLAYER'S ACTIONS__________*/
 
 
 //Tries to move the player in the corresponding direction
-void playermove(Region *reg, Player *pl, Pole dir)
+void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
 {
     Co newco = pl->loc;
     int dest_content;
+    Item item;
 
     //stores in newco the new coordinate of the player
     switch (dir)
@@ -31,16 +34,50 @@ void playermove(Region *reg, Player *pl, Pole dir)
 
     //item pickup
     if (pl->currentroom->isitem)
+    {
+        if (pl->loc.x==pl->currentroom->itemloc.x && pl->loc.y==pl->currentroom->itemloc.y)
+        {
+            item = getitem(pl->currentroom->item, NULL);
+            switch (item.type)
             {
-                if (pl->loc.x==pl->currentroom->itemloc.x && pl->loc.y==pl->currentroom->itemloc.y)
+            case HEAL:
+                if (pl->inv_size != MAX_INVENTORY_SIZE)
                 {
-                    if (pl->inv_size != MAX_INVENTORY_SIZE)
-                    {
-                        pl->inv[pl->inv_size++] = pl->currentroom->item;
-                        pl->currentroom->isitem = false;
-                    }
+                    pl->inv[pl->inv_size++] = pl->currentroom->item;
+                    pl->currentroom->isitem = false;
                 }
+                break;
+
+            case WEAPON:
+                pl->weapon = pl->currentroom->item;
+                pl->atk = item.stat;
+                pl->currentroom->isitem = false;
+                break;
+
+            case QUEST:
+                if(pl->currentroom->item == ITEM_QUEST_QUIZZ)
+                {
+                    quizz(pl, reg, di);
+                    pl->currentroom->isitem = false;
+                }
+                if(pl->currentroom->item == ITEM_QUEST_TEDDYBEAR)
+                {
+                    mvwprintw(di->box2, 1, 2, "Vous avez trouvé l'ours en peluche !");
+                    wrefresh(di->box2);
+                    wgetch(di->box2);
+                    pl->currentroom->isitem = false;
+                }
+                if(pl->currentroom->item == ITEM_QUEST_BALL)
+                {
+                    mvwprintw(di->box2, 1, 2, "Vous avez trouvé le ballon !");
+                    wrefresh(di->box2);
+                    wgetch(di->box2);
+                    pl->currentroom->isitem = false;
+                }
+                break;
             }
+        }
+    }
 
     //allows movement if the destination square is empty
     if (dest_content == VOID)

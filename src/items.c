@@ -13,13 +13,15 @@ Item getitem(ItemIndex index, char *name)
             if(name!=NULL){strcpy(name, "Pansement");}
             item.name = name;
             item.symb = L'🩹';
-            item.stat = 0;
+            item.stat = 1;
+            item.type = HEAL;
             break;
 
         case ITEM_SHIELD:
             if(name!=NULL){strcpy(name, "Bouclier");}
             item.name = name;
             item.symb = L'🛡';
+            item.type = HEAL;
             break;
 
         case ITEM_BASE_WEAPON: //base WEAPON
@@ -27,7 +29,7 @@ Item getitem(ItemIndex index, char *name)
             item.name = name;
             item.symb = L' ';
             item.type = WEAPON;
-            item.stat = 0;
+            item.stat = 3;
             break;
 
         case ITEM_WEAPON_STICKS:
@@ -35,15 +37,15 @@ Item getitem(ItemIndex index, char *name)
             item.name = name;
             item.symb = L'🥢';
             item.type = WEAPON;
-            item.stat = 0;
+            item.stat = 4;
             break;
 
         case ITEM_WEAPON_BOXING:
-            if(name!=NULL){strcpy(name, "Gant Boxe");}
+            if(name!=NULL){strcpy(name, "Gants de boxe");}
             item.name = name;
             item.symb = L'🥊';
             item.type = WEAPON;
-            item.stat = 0;
+            item.stat = 5;
             break;
         
         case ITEM_WEAPON_KEY:
@@ -51,7 +53,7 @@ Item getitem(ItemIndex index, char *name)
             item.name = name;
             item.symb = L'🔧';
             item.type = WEAPON;
-            item.stat = 0;
+            item.stat = 6;
             break;
 
         case ITEM_WEAPON_KNIFE:
@@ -59,7 +61,7 @@ Item getitem(ItemIndex index, char *name)
             item.name = name;
             item.symb = L'🔪';
             item.type = WEAPON;
-            item.stat = 0;
+            item.stat = 10;
             break;
 
         case ITEM_WEAPON_SWORD:
@@ -67,7 +69,28 @@ Item getitem(ItemIndex index, char *name)
             item.name = name;
             item.symb = L'🗡';
             item.type = WEAPON;
-            item.stat = 0;
+            item.stat = 25;
+            break;
+
+        case ITEM_QUEST_QUIZZ:
+            if(name!=NULL){strcpy(name, "Quizz");}
+            item.name = name;
+            item.symb = L'❔';
+            item.type = QUEST;
+            break;
+
+        case ITEM_QUEST_TEDDYBEAR:
+            if(name!=NULL){strcpy(name, "Ours");}
+            item.name = name;
+            item.symb = L'🧸';
+            item.type = QUEST;
+            break;
+
+        case ITEM_QUEST_BALL:
+            if(name!=NULL){strcpy(name, "Ballon");}
+            item.name = name;
+            item.symb = L'⚽';
+            item.type = QUEST;
             break;
     }
     return item;

@@ -36,5 +36,7 @@ bool newroom_valid_space(Region *reg, Room *source, Co corner, uint16_t width, u
 //generates a room when a player enters it for the first time
 void generate_room(Region *reg, Room* from, Pole dir);
 void fill_room(Region *reg, Room *room);
+void fill_item(Region *reg, Room *room);
+void fill_monster(Region *reg, Room *room);
 
 #endif

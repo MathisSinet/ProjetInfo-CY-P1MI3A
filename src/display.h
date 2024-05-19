@@ -3,8 +3,9 @@ display.h
 Display features of the game
 */
 
-#define _XOPEN_SOURCE 700
-#include <ncursesw/ncurses.h>
+#ifndef DISPLAY_HEADER
+#define DISPLAY_HEADER
+
 #include <locale.h>
 #include "game.h"
 
@@ -31,17 +32,6 @@ typedef enum
 }
 ColorPair;
 
-//Structure for display information and window pointers
-typedef struct DisplayInfo
-{
-    int width;
-    int height;
-    WINDOW *box1;
-    WINDOW *box2;
-    WINDOW *box3;
-}
-DisplayInfo;
-
 void us_sleep(uint64_t us);
 void new_wclear(WINDOW *win);
 
@@ -60,9 +50,12 @@ void getusrstr(WINDOW* win, int y, int x, char* buffer, int max_len, bool(*valid
 int MainMenu(DisplayInfo *di);
 
 void right_panel_update(Region *reg, Player *pl, WINDOW *win);
+void bottom_panel_update(Region *reg, Player *pl, WINDOW *win);
 void manage_inventory(Region *reg, Player *pl, DisplayInfo *di);
 
 void show_controls(DisplayInfo *di);
 
 void save_ui(DisplayInfo *di, Region *reg, Player *pl);
 void update_map(DisplayInfo *di, Region* reg, Player* pl);
+
+#endif

@@ -137,7 +137,7 @@ void getusrstr(WINDOW *win, int y, int x, char *buffer, int max_len, bool(*valid
             break;
         }
 
-        if (len > 0 && (chr == KEY_BACKSPACE || chr == KEY_DC))
+        if (len > 0 && (chr == KEY_BACKSPACE || chr == KEY_DC || chr == 127))
         {
             buffer[--len] = '\0';
             mvwaddstr(win, y, x+len, " ");
@@ -266,6 +266,13 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
             mvwprintw(win, 10+i, 4, "[vide]");
         }
     }
+
+    wrefresh(win);
+}
+
+void bottom_panel_update(Region *reg, Player *pl, WINDOW *win)
+{
+    
 
     wrefresh(win);
 }
@@ -432,6 +439,14 @@ void update_map(DisplayInfo *di, Region *reg, Player *pl)
                     {
                         wprintw(win, " ");
                     }
+                    continue;
+                }
+            }
+            if (pl->currentroom->ismonster)
+            {
+                if (x==pl->currentroom->monsterloc.x && y==pl->currentroom->monsterloc.y)
+                {
+                    wprintw(win, "%lc", getmonster(pl->currentroom->monster, NULL).symb);
                     continue;
                 }
             }

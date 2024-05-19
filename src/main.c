@@ -91,6 +91,7 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
     nodelay(di->box1, true);
     while (true)
     {
+
         ch = wgetch(di->box1);
         if (ch == 'x' || ch == 'X')
         {
@@ -101,22 +102,22 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
             case 'z':
             case 'Z':
             case KEY_UP:
-                playermove(reg, pl, NORTH);
+                playermove(reg, pl, NORTH, di);
                 break;
             case 'q':
             case 'Q':
             case KEY_LEFT:
-                playermove(reg, pl, WEST);
+                playermove(reg, pl, WEST, di);
                 break;
             case 's':
             case 'S':
             case KEY_DOWN:
-                playermove(reg, pl, SOUTH);
+                playermove(reg, pl, SOUTH, di);
                 break;
             case 'd':
             case 'D':
             case KEY_RIGHT:
-                playermove(reg, pl, EAST);
+                playermove(reg, pl, EAST, di);
                 break;
 
             case 'c':

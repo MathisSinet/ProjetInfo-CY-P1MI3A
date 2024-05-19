@@ -1,6 +1,8 @@
 #ifndef GAMEBASIC_HEADER
 #define GAMEBASIC_HEADER
 
+#define _XOPEN_SOURCE 700
+#include <ncursesw/ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -10,7 +12,19 @@
 #include <unistd.h>
 #include <signal.h>
 
+
 #include "settings.h"
+
+//Structure for display information and window pointers
+typedef struct DisplayInfo
+{
+    int width;
+    int height;
+    WINDOW *box1;
+    WINDOW *box2;
+    WINDOW *box3;
+}
+DisplayInfo;
 
 typedef enum
 {
@@ -29,7 +43,7 @@ Pole;
 
 typedef enum
 {
-    WEAPON, ARMOR, HEAL
+    WEAPON, HEAL, QUEST
 }
 ItemType;
 
@@ -42,10 +56,20 @@ typedef enum
     ITEM_WEAPON_BOXING = 22,
     ITEM_WEAPON_KEY = 23,
     ITEM_WEAPON_KNIFE = 24,
-    ITEM_WEAPON_SWORD = 25
-    
+    ITEM_WEAPON_SWORD = 25,
+    ITEM_QUEST_QUIZZ = 26,
+    ITEM_QUEST_TEDDYBEAR = 27,
+    ITEM_QUEST_BALL = 28,
 }
 ItemIndex;
+
+typedef enum 
+{
+    MONSTER_INVADER = 0,
+    MONSTER_ALIEN = 1,
+    MONSTER_SOUCOUPE = 2,
+}
+MonsterIndex;
 
 //Coordinates structure, with x and y
 typedef struct Coordinates
@@ -67,6 +91,7 @@ Item;
 
 typedef struct Monster
 {
+    wchar_t symb;
     uint16_t hp;
     uint16_t atk;
     uint64_t baseatkdelay;
@@ -103,6 +128,17 @@ typedef struct Door
 }
 Door;
 
+
+//structure for the quest
+typedef struct QuestInfo
+{
+    bool is_done;
+    bool is_teddybear_generated;
+    bool is_ball_generated;
+}
+QuestInfo;
+
+
 //Structure for data about room
 typedef struct Room
 {
@@ -124,10 +160,14 @@ typedef struct Room
     Door door_west;
 
     bool isitem; //If the room contains an item
+    bool ismonster; //If the room contains a monster
     ItemIndex item; //Item in the room
+    MonsterIndex monster; //Mob in the room
     Co itemloc; //Coordinates of the item (relative to the zero)
+    Co monsterloc; //Coordinates of the monster (relative to the zero)
 }
 Room;
+
 
 //structure for the map
 typedef struct Region
@@ -150,6 +190,8 @@ typedef struct Region
 
     //death timer
     int deathtimer;
+
+    QuestInfo questinfo;
 }
 Region;
 
