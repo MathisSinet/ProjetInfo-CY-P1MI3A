@@ -28,9 +28,11 @@ void initcurses(DisplayInfo *di)
     getmaxyx(stdscr, di->height, di->width);
 
     start_color();
+    init_color(COLOR_GREY, 500, 500, 500);
     init_pair(PAIR_RED, COLOR_RED, COLOR_BLACK);
     init_pair(PAIR_BLUE, COLOR_BLUE, COLOR_BLACK);
     init_pair(PAIR_CYAN, COLOR_CYAN, COLOR_BLACK);
+    init_pair(PAIR_GREY, COLOR_GREY, COLOR_BLACK);
 }
 
 //Initializes the main menu interface
@@ -252,10 +254,17 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
     mvwprintw(win, 9, 2, "Inventaire :");
 
     //Inventory
-    for (int i=0; i<pl->inv_size; i++)
+    for (int i=0; i<MAX_INVENTORY_SIZE; i++)
     {
-        item = getitem(pl->inv[i], itemname);
-        mvwprintw(win, 10+i, 4, "%s %lc", item.name, item.symb);
+        if (i < pl->inv_size)
+        {
+            item = getitem(pl->inv[i], itemname);
+            mvwprintw(win, 10+i, 4, "%s %lc", item.name, item.symb);
+        }
+        else
+        {
+            mvwprintw(win, 10+i, 4, "[vide]");
+        }
     }
 
     wrefresh(win);
@@ -432,7 +441,9 @@ void update_map(DisplayInfo *di, Region *reg, Player *pl)
                 wprintw(win, "  ");
                 break;
             case RESERVED:
+                wattron(win, COLOR_PAIR(PAIR_GREY));
                 wprintw(win, "RR");
+                wattroff(win, COLOR_PAIR(PAIR_GREY));
                 break;
             case WALL:
                 waddwstr(win, WALL_SYMB);

@@ -17,6 +17,7 @@ Display features of the game
 #define WALL_SYMB L"🧱"
 #define DOOR_SYMB L"🚪"
 
+#define COLOR_GREY 585
 
 //Use nodelay(stdscr, true) to prevent delay using getch (returns ERR if no key is pressed)
 
@@ -25,7 +26,8 @@ typedef enum
 {
     PAIR_RED = 1,
     PAIR_BLUE = 2,
-    PAIR_CYAN = 3
+    PAIR_CYAN = 3,
+    PAIR_GREY = 4
 }
 ColorPair;
 

@@ -52,7 +52,8 @@ typedef struct Coordinates
 {
     int32_t x;
     int32_t y;
-}Co;
+}
+Co;
 
 //Structure for the items
 typedef struct Item
@@ -63,6 +64,15 @@ typedef struct Item
     uint32_t stat;
 }
 Item;
+
+typedef struct Monster
+{
+    uint16_t hp;
+    uint16_t atk;
+    uint64_t baseatkdelay;
+    uint64_t atkdelay;
+}
+Monster;
 
 struct Room;
 struct Door;
