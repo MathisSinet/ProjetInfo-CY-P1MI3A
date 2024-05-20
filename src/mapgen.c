@@ -23,6 +23,7 @@ Room *allocate_room(Region* r)
 void init_room(Room* room)
 {
     room->is_generated = false;
+
     room->door_north.exists = false;
     room->door_north.to = NULL;
     room->door_east.exists = false;
@@ -32,7 +33,16 @@ void init_room(Room* room)
     room->door_west.exists = false;
     room->door_west.to = NULL;
 
-    room->isitem = false;
+    
+    room->item1.exists = false;
+    room->item2.exists = false;
+    room->item1.loc = coordinates(room->corner.x-2*MAX_ROOM_WIDTH, room->corner.y-2*MAX_ROOM_HEIGHT);
+    room->item2.loc = coordinates(room->corner.x-2*MAX_ROOM_WIDTH, room->corner.y-2*MAX_ROOM_HEIGHT);
+
+    room->monster1.exists = false;
+    room->monster2.exists = false;
+    room->monster1.loc = coordinates(room->corner.x-2*MAX_ROOM_WIDTH, room->corner.y-2*MAX_ROOM_HEIGHT);
+    room->monster2.loc = coordinates(room->corner.x-2*MAX_ROOM_WIDTH, room->corner.y-2*MAX_ROOM_HEIGHT);
 }
 
 //Returns true if the region of the grid given by a corner, width and height is free
@@ -340,6 +350,7 @@ void initial_map(Region* reg, Player *pl)
         *p = NULL;
     }
 
+
     reg->questinfo.is_ball_generated = false;
     reg->questinfo.is_teddybear_generated = false;
 
@@ -555,7 +566,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
         newroom->is_generated = true;
         wall_room(reg, newroom);
-        fill_room(reg, newroom);
+        fill_room(reg, newroom, NORTH);
         break;
 
 
@@ -600,7 +611,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
         newroom->is_generated = true;
         wall_room(reg, newroom);
-        fill_room(reg, newroom);
+        fill_room(reg, newroom, EAST);
         break;
 
     case SOUTH:
@@ -644,7 +655,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
         newroom->is_generated = true;
         wall_room(reg, newroom);
-        fill_room(reg, newroom);
+        fill_room(reg, newroom, SOUTH);
         break;
 
     case WEST:
@@ -689,89 +700,117 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
         newroom->is_generated = true;
         wall_room(reg, newroom);
-        fill_room(reg, newroom);
+        fill_room(reg, newroom, WEST);
         break;
     }
 }
 
 
 //Fills the room with potential item and monster
-void fill_room(Region *reg, Room *room)
+void fill_room(Region *reg, Room *room, Pole pole)
 {
-    fill_item(reg, room);
-    fill_monster(reg, room);
+    bool iswest = pole == WEST;
+    bool iseast = pole == EAST;
+    bool isnorth = pole == NORTH;
+    bool issouth = pole == SOUTH;
+
+    if (room->width > 4 && room->height > 4)
+    {
+        room->item1.loc = coordinates(
+            room->corner.x + randint(reg, 1+iseast, room->width-2-iswest),
+            room->corner.y + randint(reg, 1+issouth, room->height-2-isnorth)
+        );
+        fill_item(reg, room, &room->item1);
+    }
+    if (room->width > 6 && room->height > 6)
+    {
+        do{
+        room->monster1.loc = coordinates(
+            room->corner.x + randint(reg, 1+2*iseast, room->width-2-2*iswest),
+            room->corner.y + randint(reg, 1+2*issouth, room->height-2-2*isnorth)
+        );
+        } while (same_coordinates(room->item1.loc, room->monster1.loc));
+        fill_monster(reg, room, &room->monster1);
+    }
+    if (room->width > 8 && room->height > 8 && room->item1.exists && randevent(reg, 500))
+    {
+        do{
+        room->item2.loc = coordinates(
+            room->corner.x + randint(reg, 1+2*iseast, room->width-2-2*iswest),
+            room->corner.y + randint(reg, 1+2*issouth, room->height-2-2*isnorth)
+        );
+        } while (same_coordinates(room->item2.loc, room->item1.loc) ||
+            same_coordinates(room->item2.loc, room->monster1.loc));
+        fill_item(reg, room, &room->item2);
+    }
+    if (room->width > 9 && room->height > 9 && room->monster1.exists && !room->item2.exists && randevent(reg, 900))
+    {
+        do{
+        room->monster2.loc = coordinates(
+            room->corner.x + randint(reg, 1+4*iseast, room->width-2-4*iswest),
+            room->corner.y + randint(reg, 1+4*issouth, room->height-2-4*isnorth)
+        );
+        } while (same_coordinates(room->item2.loc, room->item1.loc) ||
+            same_coordinates(room->item2.loc, room->monster1.loc));
+        fill_monster(reg, room, &room->monster2);
+    }
+    
+
 }
 
 
 //Fills the room with potential item
-void fill_item(Region *reg, Room *room)
-{
-    if(room->width > 4 && room->height > 4){
-        if (randevent(reg, 120))
-        {
-        room->isitem = true;
-        room->itemloc = coordinates(room->corner.x + randint(reg, 1, room->width-2), room->corner.y + randint(reg, 1, room->height-2));
-        room->item = ITEM_SHIELD;
-        }
-        if (randevent(reg, 200))
-        {
-        room->isitem = true;
-        room->itemloc = coordinates(room->corner.x + randint(reg, 1, room->width-2), room->corner.y + randint(reg, 1, room->height-2));
-        room->item = ITEM_HEAL1;
-        return;
-        }
-        if (randevent(reg, 300))
-        {
-        room->isitem = true;
-        room->itemloc = coordinates(room->corner.x + randint(reg, 1, room->width-2), room->corner.y + randint(reg, 1, room->height-2));
-        room->item = ITEM_QUEST_QUIZZ;
-        }
-        if (randevent(reg, 500))
-        {
-        room->isitem = true;
-        room->itemloc = coordinates(room->corner.x + randint(reg, 1, room->width-2), room->corner.y + randint(reg, 1, room->height-2));
-        room->item = ITEM_WEAPON_STICKS;
-        }
-        if (randevent(reg, 400))
-        {
-        room->isitem = true;
-        room->itemloc = coordinates(room->corner.x + randint(reg, 1, room->width-2), room->corner.y + randint(reg, 1, room->height-2));
-        room->item = ITEM_WEAPON_BOXING;
-        }
-        if (randevent(reg, 300))
-        {
-        room->isitem = true;
-        room->itemloc = coordinates(room->corner.x + randint(reg, 1, room->width-2), room->corner.y + randint(reg, 1, room->height-2));
-        room->item = ITEM_WEAPON_KEY;
-        }
-        if (randevent(reg, 150))
-        {
-        room->isitem = true;
-        room->itemloc = coordinates(room->corner.x + randint(reg, 1, room->width-2), room->corner.y + randint(reg, 1, room->height-2));
-        room->item = ITEM_WEAPON_KNIFE;
-        }
-        if (randevent(reg, 50))
-        {
-        room->isitem = true;
-        room->itemloc = coordinates(room->corner.x + randint(reg, 1, room->width-2), room->corner.y + randint(reg, 1, room->height-2));
-        room->item = ITEM_WEAPON_SWORD;
-        }
-
+void fill_item(Region *reg, Room *room, ItemInRoom *item){
+    if (randevent(reg, 120))
+    {
+    item->exists = true;
+    item->index = ITEM_SHIELD;
     }
-
+    if (randevent(reg, 200))
+    {
+    item->exists = true;
+    item->index = ITEM_HEAL1;
+    return;
+    }
+    if (randevent(reg, 300))
+    {
+    item->exists = true;
+    item->index = ITEM_QUEST_QUIZZ;
+    }
+    if (randevent(reg, 500))
+    {
+    item->exists = true;
+    item->index = ITEM_WEAPON_STICKS;
+    }
+    if (randevent(reg, 400))
+    {
+    item->exists = true;
+    item->index = ITEM_WEAPON_BOXING;
+    }
+    if (randevent(reg, 300))
+    {
+    item->exists = true;
+    item->index = ITEM_WEAPON_KEY;
+    }
+    if (randevent(reg, 150))
+    {
+    item->exists = true;
+    item->index = ITEM_WEAPON_KNIFE;
+    }
+    if (randevent(reg, 50))
+    {
+    item->exists = true;
+    item->index = ITEM_WEAPON_SWORD;
+    }
 }
 
 //Fills the room with potential monster
-void fill_monster(Region *reg, Room *room)
+void fill_monster(Region *reg, Room *room, MonsterInRoom *monster)
 {
-    if(room->width > 5 && room->height > 5){
         if (randevent(reg, 1000))
         {
-        room->ismonster = true;
-        room->monsterloc = coordinates(room->corner.x + randint(reg, 1, room->width-2), room->corner.y + randint(reg, 1, room->height-2));
-        room->monster = MONSTER_ALIEN;
+        monster->exists = true;
+        monster->index = MONSTER_ALIEN;
         }
-
-    }
 
 }

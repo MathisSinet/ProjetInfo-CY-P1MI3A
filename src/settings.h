@@ -8,7 +8,7 @@ Header to define general constants used by the program
 
 /*__________ROOM GENERATION PARAMETERS__________*/
 
-#define MAX_ROOM_COUNT 75
+#define MAX_ROOM_COUNT 85
 
 #define MAX_ROOM_WIDTH 35
 #define MAX_ROOM_HEIGHT 19

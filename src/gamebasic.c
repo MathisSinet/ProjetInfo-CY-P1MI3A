@@ -11,6 +11,12 @@ Co coordinates(int16_t x, int16_t y)
     return ret;
 }
 
+/// @return true if coordinates are identical, false else
+bool same_coordinates(Co co1, Co co2)
+{
+    return (co1.x == co2.x && co1.y == co2.y);
+}
+
 //Returns true if the given chr is a digit
 bool is_digit(int chr)
 {
@@ -71,4 +77,33 @@ void reg_memfree(Region *reg)
         free(*column);
     }
     free(reg->grid);
+}
+
+
+//Sets the item pointer if the coordinates match to an item in this room. NULL else
+void set_itemptr(Co co, Player *pl, Room *room, ItemInRoom **itemptr)
+{
+    *itemptr = NULL;
+    if (room->item1.exists && co.x==room->item1.loc.x && co.y==room->item1.loc.y)
+    {
+        *itemptr = &room->item1;
+    }
+    if (room->item2.exists && co.x==room->item2.loc.x && co.y==room->item2.loc.y)
+    {
+        *itemptr = &room->item2;
+    }
+}
+
+//Sets the monster pointer if the coordinates match to a monster in this room. NULL else
+void set_monsterptr(Co co, Player *pl, Room *room, MonsterInRoom **monsterptr)
+{
+    *monsterptr = NULL;
+    if (room->monster1.exists && co.x==room->monster1.loc.x && co.y==room->monster1.loc.y)
+    {
+        *monsterptr = &room->monster1;
+    }
+    if (room->monster1.exists && co.x==room->monster2.loc.x && co.y==room->monster2.loc.y)
+    {
+        *monsterptr = &room->monster2;
+    }
 }

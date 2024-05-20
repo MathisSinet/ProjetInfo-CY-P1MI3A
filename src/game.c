@@ -12,6 +12,7 @@ void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
     Co newco = pl->loc;
     int dest_content;
     Item item;
+    ItemInRoom *itemptr;
 
     //stores in newco the new coordinate of the player
     switch (dir)
@@ -33,49 +34,47 @@ void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
     dest_content = *get_from_grid(reg, newco.x, newco.y);
 
     //item pickup
-    if (pl->currentroom->isitem)
+    set_itemptr(pl->loc, pl, pl->currentroom, &itemptr);
+    if (itemptr)
     {
-        if (pl->loc.x==pl->currentroom->itemloc.x && pl->loc.y==pl->currentroom->itemloc.y)
+        item = getitem(itemptr->index, NULL);
+        switch (item.type)
         {
-            item = getitem(pl->currentroom->item, NULL);
-            switch (item.type)
+        case HEAL:
+            if (pl->inv_size != MAX_INVENTORY_SIZE)
             {
-            case HEAL:
-                if (pl->inv_size != MAX_INVENTORY_SIZE)
-                {
-                    pl->inv[pl->inv_size++] = pl->currentroom->item;
-                    pl->currentroom->isitem = false;
-                }
-                break;
-
-            case WEAPON:
-                pl->weapon = pl->currentroom->item;
-                pl->atk = item.stat;
-                pl->currentroom->isitem = false;
-                break;
-
-            case QUEST:
-                if(pl->currentroom->item == ITEM_QUEST_QUIZZ)
-                {
-                    quizz(pl, reg, di);
-                    pl->currentroom->isitem = false;
-                }
-                if(pl->currentroom->item == ITEM_QUEST_TEDDYBEAR)
-                {
-                    mvwprintw(di->box2, 1, 2, "Vous avez trouvé l'ours en peluche !");
-                    wrefresh(di->box2);
-                    wgetch(di->box2);
-                    pl->currentroom->isitem = false;
-                }
-                if(pl->currentroom->item == ITEM_QUEST_BALL)
-                {
-                    mvwprintw(di->box2, 1, 2, "Vous avez trouvé le ballon !");
-                    wrefresh(di->box2);
-                    wgetch(di->box2);
-                    pl->currentroom->isitem = false;
-                }
-                break;
+                pl->inv[pl->inv_size++] = itemptr->index;
+                itemptr->exists = false;
             }
+            break;
+
+        case WEAPON:
+            pl->weapon = itemptr->index;
+            pl->atk = item.stat;
+            itemptr->exists = false;
+            break;
+
+        case QUEST:
+            if(itemptr->index == ITEM_QUEST_QUIZZ)
+            {
+                quizz(pl, reg, di);
+                pl->currentroom->isitem = false;
+            }
+            if(itemptr->index == ITEM_QUEST_TEDDYBEAR)
+            {
+                mvwprintw(di->box2, 1, 2, "Vous avez trouvé l'ours en peluche !");
+                wrefresh(di->box2);
+                wgetch(di->box2);
+                pl->currentroom->isitem = false;
+            }
+            if(itemptr->index == ITEM_QUEST_BALL)
+            {
+                mvwprintw(di->box2, 1, 2, "Vous avez trouvé le ballon !");
+                wrefresh(di->box2);
+                wgetch(di->box2);
+                pl->currentroom->isitem = false;
+            }
+            break;
         }
     }
 

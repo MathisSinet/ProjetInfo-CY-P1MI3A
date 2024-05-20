@@ -409,6 +409,9 @@ void update_map(DisplayInfo *di, Region *reg, Player *pl)
     int8_t *tile;
     WINDOW *win = di->box1;
 
+    ItemInRoom *itemptr;
+    MonsterInRoom *monsterptr;
+
     getmaxyx(win, h, w);
     h-=3; w-=2;
     new_wclear(win);
@@ -430,26 +433,25 @@ void update_map(DisplayInfo *di, Region *reg, Player *pl)
                 waddwstr(win, CHARACTER_SYMB);
                 continue;
             }
-            if (pl->currentroom->isitem)
+
+            set_itemptr(coordinates(x,y), pl, pl->currentroom, &itemptr);
+            if (itemptr)
             {
-                if (x==pl->currentroom->itemloc.x && y==pl->currentroom->itemloc.y)
+                wprintw(win, "%lc", getitem(itemptr->index, NULL).symb);
+                if (itemptr->index == ITEM_SHIELD || itemptr->index == ITEM_WEAPON_SWORD)
                 {
-                    wprintw(win, "%lc", getitem(pl->currentroom->item, NULL).symb);
-                    if (pl->currentroom->item == ITEM_SHIELD)
-                    {
-                        wprintw(win, " ");
-                    }
-                    continue;
+                    wprintw(win, " ");
                 }
+                continue;
             }
-            if (pl->currentroom->ismonster)
+
+            set_monsterptr(coordinates(x,y), pl, pl->currentroom, &monsterptr);
+            if (monsterptr)
             {
-                if (x==pl->currentroom->monsterloc.x && y==pl->currentroom->monsterloc.y)
-                {
-                    wprintw(win, "%lc", getmonster(pl->currentroom->monster, NULL).symb);
-                    continue;
-                }
+                wprintw(win, "%lc", getmonster(monsterptr->index, NULL).symb);
+                continue;
             }
+
             switch (*tile)
             {
             case VOID:

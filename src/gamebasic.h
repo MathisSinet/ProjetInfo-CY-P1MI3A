@@ -139,6 +139,22 @@ typedef struct QuestInfo
 QuestInfo;
 
 
+typedef struct ItemInRoom
+{
+    bool exists;
+    ItemIndex index;
+    Co loc;
+}
+ItemInRoom;
+typedef struct MonsterInRoom
+{
+    bool exists;
+    ItemIndex index;
+    Co loc;
+}
+MonsterInRoom;
+
+
 //Structure for data about room
 typedef struct Room
 {
@@ -159,6 +175,10 @@ typedef struct Room
     Door door_south;
     Door door_west;
 
+    ItemInRoom item1;
+    ItemInRoom item2;
+    MonsterInRoom monster1;
+    MonsterInRoom monster2;
     bool isitem; //If the room contains an item
     bool ismonster; //If the room contains a monster
     ItemIndex item; //Item in the room
@@ -197,6 +217,7 @@ Region;
 
 //Coordinates builder
 Co coordinates(int16_t x, int16_t y);
+bool same_coordinates(Co co1, Co co2);
 
 bool is_digit(int chr);
 bool is_valid_playername_char(int chr);
@@ -210,5 +231,8 @@ bool randevent(Region *reg, uint32_t prob);
 int8_t *get_from_grid(Region* reg, int32_t x, int32_t y);
 
 void reg_memfree(Region *reg);
+
+void set_itemptr(Co co, Player *pl, Room *room, ItemInRoom **itemptr);
+void set_monsterptr(Co co, Player *pl, Room *room, MonsterInRoom **monsterptr);
 
 #endif
