@@ -134,8 +134,9 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
             case 'E':
                 manage_inventory(reg, pl, di);
                 break;
-            case '_':
+            case ' ':
                 playerattack(reg, pl);
+                break;
         }
         if (true)
         {
@@ -157,6 +158,7 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
         diff = (t2-t1)/CLOCKS_PER_SEC;
         t1 = clock();
         reg->deathtimer -= diff;
+        pl->atkdelay -= diff;
         monstermove(reg, pl, diff);
     }
     nodelay(di->box1, false);

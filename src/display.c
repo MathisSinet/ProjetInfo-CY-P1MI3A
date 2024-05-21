@@ -27,6 +27,15 @@ void initcurses(DisplayInfo *di)
 
     getmaxyx(stdscr, di->height, di->width);
 
+    if (di->height < MIN_TERMINAL_HEIGHT || di->width < MIN_TERMINAL_WIDTH)
+    {
+        mvprintw(0,0, "Vous devez avoir un terminal de taille minimale %dx%d pour utiliser ce programme", MIN_TERMINAL_WIDTH,
+            MIN_TERMINAL_HEIGHT);
+        mvprintw(2,0, "Votre terminal a pour taille %dx%d", di->width, di->height);
+        getch();
+        abort();
+    }
+
     start_color();
     init_color(COLOR_GREY, 500, 500, 500);
     init_pair(PAIR_RED, COLOR_RED, COLOR_BLACK);
@@ -243,15 +252,17 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
         }
     }
 
+    //Attack load bar
+
     //Attack and score
-    mvwprintw(win, 5, 2, "Attaque : %d", pl->atk);
-    mvwprintw(win, 6, 2, "Score : %d", pl->xp);
+    mvwprintw(win, 6, 2, "Attaque : %d", pl->atk);
+    mvwprintw(win, 7, 2, "Score : %d", pl->xp);
     
     //Weapon
-    mvwprintw(win, 8, 2, "Arme : ");
+    mvwprintw(win, 9, 2, "Arme : ");
     item = getitem(pl->weapon, itemname);
     wprintw(win, "%s %lc", item.name, item.symb);
-    mvwprintw(win, 9, 2, "Inventaire :");
+    mvwprintw(win, 10, 2, "Inventaire :");
 
     //Inventory
     for (int i=0; i<MAX_INVENTORY_SIZE; i++)
@@ -259,11 +270,11 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
         if (i < pl->inv_size)
         {
             item = getitem(pl->inv[i], itemname);
-            mvwprintw(win, 10+i, 4, "%s %lc", item.name, item.symb);
+            mvwprintw(win, 11+i, 4, "%s %lc", item.name, item.symb);
         }
         else
         {
-            mvwprintw(win, 10+i, 4, "[vide]");
+            mvwprintw(win, 11+i, 4, "[vide]");
         }
     }
 
@@ -481,7 +492,15 @@ void update_map(DisplayInfo *di, Region *reg, Player *pl)
             set_monsterptr(coordinates(x,y), pl, pl->currentroom, &monsterptr);
             if (monsterptr)
             {
-                wprintw(win, "%lc", getmonster(monsterptr->index, NULL).symb);
+                if (monsterptr->hp > 0)
+                {
+                    wprintw(win, "%lc", getmonster(monsterptr->index, NULL).symb);
+                }
+                else
+                {
+                    waddwstr(win, L"💥");
+                }
+                
                 continue;
             }
 

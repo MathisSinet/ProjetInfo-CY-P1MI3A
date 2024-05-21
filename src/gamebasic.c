@@ -80,15 +80,28 @@ void reg_memfree(Region *reg)
 }
 
 
+bool is_inside_room(Room *room, Co co)
+{
+    return (
+        (co.x > room->corner.x && co.x < room->corner.x+room->width-1) &&
+        (co.y > room->corner.y && co.y < room->corner.y+room->height-1)
+    );
+}
+
+
 //Sets the item pointer if the coordinates match to an item in this room. NULL else
 void set_itemptr(Co co, Player *pl, Room *room, ItemInRoom **itemptr)
 {
     *itemptr = NULL;
-    if (room->item1.exists && co.x==room->item1.loc.x && co.y==room->item1.loc.y)
+    if (!is_inside_room(room, co))
+    {
+        return;
+    }
+    if (room->item1.exists && same_coordinates(co, room->item1.loc))
     {
         *itemptr = &room->item1;
     }
-    if (room->item2.exists && co.x==room->item2.loc.x && co.y==room->item2.loc.y)
+    if (room->item2.exists && same_coordinates(co, room->item2.loc))
     {
         *itemptr = &room->item2;
     }
@@ -98,11 +111,15 @@ void set_itemptr(Co co, Player *pl, Room *room, ItemInRoom **itemptr)
 void set_monsterptr(Co co, Player *pl, Room *room, MonsterInRoom **monsterptr)
 {
     *monsterptr = NULL;
-    if (room->monster1.exists && co.x==room->monster1.loc.x && co.y==room->monster1.loc.y)
+    if (!is_inside_room(room, co))
+    {
+        return;
+    }
+    if (room->monster1.exists && same_coordinates(co, room->monster1.loc))
     {
         *monsterptr = &room->monster1;
     }
-    if (room->monster1.exists && co.x==room->monster2.loc.x && co.y==room->monster2.loc.y)
+    if (room->monster2.exists && same_coordinates(co, room->monster2.loc))
     {
         *monsterptr = &room->monster2;
     }

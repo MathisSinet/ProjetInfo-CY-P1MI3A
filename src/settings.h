@@ -6,6 +6,11 @@ Header to define general constants used by the program
 #ifndef SETTINGS_HEADER
 #define SETTINGS_HEADER
 
+/*__________DISPLAY SETTINGS__________*/
+
+#define MIN_TERMINAL_WIDTH 70
+#define MIN_TERMINAL_HEIGHT 30
+
 /*__________ROOM GENERATION PARAMETERS__________*/
 
 #define MAX_ROOM_COUNT 85
@@ -32,6 +37,7 @@ Header to define general constants used by the program
 #define DEFAULT_DEATH_TIMER 600.0
 
 #define PLAYER_BASE_HP 10
+#define PLAYER_BASE_ATKDELAY 0.7
 
 /*__________RANDOM NUMBER GENERATOR SETTINGS__________*/
 

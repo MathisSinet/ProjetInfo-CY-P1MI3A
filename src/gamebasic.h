@@ -92,7 +92,7 @@ Item;
 typedef struct Monster
 {
     wchar_t symb;
-    uint16_t hp;
+    int16_t hp;
     uint16_t atk;
     double baseatkdelay;
     double basemovedelay;
@@ -110,11 +110,15 @@ typedef struct Player
     int32_t xp;
     int32_t atk;
     int32_t def;
+    double atkdelay;
+
     Co loc;
+
     ItemIndex weapon;
     ItemIndex armor;
     ItemIndex inv[MAX_INVENTORY_SIZE];
     uint16_t inv_size;
+
     struct Room *currentroom;
 }
 Player;
@@ -152,6 +156,7 @@ typedef struct MonsterInRoom
     bool exists;
     ItemIndex index;
     Co loc;
+    int16_t hp;
     double atkdelay;
     double movedelay;
 }
@@ -230,6 +235,7 @@ int8_t *get_from_grid(Region* reg, int32_t x, int32_t y);
 
 void reg_memfree(Region *reg);
 
+bool is_inside_room(Room *room, Co co);
 void set_itemptr(Co co, Player *pl, Room *room, ItemInRoom **itemptr);
 void set_monsterptr(Co co, Player *pl, Room *room, MonsterInRoom **monsterptr);
 

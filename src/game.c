@@ -216,6 +216,11 @@ void monstermove(Region *reg, Player *pl, double diff)
                     }
                 }
             }
+            if (room->monster1.hp <= 0)
+            {
+                room->monster1.exists = false;
+                pl->xp += 100;
+            }
         }
     }
 
@@ -255,6 +260,11 @@ void monstermove(Region *reg, Player *pl, double diff)
                     }
                 }
             }
+            if (room->monster2.hp <= 0)
+            {
+                room->monster2.exists = false;
+                pl->xp += 100;
+            }
         }
     }
 }
@@ -263,5 +273,22 @@ void monstermove(Region *reg, Player *pl, double diff)
 //Player's attack
 void playerattack(Region *reg, Player *pl)
 {
-
+    //Room *room = pl->currentroom;
+    MonsterInRoom *monsterptr;
+    if (pl->atkdelay > 0.0)
+    {
+        return;
+    }
+    pl->atkdelay = PLAYER_BASE_ATKDELAY;
+    for (int16_t x=pl->loc.x-2; x<=pl->loc.x+2; x++)
+    {
+        for (int16_t y=pl->loc.y-2; y<=pl->loc.y+2; y++)
+        {
+            set_monsterptr(coordinates(x,y), pl, pl->currentroom, &monsterptr);
+            if (monsterptr)
+            {
+                monsterptr->hp -= pl->atk;
+            }
+        }
+    }
 }

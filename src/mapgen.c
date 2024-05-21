@@ -413,6 +413,7 @@ void initial_map(Region* reg, Player *pl)
     pl->atk = 3;
     pl->def = 10;
     pl->inv_size = 0;
+    pl->atkdelay = 0.0;
 
     pl->weapon = ITEM_BASE_WEAPON;
 }
@@ -810,11 +811,12 @@ void fill_monster(Region *reg, Room *room, MonsterInRoom *monster)
     Monster monster_s;
     if (randevent(reg, 1000))
     {
-    monster->exists = true;
-    monster->index = MONSTER_ALIEN;
-    monster_s = getmonster(MONSTER_ALIEN, NULL);
-    monster->movedelay = 1.5*monster_s.basemovedelay;
-    monster->atkdelay = monster_s.baseatkdelay;
+        monster->exists = true;
+        monster->index = MONSTER_ALIEN;
+        monster_s = getmonster(MONSTER_ALIEN, NULL);
+        monster->hp = monster_s.hp;
+        monster->movedelay = 1.5*monster_s.basemovedelay;
+        monster->atkdelay = monster_s.baseatkdelay;
     }
 
 }
