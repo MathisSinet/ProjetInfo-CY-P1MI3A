@@ -37,7 +37,7 @@ Header to define general constants used by the program
 #define DEFAULT_DEATH_TIMER 600.0
 
 #define PLAYER_BASE_HP 10
-#define PLAYER_BASE_ATKDELAY 0.7
+#define PLAYER_BASE_ATKDELAY 0.6
 
 /*__________RANDOM NUMBER GENERATOR SETTINGS__________*/
 

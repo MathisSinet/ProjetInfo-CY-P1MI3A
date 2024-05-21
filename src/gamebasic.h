@@ -91,11 +91,13 @@ Item;
 
 typedef struct Monster
 {
-    wchar_t symb;
-    int16_t hp;
-    uint16_t atk;
-    double baseatkdelay;
-    double basemovedelay;
+    wchar_t symb; //monster symbol
+    int16_t hp; //monster health
+    double atk; //monster attack
+    //value between 0 and 100 to determine the monster's movement pattern (higher is more agressive)
+    uint16_t agression_value; 
+    double baseatkdelay; //delay between attacks
+    double basemovedelay; //delay between moves
 }
 Monster;
 

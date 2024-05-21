@@ -3,6 +3,10 @@ display.h
 Display features of the game
 */
 
+//Minimum terminal size : 70x30
+//Recommended terminal size : 100x35
+
+
 #ifndef DISPLAY_HEADER
 #define DISPLAY_HEADER
 
@@ -28,7 +32,8 @@ typedef enum
     PAIR_RED = 1,
     PAIR_BLUE = 2,
     PAIR_CYAN = 3,
-    PAIR_GREY = 4
+    PAIR_GREY = 4,
+    PAIR_GREEN = 5
 }
 ColorPair;
 

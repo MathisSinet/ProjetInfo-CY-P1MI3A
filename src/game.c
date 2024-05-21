@@ -166,11 +166,44 @@ void monstermove_one(Region *reg, Player *pl, Room *room, MonsterInRoom *monster
         same_coordinates(newco, room->item1.loc) || same_coordinates(newco, room->item2.loc)
         || same_coordinates(newco, pl->loc))
     {
-        monsterptr->movedelay = 0.04;
+        monsterptr->movedelay = 0.03; //if the movement fails, tries again in 30 ms
     }
     else
     {
         monsterptr->loc = newco;
+    }
+}
+
+
+//Moves the given monster in a random valid direction
+void monstermove_random(Region *reg, Player *pl, Room *room, MonsterInRoom *monsterptr)
+{
+    monstermove_one(reg, pl, room, monsterptr, rand()%4);
+}
+
+void monstermove_towardsplayer(Region *reg, Player *pl, Room *room, MonsterInRoom *monsterptr)
+{
+    if (rand()%2)
+    {
+        if (pl->loc.x < room->monster1.loc.x)
+        {
+            monstermove_one(reg, pl, room, monsterptr, WEST);
+        }
+        else
+        {
+            monstermove_one(reg, pl, room, monsterptr, EAST);
+        }
+    }
+    else
+    {
+        if (pl->loc.y < room->monster1.loc.y)
+        {
+            monstermove_one(reg, pl, room, monsterptr, NORTH);
+        }
+        else
+        {
+            monstermove_one(reg, pl, room, monsterptr, SOUTH);
+        }
     }
 }
 
@@ -187,34 +220,13 @@ void monstermove(Region *reg, Player *pl, double diff)
         if (room->monster1.movedelay < 0.0)
         {
             room->monster1.movedelay += monster.basemovedelay;
-            if (rand()%100 < 33)
+            if (rand()%100 > monster.agression_value)
             {
-                monstermove_one(reg, pl, room, &pl->currentroom->monster1, rand()%4);
+                monstermove_random(reg, pl, room, &room->monster1);
             }
             else
             {
-                if (rand()%2)
-                {
-                    if (pl->loc.x < room->monster1.loc.x)
-                    {
-                        monstermove_one(reg, pl, room, &pl->currentroom->monster1, WEST);
-                    }
-                    else
-                    {
-                        monstermove_one(reg, pl, room, &pl->currentroom->monster1, EAST);
-                    }
-                }
-                else
-                {
-                    if (pl->loc.y < room->monster1.loc.y)
-                    {
-                        monstermove_one(reg, pl, room, &pl->currentroom->monster1, NORTH);
-                    }
-                    else
-                    {
-                        monstermove_one(reg, pl, room, &pl->currentroom->monster1, SOUTH);
-                    }
-                }
+                monstermove_towardsplayer(reg, pl, room, &room->monster1);
             }
             if (room->monster1.hp <= 0)
             {
@@ -231,34 +243,13 @@ void monstermove(Region *reg, Player *pl, double diff)
         if (room->monster2.movedelay < 0.0)
         {
             room->monster2.movedelay += monster.basemovedelay;
-            if (rand()%100 < 33)
+            if (rand()%100 > monster.agression_value)
             {
-                monstermove_one(reg, pl, room, &pl->currentroom->monster2, rand()%4);
+                monstermove_random(reg, pl, room, &room->monster2);
             }
             else
             {
-                if (rand()%2)
-                {
-                    if (pl->loc.x < room->monster2.loc.x)
-                    {
-                        monstermove_one(reg, pl, room, &pl->currentroom->monster2, WEST);
-                    }
-                    else
-                    {
-                        monstermove_one(reg, pl, room, &pl->currentroom->monster2, EAST);
-                    }
-                }
-                else
-                {
-                    if (pl->loc.y < room->monster2.loc.y)
-                    {
-                        monstermove_one(reg, pl, room, &pl->currentroom->monster2, NORTH);
-                    }
-                    else
-                    {
-                        monstermove_one(reg, pl, room, &pl->currentroom->monster2, SOUTH);
-                    }
-                }
+                monstermove_towardsplayer(reg, pl, room, &room->monster2);
             }
             if (room->monster2.hp <= 0)
             {
@@ -290,5 +281,58 @@ void playerattack(Region *reg, Player *pl)
                 monsterptr->hp -= pl->atk;
             }
         }
+    }
+}
+
+
+
+void monsterattack_one(Region *reg, Player *pl, MonsterInRoom *monster, double diff)
+{
+    Monster monster_data;
+    double damage;
+    int damage2;
+    int damage_roll;
+
+    monster_data = getmonster(monster->index, NULL);
+    monster->atkdelay -= diff;
+    if (monster->atkdelay > 0.0)
+    {
+        return;
+    }
+    monster->atkdelay = monster_data.baseatkdelay;
+    for (int16_t x=monster->loc.x-1; x<=monster->loc.x+1; x++)
+    {
+        for (int16_t y=monster->loc.y-1; y<=monster->loc.y+1; y++)
+        {
+            if (same_coordinates(coordinates(x,y), pl->loc))
+            {
+                damage = monster_data.atk * (1.0 - 0.8*((double)pl->def/100));
+                damage2 = (int)(100*damage);
+                damage_roll = rand()%100;
+                if (damage_roll >= damage2%100)
+                {
+                    pl->hp -= damage2/100;
+                }
+                else
+                {
+                    pl->hp -= damage2/100 + 1;
+                }
+            }
+        }
+            
+    }
+}
+
+
+
+void monsterattack(Region *reg, Player *pl, double diff)
+{
+    if (pl->currentroom->monster1.exists && pl->currentroom->monster1.hp > 0)
+    {
+        monsterattack_one(reg, pl, &pl->currentroom->monster1, diff);
+    }
+    if (pl->currentroom->monster2.exists && pl->currentroom->monster2.hp > 0)
+    {
+        monsterattack_one(reg, pl, &pl->currentroom->monster2, diff);
     }
 }

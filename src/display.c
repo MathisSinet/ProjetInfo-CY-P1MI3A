@@ -42,6 +42,7 @@ void initcurses(DisplayInfo *di)
     init_pair(PAIR_BLUE, COLOR_BLUE, COLOR_BLACK);
     init_pair(PAIR_CYAN, COLOR_CYAN, COLOR_BLACK);
     init_pair(PAIR_GREY, COLOR_GREY, COLOR_BLACK);
+    init_pair(PAIR_GREEN, COLOR_GREEN, COLOR_BLACK);
 }
 
 //Initializes the main menu interface
@@ -252,7 +253,22 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
         }
     }
 
+    item = getitem(pl->weapon, itemname);
     //Attack load bar
+    mvwprintw(win, 5, 2, "%lc", item.symb);
+    for (int i=1; i<=10; i++)
+    {
+        if (pl->atkdelay <= PLAYER_BASE_ATKDELAY - i*PLAYER_BASE_ATKDELAY/10)
+        {
+            wattron(win, COLOR_PAIR(PAIR_GREEN));
+            mvwadd_wch(win, 5, 4+2*i, WACS_BLOCK);
+            wattroff(win, COLOR_PAIR(PAIR_GREEN));
+        }
+        else
+        {
+            mvwadd_wch(win, 5, 4+2*i, WACS_BLOCK);
+        }
+    }
 
     //Attack and score
     mvwprintw(win, 6, 2, "Attaque : %d", pl->atk);
@@ -260,7 +276,6 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
     
     //Weapon
     mvwprintw(win, 9, 2, "Arme : ");
-    item = getitem(pl->weapon, itemname);
     wprintw(win, "%s %lc", item.name, item.symb);
     mvwprintw(win, 10, 2, "Inventaire :");
 
@@ -308,7 +323,7 @@ void manage_inventory(Region *reg, Player *pl, DisplayInfo *di)
     mvwprintw(win, di->height-4, 2, "U : Utiliser l'objet");
     mvwprintw(win, di->height-3, 2, "E : Fermer l'inventaire");
     mvwprintw(win, di->height-2, 2, "A : Jeter l'objet");
-    mvwaddwstr(win, 10+cursor, 2, RARROW_SYMB);
+    mvwaddwstr(win, 11+cursor, 2, RARROW_SYMB);
 
     while(true)
     {
@@ -367,25 +382,25 @@ void manage_inventory(Region *reg, Player *pl, DisplayInfo *di)
             mvwprintw(win, di->height-4, 2, "U : Utiliser l'objet");
             mvwprintw(win, di->height-3, 2, "E : Fermer l'inventaire");
             mvwprintw(win, di->height-2, 2, "A : Jeter l'objet");
-            mvwaddwstr(win, 10+cursor, 2, RARROW_SYMB);
+            mvwaddwstr(win, 11+cursor, 2, RARROW_SYMB);
             if (cursor == pl->inv_size)
             {
-                mvwaddwstr(win, 10+cursor, 2, L"  ");
+                mvwaddwstr(win, 11+cursor, 2, L"  ");
                 cursor = (cursor+pl->inv_size-1) % pl->inv_size;
-                mvwaddwstr(win, 10+cursor, 2, RARROW_SYMB);
+                mvwaddwstr(win, 11+cursor, 2, RARROW_SYMB);
             }
         }
         if (ch == KEY_DOWN || ch == 's' || ch == 'S')
         {
-            mvwaddwstr(win, 10+cursor, 2, L"  ");
+            mvwaddwstr(win, 11+cursor, 2, L"  ");
             cursor = (cursor+1) % pl->inv_size;
-            mvwaddwstr(win, 10+cursor, 2, RARROW_SYMB);
+            mvwaddwstr(win, 11+cursor, 2, RARROW_SYMB);
         }
         if (ch == KEY_UP || ch == 'z' || ch == 'Z')
         {
-            mvwaddwstr(win, 10+cursor, 2, L"  ");
+            mvwaddwstr(win, 11+cursor, 2, L"  ");
             cursor = (cursor+pl->inv_size-1) % pl->inv_size;
-            mvwaddwstr(win, 10+cursor, 2, RARROW_SYMB);
+            mvwaddwstr(win, 11+cursor, 2, RARROW_SYMB);
         }
     }
 

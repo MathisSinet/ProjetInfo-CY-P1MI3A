@@ -145,7 +145,9 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
         }
         if (pl->hp <= 0)
         {
-            //game over
+            mvwprintw(di->box1,1,0,"Game over");
+            wrefresh(di->box1);
+            us_sleep(1000000);
             break;
         }
         if (reg->deathtimer <= 0.0)
@@ -160,6 +162,7 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
         reg->deathtimer -= diff;
         pl->atkdelay -= diff;
         monstermove(reg, pl, diff);
+        monsterattack(reg, pl, diff);
     }
     nodelay(di->box1, false);
     reg_memfree(reg);

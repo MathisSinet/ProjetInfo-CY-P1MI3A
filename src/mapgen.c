@@ -809,7 +809,7 @@ void fill_item(Region *reg, Room *room, ItemInRoom *item){
 void fill_monster(Region *reg, Room *room, MonsterInRoom *monster)
 {
     Monster monster_s;
-    if (randevent(reg, 1000))
+    if (randevent(reg, 800))
     {
         monster->exists = true;
         monster->index = MONSTER_ALIEN;
