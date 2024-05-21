@@ -58,21 +58,21 @@ void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
             if(itemptr->index == ITEM_QUEST_QUIZZ)
             {
                 quizz(pl, reg, di);
-                pl->currentroom->isitem = false;
+                itemptr->exists = false;
             }
             if(itemptr->index == ITEM_QUEST_TEDDYBEAR)
             {
                 mvwprintw(di->box2, 1, 2, "Vous avez trouvé l'ours en peluche !");
                 wrefresh(di->box2);
                 wgetch(di->box2);
-                pl->currentroom->isitem = false;
+                itemptr->exists = false;
             }
             if(itemptr->index == ITEM_QUEST_BALL)
             {
                 mvwprintw(di->box2, 1, 2, "Vous avez trouvé le ballon !");
                 wrefresh(di->box2);
                 wgetch(di->box2);
-                pl->currentroom->isitem = false;
+                itemptr->exists = false;
             }
             break;
         }

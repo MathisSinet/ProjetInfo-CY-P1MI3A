@@ -175,16 +175,11 @@ typedef struct Room
     Door door_south;
     Door door_west;
 
+    //items and monsters
     ItemInRoom item1;
     ItemInRoom item2;
     MonsterInRoom monster1;
     MonsterInRoom monster2;
-    bool isitem; //If the room contains an item
-    bool ismonster; //If the room contains a monster
-    ItemIndex item; //Item in the room
-    MonsterIndex monster; //Mob in the room
-    Co itemloc; //Coordinates of the item (relative to the zero)
-    Co monsterloc; //Coordinates of the monster (relative to the zero)
 }
 Room;
 

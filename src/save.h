@@ -54,10 +54,11 @@ struct RoomSave
     struct DoorSave door_south;
     struct DoorSave door_west;
 
-    //item
-    bool isitem;
-    ItemIndex item;
-    Co itemloc;
+    //items and monsters
+    ItemInRoom item1;
+    ItemInRoom item2;
+    MonsterInRoom monster1;
+    MonsterInRoom monster2;
 };
 
 //Structure used to save the Region structure
@@ -80,6 +81,8 @@ struct RegionSave
 
     //death timer
     int deathtimer;
+
+    QuestInfo questinfo;
 };
 
 //Structure used to save the Player structure

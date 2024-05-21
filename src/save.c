@@ -38,6 +38,7 @@ int save(FILE *savefile, Region *reg, Player *pl)
     regionsave.allocated_rooms = reg->allocated_rooms;
     regionsave.zero = reg->zero;
     regionsave.deathtimer = reg->deathtimer;
+    regionsave.questinfo = reg->questinfo;
 
     //Locates the grid and room in the savefile
 
@@ -67,9 +68,10 @@ int save(FILE *savefile, Region *reg, Player *pl)
         roomsave.corner = room->corner;
         roomsave.width = room->width;
         roomsave.height = room->height;
-        roomsave.isitem = room->isitem;
-        roomsave.item = room->item;
-        roomsave.itemloc = room->itemloc;
+        roomsave.item1 = room->item1;
+        roomsave.item2 = room->item2;
+        roomsave.monster1 = room->monster1;
+        roomsave.monster2 = room->monster2;
 
         roomsave.door_north.exists = room->door_north.exists;
         roomsave.door_north.dist = room->door_north.dist;
@@ -138,6 +140,7 @@ int load(char *name, Region *reg, Player *pl)
     reg->allocated_rooms = regionsave.allocated_rooms;
     reg->zero = regionsave.zero;
     reg->deathtimer = regionsave.deathtimer;
+    reg->questinfo = regionsave.questinfo;
 
     //Loads the grid
 
@@ -181,9 +184,10 @@ int load(char *name, Region *reg, Player *pl)
             room->corner = roomsave.corner;
             room->width = roomsave.width;
             room->height = roomsave.height;
-            room->isitem = roomsave.isitem;
-            room->item = roomsave.item;
-            room->itemloc = roomsave.itemloc;
+            room->item1 = roomsave.item1;
+            room->item2 = roomsave.item2;
+            room->monster1 = roomsave.monster1;
+            room->monster2 = roomsave.monster2;
 
             room->door_north.exists = roomsave.door_north.exists;
             room->door_north.dist = roomsave.door_north.dist;
