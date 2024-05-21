@@ -7,6 +7,7 @@ This header provides map generation functions
 #define MAPGEN_HEADER
 
 #include "gamebasic.h"
+#include "monster.h"
 
 //allocates memory for a room, stores it in the region and returns a pointer to it
 Room *allocate_room(Region* r);

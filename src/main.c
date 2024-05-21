@@ -82,16 +82,18 @@ bool loadSave(DisplayInfo *di, Region *reg, Player *pl)
 }
 
 
+//Game loop
 void Game(DisplayInfo *di, Region *reg, Player *pl)
 {
     int ch;
+    float t1, t2, diff;
     update_map(di, reg, pl);
     wrefresh(di->box2); //temp
     right_panel_update(reg, pl, di->box3);
     nodelay(di->box1, true);
+    t1 = clock();
     while (true)
     {
-
         ch = wgetch(di->box1);
         if (ch == 'x' || ch == 'X')
         {
@@ -132,8 +134,10 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
             case 'E':
                 manage_inventory(reg, pl, di);
                 break;
+            case '_':
+                playerattack(reg, pl);
         }
-        if (ch != ERR)
+        if (true)
         {
             update_map(di, reg, pl);
             right_panel_update(reg, pl, di->box3);
@@ -143,11 +147,17 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
             //game over
             break;
         }
-        if (reg->deathtimer <= 0)
+        if (reg->deathtimer <= 0.0)
         {
             //game over
             break;
         }
+
+        t2 = clock();
+        diff = (t2-t1)/CLOCKS_PER_SEC;
+        t1 = clock();
+        reg->deathtimer -= diff;
+        monstermove(reg, pl, diff);
     }
     nodelay(di->box1, false);
     reg_memfree(reg);

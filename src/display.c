@@ -284,6 +284,9 @@ void manage_inventory(Region *reg, Player *pl, DisplayInfo *di)
     WINDOW *win = di->box3;
     int ch;
     unsigned int cursor = 0;
+    Item item;
+    ItemIndex itemindex;
+    bool drop;
 
     //This function does nothing if the inventory is empty
     if (pl->inv_size <= 0)
@@ -299,13 +302,43 @@ void manage_inventory(Region *reg, Player *pl, DisplayInfo *di)
     while(true)
     {
         ch = wgetch(win);
+        drop = false;
         //Close inventory
         if (ch == 'e' || ch == 'E')
         {
             break;
         }
+        //Use item
+        if (ch == 'u' || ch == 'U')
+        {
+            item = getitem(pl->inv[cursor], NULL);
+            if (item.type == HEAL)
+            {
+                pl->hp += item.stat;
+                if (pl->hp > PLAYER_BASE_HP)
+                {
+                    pl->hp = PLAYER_BASE_HP;
+                }
+                drop = true;
+            }
+            if (item.type == WEAPON)
+            {
+                itemindex = pl->weapon;
+                pl->weapon = pl->inv[cursor];
+                if (itemindex != ITEM_BASE_WEAPON)
+                {
+                    pl->inv[cursor] = itemindex;
+                }
+                pl->atk = item.stat;
+                //Display update
+                right_panel_update(reg, pl, win);
+                mvwprintw(win, di->height-4, 2, "U : Utiliser l'objet");
+                mvwprintw(win, di->height-3, 2, "E : Fermer l'inventaire");
+                mvwprintw(win, di->height-2, 2, "A : Jeter l'objet");
+            }
+        }
         //Drop item
-        if (ch == 'a' || ch == 'A')
+        if (ch == 'a' || ch == 'A' || drop)
         {
             //Removes the item from the inventory
             for (int i=cursor; i<pl->inv_size-1; i++)
@@ -415,7 +448,7 @@ void update_map(DisplayInfo *di, Region *reg, Player *pl)
     getmaxyx(win, h, w);
     h-=3; w-=2;
     new_wclear(win);
-    mvwprintw(win, row++, 2, "x=%d, y=%d, grid width=%d, grid height=%d", pl->loc.x, pl->loc.y, reg->grid_width, reg->grid_height);
+    mvwprintw(win, row++, 2, "x=%d, y=%d, grid width=%d, grid height=%d, reamin=%.1f", pl->loc.x, pl->loc.y, reg->grid_width, reg->grid_height, reg->deathtimer);
     
     for (int y=pl->loc.y-h/2; y<pl->loc.y+h/2; y++)
     {

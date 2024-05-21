@@ -409,7 +409,7 @@ void initial_map(Region* reg, Player *pl)
     pl->currentroom = firstRoom;
     pl->loc = coordinates(0,0);
     pl->xp = 0;
-    pl->hp = 10;
+    pl->hp = PLAYER_BASE_HP;
     pl->atk = 3;
     pl->def = 10;
     pl->inv_size = 0;
@@ -807,10 +807,14 @@ void fill_item(Region *reg, Room *room, ItemInRoom *item){
 //Fills the room with potential monster
 void fill_monster(Region *reg, Room *room, MonsterInRoom *monster)
 {
-        if (randevent(reg, 1000))
-        {
-        monster->exists = true;
-        monster->index = MONSTER_ALIEN;
-        }
+    Monster monster_s;
+    if (randevent(reg, 1000))
+    {
+    monster->exists = true;
+    monster->index = MONSTER_ALIEN;
+    monster_s = getmonster(MONSTER_ALIEN, NULL);
+    monster->movedelay = 1.5*monster_s.basemovedelay;
+    monster->atkdelay = monster_s.baseatkdelay;
+    }
 
 }

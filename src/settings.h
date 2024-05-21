@@ -29,7 +29,9 @@ Header to define general constants used by the program
 
 /*__________BALANCE CHANGES__________*/
 
-#define DEFAULT_DEATH_TIMER 600
+#define DEFAULT_DEATH_TIMER 600.0
+
+#define PLAYER_BASE_HP 10
 
 /*__________RANDOM NUMBER GENERATOR SETTINGS__________*/
 

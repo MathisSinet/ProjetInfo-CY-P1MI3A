@@ -40,6 +40,14 @@ void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
         item = getitem(itemptr->index, NULL);
         switch (item.type)
         {
+        case WEAPON:
+            if(pl->weapon == ITEM_BASE_WEAPON)
+            {
+                pl->weapon = itemptr->index;
+                pl->atk = item.stat;
+                itemptr->exists = false;
+                break;
+            }
         case HEAL:
             if (pl->inv_size != MAX_INVENTORY_SIZE)
             {
@@ -47,12 +55,7 @@ void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
                 itemptr->exists = false;
             }
             break;
-
-        case WEAPON:
-            pl->weapon = itemptr->index;
-            pl->atk = item.stat;
-            itemptr->exists = false;
-            break;
+        
 
         case QUEST:
             if(itemptr->index == ITEM_QUEST_QUIZZ)
@@ -126,4 +129,139 @@ void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
             break;
         }
     }
+}
+
+
+void monstermove_one(Region *reg, Player *pl, Room *room, MonsterInRoom *monsterptr, Pole pole)
+{
+    Co newco = monsterptr->loc;
+    switch(pole)
+    {
+        case NORTH:
+            if (monsterptr->loc.y-1 > room->corner.y)
+            {
+                newco.y--;
+            }
+            break;
+        case EAST:
+            if (monsterptr->loc.x+1 < room->corner.x + room->width-1)
+            {
+                newco.x++;
+            }
+            break;
+        case SOUTH:
+            if (monsterptr->loc.y+1 < room->corner.y + room->height-1)
+            {
+                newco.y++;
+            }
+            break;
+        case WEST:
+            if (monsterptr->loc.x-1 > room->corner.x)
+            {
+                newco.x--;
+            }
+            break;
+    }
+    if (same_coordinates(newco, room->monster1.loc) || same_coordinates(newco, room->monster2.loc) ||
+        same_coordinates(newco, room->item1.loc) || same_coordinates(newco, room->item2.loc)
+        || same_coordinates(newco, pl->loc))
+    {
+        monsterptr->movedelay = 0.04;
+    }
+    else
+    {
+        monsterptr->loc = newco;
+    }
+}
+
+
+//Function for the movement of the monsters
+void monstermove(Region *reg, Player *pl, double diff)
+{
+    Room *room = pl->currentroom;
+    Monster monster;
+    if (room->monster1.exists)
+    {
+        monster = getmonster(room->monster1.index, NULL);
+        room->monster1.movedelay -= diff;
+        if (room->monster1.movedelay < 0.0)
+        {
+            room->monster1.movedelay += monster.basemovedelay;
+            if (rand()%100 < 33)
+            {
+                monstermove_one(reg, pl, room, &pl->currentroom->monster1, rand()%4);
+            }
+            else
+            {
+                if (rand()%2)
+                {
+                    if (pl->loc.x < room->monster1.loc.x)
+                    {
+                        monstermove_one(reg, pl, room, &pl->currentroom->monster1, WEST);
+                    }
+                    else
+                    {
+                        monstermove_one(reg, pl, room, &pl->currentroom->monster1, EAST);
+                    }
+                }
+                else
+                {
+                    if (pl->loc.y < room->monster1.loc.y)
+                    {
+                        monstermove_one(reg, pl, room, &pl->currentroom->monster1, NORTH);
+                    }
+                    else
+                    {
+                        monstermove_one(reg, pl, room, &pl->currentroom->monster1, SOUTH);
+                    }
+                }
+            }
+        }
+    }
+
+    if (room->monster2.exists)
+    {
+        monster = getmonster(room->monster2.index, NULL);
+        room->monster2.movedelay -= diff;
+        if (room->monster2.movedelay < 0.0)
+        {
+            room->monster2.movedelay += monster.basemovedelay;
+            if (rand()%100 < 33)
+            {
+                monstermove_one(reg, pl, room, &pl->currentroom->monster2, rand()%4);
+            }
+            else
+            {
+                if (rand()%2)
+                {
+                    if (pl->loc.x < room->monster2.loc.x)
+                    {
+                        monstermove_one(reg, pl, room, &pl->currentroom->monster2, WEST);
+                    }
+                    else
+                    {
+                        monstermove_one(reg, pl, room, &pl->currentroom->monster2, EAST);
+                    }
+                }
+                else
+                {
+                    if (pl->loc.y < room->monster2.loc.y)
+                    {
+                        monstermove_one(reg, pl, room, &pl->currentroom->monster2, NORTH);
+                    }
+                    else
+                    {
+                        monstermove_one(reg, pl, room, &pl->currentroom->monster2, SOUTH);
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+//Player's attack
+void playerattack(Region *reg, Player *pl)
+{
+
 }

@@ -94,8 +94,8 @@ typedef struct Monster
     wchar_t symb;
     uint16_t hp;
     uint16_t atk;
-    uint64_t baseatkdelay;
-    uint64_t atkdelay;
+    double baseatkdelay;
+    double basemovedelay;
 }
 Monster;
 
@@ -146,11 +146,14 @@ typedef struct ItemInRoom
     Co loc;
 }
 ItemInRoom;
+
 typedef struct MonsterInRoom
 {
     bool exists;
     ItemIndex index;
     Co loc;
+    double atkdelay;
+    double movedelay;
 }
 MonsterInRoom;
 
@@ -204,7 +207,7 @@ typedef struct Region
     Co zero;
 
     //death timer
-    int deathtimer;
+    float deathtimer;
 
     QuestInfo questinfo;
 }
