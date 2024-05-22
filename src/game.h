@@ -17,4 +17,7 @@ void playerattack(Region *reg, Player *pl);
 void monsterattack_one(Region *reg, Player *pl, MonsterInRoom *monster, double diff);
 void monsterattack(Region *reg, Player *pl, double diff);
 
+void death(Region *reg, Player *pl, DisplayInfo* di, int cause_of_death);
+void win(Region *reg, Player *pl, DisplayInfo* di);
+
 #endif

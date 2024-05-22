@@ -59,6 +59,9 @@ void NewGame(DisplayInfo *di, Region *reg, Player *pl)
     }
     
     initial_map(reg, pl);
+
+    lore_screen(di, win);
+    end_mainmenu(di);
 }
 
 
@@ -158,14 +161,16 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
         }
         if (pl->hp <= 0)
         {
-            mvwprintw(di->box1,1,0,"Game over");
-            wrefresh(di->box1);
-            us_sleep(1000000);
-            break;
+            death(reg, pl, di, 1);
         }
         if (reg->deathtimer <= 0.0)
         {
-            //game over
+            death(reg, pl, di, 2);
+            break;
+        }
+        if (false)
+        {
+            win(reg, pl, di);
             break;
         }
 
@@ -204,7 +209,6 @@ int main(int argc, char **argv)
         {
             case MAIN_MENU_NEW:
                 NewGame(&di, &reg, &pl);
-                end_mainmenu(&di);
                 init_gameui(&di);
                 Game(&di, &reg, &pl);
                 end_gameui(&di);

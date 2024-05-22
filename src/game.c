@@ -337,3 +337,29 @@ void monsterattack(Region *reg, Player *pl, double diff)
         monsterattack_one(reg, pl, &pl->currentroom->monster2, diff);
     }
 }
+
+
+//Display the death screen and returns to the menu
+void death(Region *reg, Player *pl, DisplayInfo *di, int cause_of_death)
+{
+    end_gameui(di);
+    death_screen(di, cause_of_death);
+
+    pl->hp = PLAYER_BASE_HP;
+    pl->loc = coordinates(0, 0);
+
+    pl->currentroom = reg->roomlist[0];
+
+    init_gameui(di);
+    nodelay(di->box1, true);
+}
+
+
+//Display the win screen and returns to the menu
+void win(Region *reg, Player *pl, DisplayInfo *di)
+{
+    end_gameui(di);
+    win_screen(di);
+
+    init_gameui(di);
+}

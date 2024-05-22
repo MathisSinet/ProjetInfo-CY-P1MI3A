@@ -46,6 +46,10 @@ void init_mainmenu(DisplayInfo *di);
 void end_mainmenu(DisplayInfo *di);
 void init_gameui(DisplayInfo *di);
 void end_gameui(DisplayInfo *di);
+void lore_screen(DisplayInfo *di, WINDOW* lore_box);
+void death_screen(DisplayInfo *di, int cause_of_death);
+void win_screen(DisplayInfo *di);
+
 
 void endcurses(DisplayInfo *di);
 
@@ -61,6 +65,6 @@ void manage_inventory(Region *reg, Player *pl, DisplayInfo *di);
 void show_controls(DisplayInfo *di);
 
 void save_ui(DisplayInfo *di, Region *reg, Player *pl);
-void update_map(DisplayInfo *di, Region* reg, Player* pl);
+void update_map(DisplayInfo *di, Region *reg, Player *pl);
 
 #endif

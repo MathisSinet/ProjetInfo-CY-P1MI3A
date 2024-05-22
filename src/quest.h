@@ -5,5 +5,6 @@
 #include "display.h"
 
 void quizz(Player* pl, Region* reg, DisplayInfo* di);
+void check_quests();
 
 #endif
