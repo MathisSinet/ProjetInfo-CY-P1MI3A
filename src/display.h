@@ -47,8 +47,8 @@ void end_mainmenu(DisplayInfo *di);
 void init_gameui(DisplayInfo *di);
 void end_gameui(DisplayInfo *di);
 void lore_screen(DisplayInfo *di, WINDOW* lore_box);
-void death_screen(DisplayInfo *di, int cause_of_death);
-void win_screen(DisplayInfo *di);
+void death_screen(DisplayInfo *di, Player *pl, int cause_of_death);
+void win_screen(DisplayInfo *di, Player *pl);
 
 
 void endcurses(DisplayInfo *di);

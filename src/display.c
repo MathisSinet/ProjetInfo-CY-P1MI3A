@@ -592,7 +592,7 @@ void lore_screen(DisplayInfo *di, WINDOW* lore_box)
 
 
 //Display the win screen
-void win_screen(DisplayInfo *di)
+void win_screen(DisplayInfo *di, Player *pl)
 {
     char *ascii_art =
 ":::     :::  :::::::::::  ::::::::  :::::::::::  ::::::::  :::::::::::  :::::::::   :::::::::: \n"
@@ -619,10 +619,13 @@ void win_screen(DisplayInfo *di)
     wrefresh(win_box);
 
     // Displays a sentence depending on the cause of the player win
+    int lenght = strlen("Felicitations, vous avez triomphe des monstres.. appuyez sur une touche pour continuer");
     int x = 3 + num_lines + 4;
-    int y = start_x + (num_char_line - strlen("Felicitations, vous avez triomphe des monstres.. appuyez sur une touche pour continuer")) / 2;
+    int y = start_x + (num_char_line - lenght) / 2;
 
     mvprintw(x, y, "Votre courage a ete vain, les monstres ont triomphe.. appuyez sur une touche pour continuer");
+    mvprintw(x+2, (y + lenght/2) - 5, "XP obtenue : %d", pl->xp);
+    mvprintw(x+3, (y + lenght/2) - 9, "Nombre de mort(s) : %d", pl->nb_of_death);
     refresh();
 
     wgetch(win_box);
@@ -631,7 +634,7 @@ void win_screen(DisplayInfo *di)
 }
 
 //Display the game over screen
-void death_screen(DisplayInfo *di, int cause_of_death)
+void death_screen(DisplayInfo *di, Player *pl, int cause_of_death)
 {
     char *ascii_art =
         "::::::::       :::      ::::    ::::   ::::::::::       ::::::::   :::     :::  ::::::::::  :::::::::  \n"
@@ -659,18 +662,24 @@ void death_screen(DisplayInfo *di, int cause_of_death)
 
     // Displays a sentence depending on the cause of the player death
     int x = 3 + num_lines + 4;
-    int y;
+    int y, lenght;
 
     switch (cause_of_death)
     {
     case 1:
-        y = start_x + (num_char_line - strlen("Votre courage a ete vain, les monstres ont triomphe.. appuyez sur une touche pour continuer")) / 2;
+        lenght = strlen("Votre courage a ete vain, les monstres ont triomphe.. appuyez sur une touche pour continuer");
+        y = start_x + (num_char_line - lenght ) / 2;
         mvprintw(x, y, "Votre courage a ete vain, les monstres ont triomphe.. appuyez sur une touche pour continuer");
+        mvprintw(x+2, (y + lenght/2) - 5, "XP obtenue : %d", pl->xp);
+        mvprintw(x+3, (y + lenght/2) - 9, "Nombre de mort(s) : %d", pl->nb_of_death);
         refresh();
         break;
     case 2:
-        y = start_x + (num_char_line - strlen("Vous n'avez plus d'oxygene.. appuyez sur une touche pour continuer")) / 2;
+        lenght = strlen("Vous n'avez plus d'oxygene.. appuyez sur une touche pour continuer");
+        y = start_x + (num_char_line - lenght) / 2;
         mvprintw(x, y, "Vous n'avez plus d'oxygene.. appuyez sur une touche pour continuer");
+        mvprintw(x+2, (y + lenght/2) - 5, "XP obtenue : %d", pl->xp);
+        mvprintw(x+3, (y + lenght/2) - 9, "Nombre de mort(s) : %d", pl->nb_of_death);
         refresh();
         break;
     }

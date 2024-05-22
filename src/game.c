@@ -343,9 +343,12 @@ void monsterattack(Region *reg, Player *pl, double diff)
 void death(Region *reg, Player *pl, DisplayInfo *di, int cause_of_death)
 {
     end_gameui(di);
-    death_screen(di, cause_of_death);
+
+    pl->nb_of_death++;
+    death_screen(di, pl, cause_of_death);
 
     pl->hp = PLAYER_BASE_HP;
+    pl->xp = 0;
     pl->loc = coordinates(0, 0);
 
     pl->currentroom = reg->roomlist[0];
@@ -359,7 +362,7 @@ void death(Region *reg, Player *pl, DisplayInfo *di, int cause_of_death)
 void win(Region *reg, Player *pl, DisplayInfo *di)
 {
     end_gameui(di);
-    win_screen(di);
+    win_screen(di, pl);
 
     init_gameui(di);
 }

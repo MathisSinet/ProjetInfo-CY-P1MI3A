@@ -113,6 +113,7 @@ typedef struct Player
     int32_t xp;
     int32_t atk;
     int32_t def;
+    int32_t nb_of_death;
     double atkdelay;
 
     Co loc;

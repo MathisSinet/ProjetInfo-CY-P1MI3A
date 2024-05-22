@@ -422,6 +422,7 @@ void initial_map(Region* reg, Player *pl)
     pl->def = 10;
     pl->inv_size = 0;
     pl->atkdelay = 0.0;
+    pl->nb_of_death = 0;
 
     pl->weapon = ITEM_BASE_WEAPON;
 }
