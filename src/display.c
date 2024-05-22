@@ -228,12 +228,12 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
         if (pl->hp >= i)
         {
             wattron(win, COLOR_PAIR(PAIR_RED));
-            mvwadd_wch(win, 3, 3+2*i, WACS_BLOCK);
+            mvwadd_wch(win, 3, 4+2*i, WACS_BLOCK);
             wattroff(win, COLOR_PAIR(PAIR_RED));
         }
         else
         {
-            mvwadd_wch(win, 3, 3+2*i, WACS_BLOCK);
+            mvwadd_wch(win, 3, 4+2*i, WACS_BLOCK);
         }
     }
 
@@ -298,7 +298,14 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
 
 void bottom_panel_update(Region *reg, Player *pl, WINDOW *win)
 {
-    
+    new_wclear(win);
+    wattron(win, A_BOLD);
+    mvwprintw(win, 1, 2, "Objectifs :");
+    wattroff(win, A_BOLD);
+    mvwaddwstr(win, 2, 2, L"Objets à récupérer : ");
+    mvwaddwstr(win, 3, 2, L"Quiz à terminer : ");
+    mvwaddwstr(win, 4, 2, L"Monstres à éliminer : ");
+    wprintw(win, "%d/%d", reg->questinfo.monsters_killed, GOAL_MONSTER_KILLS);
 
     wrefresh(win);
 }

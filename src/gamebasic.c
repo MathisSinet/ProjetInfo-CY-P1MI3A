@@ -80,6 +80,7 @@ void reg_memfree(Region *reg)
 }
 
 
+//returns true if the coordinates are strictly inside of the room
 bool is_inside_room(Room *room, Co co)
 {
     return (

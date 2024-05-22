@@ -13,24 +13,27 @@ Monster getmonster(MonsterIndex index, char *name)
             monster.symb = L'👾';
             monster.hp = 15;
             monster.atk = 1.0;
+            monster.xp_reward = 100;
             monster.agression_value = 30;
-            monster.baseatkdelay = 0.8;
+            monster.baseatkdelay = 0.7;
             monster.basemovedelay = 0.25;
             break;
         case MONSTER_ALIEN:
             monster.symb = L'👽';
             monster.hp = 30;
             monster.atk = 2.0;
+            monster.xp_reward = 200;
             monster.agression_value = 70;
-            monster.baseatkdelay = 1.0;
+            monster.baseatkdelay = 0.95;
             monster.basemovedelay = 0.7;
             break;
-        case MONSTER_SOUCOUPE:
+        case MONSTER_SAUCER:
             monster.symb = L'🛸';
             monster.hp = 60;
             monster.atk = 3.0;
+            monster.xp_reward = 300;
             monster.agression_value = 70;
-            monster.baseatkdelay = 1.5;
+            monster.baseatkdelay = 1.35;
             monster.basemovedelay = 1.1;
             break;
     }

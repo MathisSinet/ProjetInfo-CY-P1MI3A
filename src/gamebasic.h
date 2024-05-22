@@ -67,7 +67,7 @@ typedef enum
 {
     MONSTER_INVADER = 0,
     MONSTER_ALIEN = 1,
-    MONSTER_SOUCOUPE = 2,
+    MONSTER_SAUCER = 2,
 }
 MonsterIndex;
 
@@ -94,6 +94,7 @@ typedef struct Monster
     wchar_t symb; //monster symbol
     int16_t hp; //monster health
     double atk; //monster attack
+    uint16_t xp_reward;
     //value between 0 and 100 to determine the monster's movement pattern (higher is more agressive)
     uint16_t agression_value; 
     double baseatkdelay; //delay between attacks
@@ -138,9 +139,12 @@ Door;
 //structure for the quest
 typedef struct QuestInfo
 {
-    bool is_done;
     bool is_teddybear_generated;
+    bool is_teddybear_found;
     bool is_ball_generated;
+    bool is_ball_found;
+
+    uint16_t monsters_killed;
 }
 QuestInfo;
 
@@ -209,6 +213,7 @@ typedef struct Region
     Room *roomlist[MAX_ROOM_COUNT];
     //number of allocated rooms
     uint16_t allocated_rooms;
+    uint16_t generated_rooms;
 
     //coordinated in grid of the zero
     Co zero;

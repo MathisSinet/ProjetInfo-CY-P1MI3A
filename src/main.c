@@ -100,7 +100,9 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
     update_map(di, reg, pl);
     wrefresh(di->box2); //temp
     right_panel_update(reg, pl, di->box3);
+    bottom_panel_update(reg, pl, di->box2);
     nodelay(di->box1, true);
+    
     t1 = clock();
     while (true)
     {
@@ -152,6 +154,7 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
         {
             update_map(di, reg, pl);
             right_panel_update(reg, pl, di->box3);
+            bottom_panel_update(reg, pl, di->box2);
         }
         if (pl->hp <= 0)
         {

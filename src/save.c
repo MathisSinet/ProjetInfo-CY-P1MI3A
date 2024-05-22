@@ -37,6 +37,7 @@ int save(FILE *savefile, Region *reg, Player *pl)
     regionsave.grid_width = reg->grid_width;
     regionsave.grid_height = reg->grid_height;
     regionsave.allocated_rooms = reg->allocated_rooms;
+    regionsave.generated_rooms = reg->generated_rooms;
     regionsave.zero = reg->zero;
     regionsave.deathtimer = reg->deathtimer;
     regionsave.questinfo = reg->questinfo;
@@ -139,6 +140,7 @@ int load(char *name, Region *reg, Player *pl)
     reg->grid_width = regionsave.grid_width;
     reg->grid_height = regionsave.grid_height;
     reg->allocated_rooms = regionsave.allocated_rooms;
+    reg->generated_rooms = regionsave.generated_rooms;
     reg->zero = regionsave.zero;
     reg->deathtimer = regionsave.deathtimer;
     reg->questinfo = regionsave.questinfo;

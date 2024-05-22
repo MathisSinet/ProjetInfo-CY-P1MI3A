@@ -39,6 +39,10 @@ Header to define general constants used by the program
 #define PLAYER_BASE_HP 10
 #define PLAYER_BASE_ATKDELAY 0.6
 
+/*__________QUEST SETTINGS__________*/
+
+#define GOAL_MONSTER_KILLS 25
+
 /*__________RANDOM NUMBER GENERATOR SETTINGS__________*/
 
 #define RAND_A 157

@@ -184,7 +184,7 @@ void monstermove_towardsplayer(Region *reg, Player *pl, Room *room, MonsterInRoo
 {
     if (rand()%2)
     {
-        if (pl->loc.x < room->monster1.loc.x)
+        if (pl->loc.x < monsterptr->loc.x)
         {
             monstermove_one(reg, pl, room, monsterptr, WEST);
         }
@@ -195,7 +195,7 @@ void monstermove_towardsplayer(Region *reg, Player *pl, Room *room, MonsterInRoo
     }
     else
     {
-        if (pl->loc.y < room->monster1.loc.y)
+        if (pl->loc.y < monsterptr->loc.y)
         {
             monstermove_one(reg, pl, room, monsterptr, NORTH);
         }
@@ -230,7 +230,8 @@ void monstermove(Region *reg, Player *pl, double diff)
             if (room->monster1.hp <= 0)
             {
                 room->monster1.exists = false;
-                pl->xp += 100;
+                pl->xp += monster.xp_reward;
+                reg->questinfo.monsters_killed++;
             }
         }
     }
@@ -253,7 +254,8 @@ void monstermove(Region *reg, Player *pl, double diff)
             if (room->monster2.hp <= 0)
             {
                 room->monster2.exists = false;
-                pl->xp += 100;
+                pl->xp += monster.xp_reward;
+                reg->questinfo.monsters_killed++;
             }
         }
     }

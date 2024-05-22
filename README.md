@@ -1,7 +1,7 @@
 # ProjetInfo-CY-P1MI3A
 
 Projet d'informatique pour la fin de notre année en Pré ING 1  
-Fait par le trinôme A  
+Fait par le trinôme A du groupe MI3
 Sujet : Cosmic Yonder
 
 ## Contributeurs

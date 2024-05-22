@@ -76,6 +76,7 @@ struct RegionSave
     uint64_t roomptr;
     //number of allocated rooms
     uint16_t allocated_rooms;
+    uint16_t generated_rooms;
 
     //coordinated in grid of the zero
     Co zero;
