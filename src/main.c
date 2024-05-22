@@ -1,10 +1,17 @@
+/*
+main.c
+Main file of the program
+*/
+
 #include "main.h"
 
+// calls exit(__status) while ending curses mode
 void pexit(DisplayInfo *di, int __status)
 {
     endcurses(di);
     exit(__status);
 }
+// segmentation fault handler
 void segfault()
 {
     sleep(1);
@@ -12,6 +19,7 @@ void segfault()
     printf("---Erreur de segmentation---\n");
     exit(EXIT_FAILURE);
 }
+// abortion handler
 void aborthandler()
 {
     sleep(1);
@@ -21,6 +29,7 @@ void aborthandler()
 }
 
 
+// Function to create a new game
 void NewGame(DisplayInfo *di, Region *reg, Player *pl)
 {
     WINDOW *win = di->box2;
@@ -53,6 +62,7 @@ void NewGame(DisplayInfo *di, Region *reg, Player *pl)
 }
 
 
+// Function to ask the user to load a save and load it if found
 bool loadSave(DisplayInfo *di, Region *reg, Player *pl)
 {
     WINDOW *win = di->box2;

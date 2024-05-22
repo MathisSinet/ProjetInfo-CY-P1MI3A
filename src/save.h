@@ -18,6 +18,7 @@ struct PlayerSave
     int32_t xp;
     int32_t atk;
     int32_t def;
+    double atkdelay;
     Co loc;
     ItemIndex weapon;
     ItemIndex armor;
@@ -80,7 +81,7 @@ struct RegionSave
     Co zero;
 
     //death timer
-    int deathtimer;
+    float deathtimer;
 
     QuestInfo questinfo;
 };

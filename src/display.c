@@ -338,13 +338,16 @@ void manage_inventory(Region *reg, Player *pl, DisplayInfo *di)
         if (ch == 'u' || ch == 'U')
         {
             item = getitem(pl->inv[cursor], NULL);
-            if (item.type == HEAL)
+            if (pl->inv[cursor] == ITEM_SHIELD)
+            {
+                pl->def += 10;
+                pl->def = pl->def > 100 ? 100 : pl->def;
+                drop = true;
+            }
+            else if (item.type == HEAL)
             {
                 pl->hp += item.stat;
-                if (pl->hp > PLAYER_BASE_HP)
-                {
-                    pl->hp = PLAYER_BASE_HP;
-                }
+                pl->hp = pl->hp > PLAYER_BASE_HP ? PLAYER_BASE_HP : pl->hp;
                 drop = true;
             }
             if (item.type == WEAPON)
@@ -414,8 +417,8 @@ void show_controls(DisplayInfo *di)
     WINDOW *win = di->box2;
     new_wclear(win);
     mvwaddwstr(win, 1, 2, L"ZQSD ou flèches directionnelles : se déplacer");
-    mvwaddwstr(win, 2, 2, L"X : quitter le jeu sans sauvegarder");
-    mvwaddwstr(win, 3, 2, L"W : sauvegarder le jeu");
+    mvwaddwstr(win, 2, 2, L"X : quitter / W : sauvegarder");
+    mvwaddwstr(win, 3, 2, L"Espace : attaquer");
     mvwaddwstr(win, 4, 2, L"E : ouvrir/fermer l'inventaire");
     mvwaddwstr(win, 5, 2, L"Appuyez sur une touche pour reprendre la partie...");
     wgetch(win);
@@ -487,7 +490,7 @@ void update_map(DisplayInfo *di, Region *reg, Player *pl)
                 wprintw(win, "  ");
                 continue;
             }
-            if(x==pl->loc.x && y==pl->loc.y)
+            if(same_coordinates(coordinates(x,y), pl->loc))
             {
                 waddwstr(win, CHARACTER_SYMB);
                 continue;

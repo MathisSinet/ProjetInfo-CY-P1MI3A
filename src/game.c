@@ -56,7 +56,6 @@ void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
             }
             break;
         
-
         case QUEST:
             if(itemptr->index == ITEM_QUEST_QUIZZ)
             {
