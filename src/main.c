@@ -8,7 +8,7 @@ Main file of the program
 // calls exit(__status) while ending curses mode
 void pexit(DisplayInfo *di, int __status)
 {
-    endcurses(di);
+    endwin();
     exit(__status);
 }
 // segmentation fault handler
@@ -233,7 +233,7 @@ int main(int argc, char **argv)
     }
     
     
-    endcurses(&di);
+    endwin();
     
     return 0;
 }

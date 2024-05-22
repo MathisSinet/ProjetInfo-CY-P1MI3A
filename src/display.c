@@ -1,3 +1,8 @@
+/*
+display.c
+Display features of the game
+*/
+
 #include "display.h"
 
 
@@ -113,15 +118,6 @@ void end_gameui(DisplayInfo *di)
     delwin(di->box2);
     delwin(di->box3);
     refresh();
-}
-
-
-void endcurses(DisplayInfo *di)
-{
-    //delwin(di->box1);
-    //delwin(di->box2);
-    //delwin(di->box3);
-    endwin();
 }
 
 
@@ -296,6 +292,8 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
     wrefresh(win);
 }
 
+
+//Updates the bottom
 void bottom_panel_update(Region *reg, Player *pl, WINDOW *win)
 {
     new_wclear(win);
@@ -470,6 +468,7 @@ void save_ui(DisplayInfo *di, Region *reg, Player *pl)
     wrefresh(win);
 }
 
+
 //Updates the display of the map
 void update_map(DisplayInfo *di, Region *reg, Player *pl)
 {
@@ -484,7 +483,7 @@ void update_map(DisplayInfo *di, Region *reg, Player *pl)
     getmaxyx(win, h, w);
     h-=3; w-=2;
     new_wclear(win);
-    mvwprintw(win, row++, 2, "x=%d, y=%d, grid width=%d, grid height=%d, reamin=%.1f", pl->loc.x, pl->loc.y, reg->grid_width, reg->grid_height, reg->deathtimer);
+    mvwprintw(win, row++, 2, "x=%d, y=%d, grid width=%d, grid height=%d, remain=%.1f", pl->loc.x, pl->loc.y, reg->grid_width, reg->grid_height, reg->deathtimer);
     
     for (int y=pl->loc.y-h/2; y<pl->loc.y+h/2; y++)
     {
@@ -560,17 +559,17 @@ void lore_screen(DisplayInfo *di, WINDOW* lore_box)
     // Adjust the cursor position to start just below the top left corner of the box
     int i=0, y, x;
     getyx(lore_box, y, x);
-    wmove(lore_box, y+1, x+1);
+    wmove(lore_box, y+1, x+2);
     int ligne_courante = y + 1;
 
     // Print the text line by line with a delay
-    char chaine[1000] = "salut salut salut salut \nsalut salut salut \nsalut";
+    char chaine[1000] = "salut salut salut\nsalut salut salut\nsalut salut";
         while(chaine[i] != '\0')
         {
-            if(chaine[i] == 94)
+            if(chaine[i] == '\n')
             {
                 ligne_courante++;
-                wmove(lore_box, ligne_courante, x+1);
+                wmove(lore_box, ligne_courante, x+2);
             }
             else
             {
@@ -584,10 +583,7 @@ void lore_screen(DisplayInfo *di, WINDOW* lore_box)
 
     wmove(lore_box, LINES/2 - 2, 2);
     wprintw(lore_box, "Appuyez sur une touche pour continuer...");
-
     wgetch(lore_box);
-
-    delwin(lore_box);
 }
 
 

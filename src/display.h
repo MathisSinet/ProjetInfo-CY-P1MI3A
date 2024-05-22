@@ -51,8 +51,6 @@ void death_screen(DisplayInfo *di, Player *pl, int cause_of_death);
 void win_screen(DisplayInfo *di, Player *pl);
 
 
-void endcurses(DisplayInfo *di);
-
 //Dynamic way to asks for the user string in curses
 void getusrstr(WINDOW* win, int y, int x, char* buffer, int max_len, bool(*validatefunc)(int));
 //Main Menu Loop
