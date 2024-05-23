@@ -113,7 +113,7 @@ typedef struct Player
     int32_t xp;
     int32_t atk;
     int32_t def;
-    int32_t nb_of_death;
+    int32_t death_count;
     double atkdelay;
 
     Co loc;
@@ -146,6 +146,9 @@ typedef struct QuestInfo
     bool is_ball_found;
 
     uint16_t monsters_killed;
+
+    uint8_t quizz_done;
+    uint8_t quizz_generated;
 }
 QuestInfo;
 

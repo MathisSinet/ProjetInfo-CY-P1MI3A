@@ -53,28 +53,43 @@ void initcurses(DisplayInfo *di)
 //Initializes the main menu interface
 void init_mainmenu(DisplayInfo *di)
 {
+    int y,i;
     // Load ASCII art
     char *ascii_art =
-        "::::::::    ::::::::    ::::::::    ::::    ::::   :::::::::::  ::::::::        :::   :::   ::::::::   ::::    :::  :::::::::   ::::::::::  :::::::::  \n"
-        ":+:    :+:  :+:     :+:  :+:    :+:  +:+:+: :+:+:+      :+:     :+:    :+:       :+:   :+:  :+:    :+:  :+:+:   :+:  :+:    :+:  :+:         :+:    :+: \n"
-        "+:+         +:+     +:+  +:+         +:+ +:+:+ +:+      +:+     +:+               +:+ +:+   +:+    +:+  :+:+:+  +:+  +:+    +:+  +:+         +:+    +:+ \n"
-        "+#+         +#+     +:+  +#++:++#++  +#+  +:+  +#+      +#+     +#+                +#++:    +#+    +:+  +#+ +:+ +#+  +#+    +:+  +#++:++#    +#++:++#:  \n"
-        "+#+         +#+     +#+         +#+  +#+       +#+      +#+     +#+                 +#+     +#+    +#+  +#+  +#+#+#  +#+    +#+  +#+         +#+    +#+ \n"
-        "#+#    #+#  #+#     #+#  #+#    #+#  #+#       #+#      #+#     #+#    #+#          #+#     #+#    #+#  #+#   #+# #  +#    #+#   #+#         #+#    #+# \n"
-        " ########    ########    ########    ###       ###  ###########  ########           ###      ########   ###    ####  #########   ##########  ###    ### \n";
+        " ::::::::    ::::::::    ::::::::    ::::    ::::   :::::::::::  ::::::::        :::   :::   ::::::::   ::::    :::  :::::::::   ::::::::::  ::::::::: \n"
+        ":+:    :+:  :+:     :+:  :+:    :+:  +:+:+: :+:+:+      :+:     :+:    :+:       :+:   :+:  :+:    :+:  :+:+:   :+:  :+:    :+:  :+:         :+:    :+:\n"
+        "+:+         +:+     +:+  +:+         +:+ +:+:+ +:+      +:+     +:+               +:+ +:+   +:+    +:+  :+:+:+  +:+  +:+    +:+  +:+         +:+    +:+\n"
+        "+#+         +#+     +:+  +#++:++#++  +#+  +:+  +#+      +#+     +#+                +#++:    +#+    +:+  +#+ +:+ +#+  +#+    +:+  +#++:++#    +#++:++#: \n"
+        "+#+         +#+     +#+         +#+  +#+       +#+      +#+     +#+                 +#+     +#+    +#+  +#+  +#+#+#  +#+    +#+  +#+         +#+    +#+\n"
+        "#+#    #+#  #+#     #+#  #+#    #+#  #+#       #+#      #+#     #+#    #+#          #+#     #+#    #+#  #+#   #+# #  +#    #+#   #+#         #+#    #+#\n"
+        " ########    ########    ########    ###       ###  ###########  ########           ###      ########   ###    ####  #########   ##########  ###    ###\n";
 
     // Calculate the number of lines in the ASCII art
-    int num_lines = 12;
+    int num_lines = 7;
     int num_char_line = 151;
     // Calculate position to center ASCII horizontally
     int start_x = (di->width - num_char_line) / 2;
 
     // Generate a new box for ASCII ART
-    di->box1 = newwin(num_lines + 2, num_char_line, 3, start_x);
+    di->box1 = newwin(num_lines+1, di->width, 3, start_x);
 
     // Print ASCII art
     wattron(di->box1, COLOR_PAIR(PAIR_CYAN));
-    mvwprintw(di->box1, 1, 1, "%s", ascii_art);
+    i = 0;
+    y = 1;
+    wmove(di->box1, 1, start_x);
+    while (ascii_art[i] && di->width+2 > num_char_line)
+    {
+        if (ascii_art[i] != '\n')
+        {
+            wprintw(di->box1, "%c", ascii_art[i]);
+        }
+        else
+        {
+            wmove(di->box1, ++y, start_x);
+        }
+        i++;
+    }
     wattroff(di->box1, COLOR_PAIR(PAIR_CYAN));
     wrefresh(di->box1);
 
@@ -300,7 +315,10 @@ void bottom_panel_update(Region *reg, Player *pl, WINDOW *win)
     wattron(win, A_BOLD);
     mvwprintw(win, 1, 2, "Objectifs :");
     wattroff(win, A_BOLD);
-    mvwaddwstr(win, 2, 2, L"Objets à récupérer : ");
+    mvwaddwstr(win, 2, 2, L"Objets à récupérer : 🧸");
+    waddstr(win, reg->questinfo.is_teddybear_found ? "[X]" : "[ ]");
+    waddwstr(win, L"  ⚽");
+    waddstr(win, reg->questinfo.is_ball_found ? "[X]" : "[ ]");
     mvwaddwstr(win, 3, 2, L"Quiz à terminer : ");
     mvwaddwstr(win, 4, 2, L"Monstres à éliminer : ");
     wprintw(win, "%d/%d", reg->questinfo.monsters_killed, GOAL_MONSTER_KILLS);
@@ -483,7 +501,10 @@ void update_map(DisplayInfo *di, Region *reg, Player *pl)
     getmaxyx(win, h, w);
     h-=3; w-=2;
     new_wclear(win);
-    mvwprintw(win, row++, 2, "x=%d, y=%d, grid width=%d, grid height=%d, remain=%.1f", pl->loc.x, pl->loc.y, reg->grid_width, reg->grid_height, reg->deathtimer);
+    reg->deathtimer < DEFAULT_DEATH_TIMER / 10 ? wattron(win, COLOR_PAIR(PAIR_RED)) : 0;
+    mvwprintw(win, row++, 2, "%.f secondes avant ", reg->deathtimer);
+    waddwstr(win, L"épuisement de l'oxygène de la station");
+    reg->deathtimer < DEFAULT_DEATH_TIMER / 10 ? wattroff(win, COLOR_PAIR(PAIR_RED)) : 0;
     
     for (int y=pl->loc.y-h/2; y<pl->loc.y+h/2; y++)
     {
@@ -558,30 +579,33 @@ void lore_screen(DisplayInfo *di, WINDOW* lore_box)
     new_wclear(lore_box);
     // Adjust the cursor position to start just below the top left corner of the box
     int i=0, y, x;
-    getyx(lore_box, y, x);
-    wmove(lore_box, y+1, x+2);
-    int ligne_courante = y + 1;
+    int wheight, wwidth;
+    getmaxyx(lore_box, wheight, wwidth);
+    
+    y = 1; x = 2;
+    wmove(lore_box, y, x);
 
     // Print the text line by line with a delay
-    char chaine[1000] = "salut salut salut\nsalut salut salut\nsalut salut";
+    char chaine[1000] = "yo";
         while(chaine[i] != '\0')
         {
-            if(chaine[i] == '\n')
+            if(chaine[i] == '\n' || x >= wwidth-3)
             {
-                ligne_courante++;
-                wmove(lore_box, ligne_courante, x+2);
+                y++; x=2;
+                wmove(lore_box, y, x);
             }
             else
             {
                 // Print the character
                 wprintw(lore_box, "%c", chaine[i]);
+                x++;
             }
             wrefresh(lore_box);
             usleep(9500);
             i++;
         }
 
-    wmove(lore_box, LINES/2 - 2, 2);
+    wmove(lore_box, wheight-2, 2);
     wprintw(lore_box, "Appuyez sur une touche pour continuer...");
     wgetch(lore_box);
 }
@@ -590,38 +614,55 @@ void lore_screen(DisplayInfo *di, WINDOW* lore_box)
 //Display the win screen
 void win_screen(DisplayInfo *di, Player *pl)
 {
+    int y,i;
+    char buffer[100];
     char *ascii_art =
-":::     :::  :::::::::::  ::::::::  :::::::::::  ::::::::  :::::::::::  :::::::::   :::::::::: \n"
-" :+:     :+:      :+:     :+:    :+:     :+:     :+:    :+:     :+:      :+:    :+:  :+:        \n"
-" +:+     +:+      +:+     +:+            +:+     +:+    +:+     +:+      +:+    +:+  +:+        \n"
-" +#+     +:+      +#+     +#+            +#+     +#+    +:+     +#+      +#++:++#:   +#++:++#   \n"
-"  +#+   +#+       +#+     +#+            +#+     +#+    +#+     +#+      +#+    +#+  +#+        \n"
-"   #+#+#+#        #+#     #+#    #+#     #+#     #+#    #+#     #+#      #+#    #+#  #+#        \n"
-"     ###      ###########  ########      ###      ########  ###########  ###    ###  ########## \n";
+":::     :::  :::::::::::  ::::::::  :::::::::::  ::::::::  :::::::::::  :::::::::   ::::::::::\n"
+":+:     :+:      :+:     :+:    :+:     :+:     :+:    :+:     :+:      :+:    :+:  :+:       \n"
+"+:+     +:+      +:+     +:+            +:+     +:+    +:+     +:+      +:+    +:+  +:+       \n"
+"+#+     +:+      +#+     +#+            +#+     +#+    +:+     +#+      +#++:++#:   +#++:++#  \n"
+" +#+   +#+       +#+     +#+            +#+     +#+    +#+     +#+      +#+    +#+  +#+       \n"
+"  #+#+#+#        #+#     #+#    #+#     #+#     #+#    #+#     #+#      #+#    #+#  #+#       \n"
+"    ###      ###########  ########      ###      ########  ###########  ###    ###  ##########\n";
 
     // Calculate the number of lines in the ASCII art
-    int num_lines = 11;
-    int num_char_line = 95;
+    int num_lines = 7;
+    int num_char_line = 94;
     // Calculate position to center ASCII horizontally
     int start_x = (di->width - num_char_line) / 2;
 
     // Generate a new box for ASCII ART
-    WINDOW* win_box = newwin(num_lines + 2, num_char_line, 3, start_x);
+    WINDOW* win_box = newwin(2*num_lines + 6, di->width, 3, 0);
 
     // Print ASCII art
     wattron(win_box, COLOR_PAIR(PAIR_GREEN));
-    mvwprintw(win_box, 1, 1, "%s", ascii_art);
+    i = 0;
+    y = 1;
+    wmove(win_box, 1, start_x);
+    while (ascii_art[i] && di->width+2 > num_char_line)
+    {
+        if (ascii_art[i] != '\n')
+        {
+            wprintw(win_box, "%c", ascii_art[i]);
+        }
+        else
+        {
+            wmove(win_box, ++y, start_x);
+        }
+        i++;
+    }
     wattroff(win_box, COLOR_PAIR(PAIR_GREEN));
     wrefresh(win_box);
 
     // Displays a sentence depending on the cause of the player win
-    int lenght = strlen("Felicitations, vous avez triomphe des monstres.. appuyez sur une touche pour continuer");
-    int x = 3 + num_lines + 4;
-    int y = start_x + (num_char_line - lenght) / 2;
+    y = 2*num_lines + 2;
 
-    mvprintw(x, y, "Votre courage a ete vain, les monstres ont triomphe.. appuyez sur une touche pour continuer");
-    mvprintw(x+2, (y + lenght/2) - 5, "XP obtenue : %d", pl->xp);
-    mvprintw(x+3, (y + lenght/2) - 9, "Nombre de mort(s) : %d", pl->nb_of_death);
+    mvwaddwstr(win_box, y, (di->width-48)/2, L"Félicitations, vous avez triomphé des monstres !");
+    mvwaddwstr(win_box, y+1, (di->width-76)/2, L"La station est réparée, vous continuez sain et sauf votre recherche spatiale");
+    snprintf(buffer, 100, "XP obtenue : %d", pl->xp);
+    mvwaddstr(win_box, y+2, (di->width-strlen(buffer)-1)/2, buffer);
+    snprintf(buffer, 100, "Nombre de mort(s) : %d", pl->death_count);
+    mvwaddstr(win_box, y+3, (di->width-strlen(buffer)-1)/2, buffer);
     refresh();
 
     wgetch(win_box);
@@ -632,51 +673,66 @@ void win_screen(DisplayInfo *di, Player *pl)
 //Display the game over screen
 void death_screen(DisplayInfo *di, Player *pl, int cause_of_death)
 {
+    int y,i;
+    char buffer[100];
     char *ascii_art =
-        "::::::::       :::      ::::    ::::   ::::::::::       ::::::::   :::     :::  ::::::::::  :::::::::  \n"
-        ":+:    :+:    :+: :+:    +:+:+: :+:+:+  :+:             :+:    :+:  :+:     :+:  :+:         :+:    :+: \n"
-        "+:+          +:+   +:+   +:+ +:+:+ +:+  +:+             +:+    +:+  +:+     +:+  +:+         +:+    +:+ \n"
-        ":#:         +#++:++#++:  +#+  +:+  +#+  +#++:++#        +#+    +:+  +#+     +:+  +#++:++#    +#++:++#:  \n"
-        "+#+   +#+#  +#+     +#+  +#+       +#+  +#+             +#+    +#+   +#+   +#+   +#+         +#+    +#+ \n"
-        "#+#    #+#  #+#     #+#  #+#       #+#  #+#             #+#    #+#    #+#+#+#    #+#         #+#    #+# \n"
-        " ########   ###     ###  ###       ###  ##########       ########       ###      ##########  ###    ### \n";
+        " ::::::::       :::      ::::    ::::   ::::::::::       ::::::::   :::     :::  ::::::::::  ::::::::: \n"
+        ":+:    :+:    :+: :+:    +:+:+: :+:+:+  :+:             :+:    :+:  :+:     :+:  :+:         :+:    :+:\n"
+        "+:+          +:+   +:+   +:+ +:+:+ +:+  +:+             +:+    +:+  +:+     +:+  +:+         +:+    +:+\n"
+        ":#:         +#++:++#++:  +#+  +:+  +#+  +#++:++#        +#+    +:+  +#+     +:+  +#++:++#    +#++:++#: \n"
+        "+#+   +#+#  +#+     +#+  +#+       +#+  +#+             +#+    +#+   +#+   +#+   +#+         +#+    +#+\n"
+        "#+#    #+#  #+#     #+#  #+#       #+#  #+#             #+#    #+#    #+#+#+#    #+#         #+#    #+#\n"
+        " ########   ###     ###  ###       ###  ##########       ########       ###      ##########  ###    ###\n";
 
     // Calculate the number of lines in the ASCII art
-    int num_lines = 12;
+    int num_lines = 7;
     int num_char_line = 103;
     // Calculate position to center ASCII horizontally
     int start_x = (di->width - num_char_line) / 2;
 
     // Generate a new box for ASCII ART
-    WINDOW* gameover_box = newwin(num_lines + 2, num_char_line, 3, start_x);
+    WINDOW* gameover_box = newwin(2*num_lines + 6, di->width, 3, 0);
 
     // Print ASCII art
     wattron(gameover_box, COLOR_PAIR(PAIR_RED));
-    mvwprintw(gameover_box, 1, 1, "%s", ascii_art);
+    i = 0;
+    y = 1;
+    wmove(gameover_box, 1, start_x);
+    while (ascii_art[i] && di->width+2 > num_char_line)
+    {
+        if (ascii_art[i] != '\n')
+        {
+            wprintw(gameover_box, "%c", ascii_art[i]);
+        }
+        else
+        {
+            wmove(gameover_box, ++y, start_x);
+        }
+        i++;
+    }
     wattroff(gameover_box, COLOR_PAIR(PAIR_RED));
     wrefresh(gameover_box);
 
     // Displays a sentence depending on the cause of the player death
-    int x = 3 + num_lines + 4;
-    int y, lenght;
+    y = 2*num_lines + 2;
 
     switch (cause_of_death)
     {
     case 1:
-        lenght = strlen("Votre courage a ete vain, les monstres ont triomphe.. appuyez sur une touche pour continuer");
-        y = start_x + (num_char_line - lenght ) / 2;
-        mvprintw(x, y, "Votre courage a ete vain, les monstres ont triomphe.. appuyez sur une touche pour continuer");
-        mvprintw(x+2, (y + lenght/2) - 5, "XP obtenue : %d", pl->xp);
-        mvprintw(x+3, (y + lenght/2) - 9, "Nombre de mort(s) : %d", pl->nb_of_death);
-        refresh();
+        mvwaddwstr(gameover_box, y, (di->width-92)/2, L"Votre courage a été vain, les monstres ont triomphé... Appuyez sur une touche pour continuer");
+        snprintf(buffer, 100, "XP obtenue : %d", pl->xp);
+        mvwaddstr(gameover_box, y+2, (di->width-strlen(buffer)-1)/2, buffer);
+        snprintf(buffer, 100, "Nombre de mort(s) : %d", pl->death_count);
+        mvwaddstr(gameover_box, y+3, (di->width-strlen(buffer)-1)/2, buffer);
+        wrefresh(gameover_box);
         break;
     case 2:
-        lenght = strlen("Vous n'avez plus d'oxygene.. appuyez sur une touche pour continuer");
-        y = start_x + (num_char_line - lenght) / 2;
-        mvprintw(x, y, "Vous n'avez plus d'oxygene.. appuyez sur une touche pour continuer");
-        mvprintw(x+2, (y + lenght/2) - 5, "XP obtenue : %d", pl->xp);
-        mvprintw(x+3, (y + lenght/2) - 9, "Nombre de mort(s) : %d", pl->nb_of_death);
-        refresh();
+        mvwaddwstr(gameover_box, y, (di->width-66)/2, L"Vous n'avez plus d'oxygène.. Appuyez sur une touche pour continuer");
+        snprintf(buffer, 100, "XP obtenue : %d", pl->xp);
+        mvwaddstr(gameover_box, y+2, (di->width-strlen(buffer)-1)/2, buffer);
+        snprintf(buffer, 100, "Nombre de mort(s) : %d", pl->death_count);
+        mvwaddstr(gameover_box, y+3, (di->width-strlen(buffer)-1)/2, buffer);
+        wrefresh(gameover_box);
         break;
     }
 

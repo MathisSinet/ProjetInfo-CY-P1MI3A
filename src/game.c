@@ -1,5 +1,11 @@
+/*
+game.h
+Contains functions to allow the player and monsters to move and attack
+Also contains the item pickup code
+*/
+
+
 #include "game.h"
-#include "quest.h"
 #include "display.h"
 
 
@@ -33,6 +39,12 @@ void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
     //content of the destination tile
     dest_content = *get_from_grid(reg, newco.x, newco.y);
 
+    //allows movement if the destination square is empty
+    if (dest_content == VOID)
+    {
+        pl->loc = newco;
+    }
+
     //item pickup
     set_itemptr(pl->loc, pl, pl->currentroom, &itemptr);
     if (itemptr)
@@ -59,31 +71,34 @@ void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
         case QUEST:
             if(itemptr->index == ITEM_QUEST_QUIZZ)
             {
-                quizz(pl, reg, di);
-                itemptr->exists = false;
+                if (quizz(pl, reg, di, reg->questinfo.quizz_done+1))
+                {
+                    itemptr->exists = false;
+                    reg->questinfo.quizz_done++;
+                }
             }
             if(itemptr->index == ITEM_QUEST_TEDDYBEAR)
             {
+                new_wclear(di->box2);
                 mvwprintw(di->box2, 1, 2, "Vous avez trouvé l'ours en peluche !");
                 wrefresh(di->box2);
+                us_sleep(500*1000);
                 wgetch(di->box2);
                 itemptr->exists = false;
+                reg->questinfo.is_teddybear_found = true;
             }
             if(itemptr->index == ITEM_QUEST_BALL)
             {
+                new_wclear(di->box2);
                 mvwprintw(di->box2, 1, 2, "Vous avez trouvé le ballon !");
                 wrefresh(di->box2);
+                us_sleep(500*1000);
                 wgetch(di->box2);
                 itemptr->exists = false;
+                reg->questinfo.is_ball_found = true;
             }
             break;
         }
-    }
-
-    //allows movement if the destination square is empty
-    if (dest_content == VOID)
-    {
-        pl->loc = newco;
     }
 
     //code when the player enters a door
@@ -131,6 +146,34 @@ void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
 }
 
 
+//Player's attack
+void playerattack(Region *reg, Player *pl)
+{
+    //Room *room = pl->currentroom;
+    MonsterInRoom *monsterptr;
+    if (pl->atkdelay > 0.0)
+    {
+        return;
+    }
+    pl->atkdelay = PLAYER_BASE_ATKDELAY;
+    for (int16_t x=pl->loc.x-2; x<=pl->loc.x+2; x++)
+    {
+        for (int16_t y=pl->loc.y-2; y<=pl->loc.y+2; y++)
+        {
+            set_monsterptr(coordinates(x,y), pl, pl->currentroom, &monsterptr);
+            if (monsterptr)
+            {
+                monsterptr->hp -= pl->atk;
+            }
+        }
+    }
+}
+
+
+/*__________MONSTERS' ACTIONS__________*/
+
+
+//Moves one monster in the corresponding direction
 void monstermove_one(Region *reg, Player *pl, Room *room, MonsterInRoom *monsterptr, Pole pole)
 {
     Co newco = monsterptr->loc;
@@ -180,6 +223,7 @@ void monstermove_random(Region *reg, Player *pl, Room *room, MonsterInRoom *mons
     monstermove_one(reg, pl, room, monsterptr, rand()%4);
 }
 
+//Moves the given monster towards the player
 void monstermove_towardsplayer(Region *reg, Player *pl, Room *room, MonsterInRoom *monsterptr)
 {
     if (rand()%2)
@@ -207,7 +251,7 @@ void monstermove_towardsplayer(Region *reg, Player *pl, Room *room, MonsterInRoo
 }
 
 
-//Function for the movement of the monsters
+//Moves the monsters in the current room
 void monstermove(Region *reg, Player *pl, double diff)
 {
     Room *room = pl->currentroom;
@@ -262,31 +306,7 @@ void monstermove(Region *reg, Player *pl, double diff)
 }
 
 
-//Player's attack
-void playerattack(Region *reg, Player *pl)
-{
-    //Room *room = pl->currentroom;
-    MonsterInRoom *monsterptr;
-    if (pl->atkdelay > 0.0)
-    {
-        return;
-    }
-    pl->atkdelay = PLAYER_BASE_ATKDELAY;
-    for (int16_t x=pl->loc.x-2; x<=pl->loc.x+2; x++)
-    {
-        for (int16_t y=pl->loc.y-2; y<=pl->loc.y+2; y++)
-        {
-            set_monsterptr(coordinates(x,y), pl, pl->currentroom, &monsterptr);
-            if (monsterptr)
-            {
-                monsterptr->hp -= pl->atk;
-            }
-        }
-    }
-}
-
-
-
+//Makes the given monster try to attack the player
 void monsterattack_one(Region *reg, Player *pl, MonsterInRoom *monster, double diff)
 {
     Monster monster_data;
@@ -325,7 +345,7 @@ void monsterattack_one(Region *reg, Player *pl, MonsterInRoom *monster, double d
 }
 
 
-
+//Makes the monsters in the current room try to attack the player
 void monsterattack(Region *reg, Player *pl, double diff)
 {
     if (pl->currentroom->monster1.exists && pl->currentroom->monster1.hp > 0)
@@ -339,17 +359,18 @@ void monsterattack(Region *reg, Player *pl, double diff)
 }
 
 
-//Display the death screen and returns to the menu
+//Display the death screen and run the death routine
 void death(Region *reg, Player *pl, DisplayInfo *di, int cause_of_death)
 {
     end_gameui(di);
 
-    pl->nb_of_death++;
+    pl->death_count++;
     death_screen(di, pl, cause_of_death);
 
     pl->hp = PLAYER_BASE_HP;
     pl->xp = 0;
     pl->loc = coordinates(0, 0);
+    pl->weapon = ITEM_BASE_WEAPON;
 
     pl->currentroom = reg->roomlist[0];
 
@@ -358,7 +379,7 @@ void death(Region *reg, Player *pl, DisplayInfo *di, int cause_of_death)
 }
 
 
-//Display the win screen and returns to the menu
+//Display the win screen
 void win(Region *reg, Player *pl, DisplayInfo *di)
 {
     end_gameui(di);

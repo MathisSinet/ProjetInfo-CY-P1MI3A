@@ -20,6 +20,7 @@ int save(FILE *savefile, Region *reg, Player *pl)
     playersave.xp = pl->xp;
     playersave.atk = pl->atk;
     playersave.def = pl->def;
+    playersave.death_count = pl->death_count;
     playersave.atkdelay = pl->atkdelay;
     playersave.loc = pl->loc;
     playersave.weapon = pl->weapon;
@@ -244,6 +245,7 @@ int load(char *name, Region *reg, Player *pl)
     pl->xp = playersave.xp;
     pl->atk = playersave.atk;
     pl->def = playersave.def;
+    pl->death_count = playersave.death_count;
     pl->atkdelay = playersave.atkdelay;
     pl->loc = playersave.loc;
     pl->weapon = playersave.weapon;

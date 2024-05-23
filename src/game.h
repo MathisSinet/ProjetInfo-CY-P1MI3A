@@ -1,3 +1,9 @@
+/*
+game.h
+Contains functions to allow the player and monsters to move and attack
+Also contains the item pickup code
+*/
+
 #ifndef GAME_HEADER
 #define GAME_HEADER
 
@@ -5,6 +11,7 @@
 #include "monster.h"
 #include "mapgen.h"
 #include "save.h"
+#include "quest.h"
 
 //handles the movement of a player
 void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di);

@@ -378,6 +378,8 @@ void initial_map(Region* reg, Player *pl)
     reg->questinfo.is_ball_found = false;
     reg->questinfo.is_teddybear_generated = false;
     reg->questinfo.is_teddybear_found = false;
+    reg->questinfo.quizz_done = 0;
+    reg->questinfo.quizz_generated = 0;
 
     reg->questinfo.monsters_killed = 0;
 
@@ -422,7 +424,7 @@ void initial_map(Region* reg, Player *pl)
     pl->def = 10;
     pl->inv_size = 0;
     pl->atkdelay = 0.0;
-    pl->nb_of_death = 0;
+    pl->death_count = 0;
 
     pl->weapon = ITEM_BASE_WEAPON;
 }
@@ -779,6 +781,24 @@ void fill_item(Region *reg, Room *room, ItemInRoom *item){
     int16_t loot = randint(reg, 1, 1000);
 
     item->exists = true;
+    if (!reg->questinfo.is_ball_generated && loot <= 50 + 1200*(int)((double)reg->generated_rooms/MAX_ROOM_COUNT))
+    {
+        item->index = ITEM_QUEST_BALL;
+        reg->questinfo.is_ball_generated = true;
+        return;
+    }
+    if (!reg->questinfo.is_teddybear_generated && loot <= 50 + 1200*(int)((double)reg->generated_rooms/MAX_ROOM_COUNT))
+    {
+        item->index = ITEM_QUEST_TEDDYBEAR;
+        reg->questinfo.is_teddybear_generated = true;
+        return;
+    }
+    if (reg->questinfo.quizz_generated < 3 && loot <= 40*(3-reg->questinfo.quizz_generated) + 1200*(int)((double)reg->generated_rooms/MAX_ROOM_COUNT))
+    {
+        item->index = ITEM_QUEST_QUIZZ;
+        reg->questinfo.quizz_generated++;
+        return;
+    }
     if (loot > 0)
     {
         item->index = ITEM_HEAL1;

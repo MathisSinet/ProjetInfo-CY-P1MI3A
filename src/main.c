@@ -61,7 +61,6 @@ void NewGame(DisplayInfo *di, Region *reg, Player *pl)
     initial_map(reg, pl);
 
     lore_screen(di, win);
-    end_mainmenu(di);
 }
 
 
@@ -168,7 +167,7 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
             death(reg, pl, di, 2);
             break;
         }
-        if (false)
+        if (check_quests(reg, pl))
         {
             win(reg, pl, di);
             break;
@@ -201,14 +200,15 @@ int main(int argc, char **argv)
 
 
     initcurses(&di);
-
     init_mainmenu(&di);
+
     while(true)
     {
         switch (MainMenu(&di))
         {
             case MAIN_MENU_NEW:
                 NewGame(&di, &reg, &pl);
+                end_mainmenu(&di);
                 init_gameui(&di);
                 Game(&di, &reg, &pl);
                 end_gameui(&di);
@@ -231,7 +231,6 @@ int main(int argc, char **argv)
                 break;
         }
     }
-    
     
     endwin();
     

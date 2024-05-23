@@ -4,7 +4,7 @@
 #include "gamebasic.h"
 #include "display.h"
 
-void quizz(Player* pl, Region* reg, DisplayInfo* di);
-void check_quests();
+bool quizz(Player* pl, Region* reg, DisplayInfo* di, uint8_t quizz_id);
+bool check_quests(Region* reg, Player* pl);
 
 #endif

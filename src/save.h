@@ -18,6 +18,7 @@ struct PlayerSave
     int32_t xp;
     int32_t atk;
     int32_t def;
+    int32_t death_count;
     double atkdelay;
     Co loc;
     ItemIndex weapon;
