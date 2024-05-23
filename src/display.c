@@ -71,7 +71,7 @@ void init_mainmenu(DisplayInfo *di)
     int start_x = (di->width - num_char_line) / 2;
 
     // Generate a new box for ASCII ART
-    di->box1 = newwin(num_lines+1, di->width, 3, start_x);
+    di->box1 = newwin(num_lines+1, di->width, 3, 0);
 
     // Print ASCII art
     wattron(di->box1, COLOR_PAIR(PAIR_CYAN));
@@ -320,6 +320,7 @@ void bottom_panel_update(Region *reg, Player *pl, WINDOW *win)
     waddwstr(win, L"  ⚽");
     waddstr(win, reg->questinfo.is_ball_found ? "[X]" : "[ ]");
     mvwaddwstr(win, 3, 2, L"Quiz à terminer : ");
+    wprintw(win, "%d/3", reg->questinfo.quizz_done);
     mvwaddwstr(win, 4, 2, L"Monstres à éliminer : ");
     wprintw(win, "%d/%d", reg->questinfo.monsters_killed, GOAL_MONSTER_KILLS);
 

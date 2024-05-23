@@ -74,7 +74,6 @@ void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
                 if (quizz(pl, reg, di, reg->questinfo.quizz_done+1))
                 {
                     itemptr->exists = false;
-                    reg->questinfo.quizz_done++;
                 }
             }
             if(itemptr->index == ITEM_QUEST_TEDDYBEAR)

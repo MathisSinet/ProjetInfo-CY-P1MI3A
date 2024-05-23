@@ -23,22 +23,20 @@ Pour nettoyer les fichiers de construction, utiliser `make clean`
 Lors du lancement du programme, vous vous retrouverez dans un menu principal proposant 3 options :
     - Lancer une nouvelle partie
     - Charger une partie
-    - Quitter la partie 
+    - Quitter la partie
 
 - Lorsque vous choisissez l'option `Lancer la partie`, le programme vous demandera le nom que vous voulez donner au personnage ainsi que la seed. Une histoire se lancera par la suite. Puis, vous allez incarner un personnage qui devra défendre sa station spatiale. Pour cela, vous devez accomplir 3 quêtes:
-    - Ramasser une peluche et un ballon de foot (ces objets ont un rapport avec la vie de votre personnage)
-    - Tuer un certains nombre de monstres
-    - Répondre à 3 questions de type quizz en rapport avec le programme d'informatique du 2e semestre (chaque question aura un niveau de difficulté différent). Ces questions ont le même style que les quizz sur le Moodle de CY Tech.
+- Ramasser une peluche et un ballon de foot (ces objets ont un rapport avec la vie de votre personnage)
+- Tuer un certains nombre de monstres
+- Répondre à 3 questions de type quizz en rapport avec le programme d'informatique du 2e semestre (chaque question aura un niveau de difficulté différent). Ces questions ont le même style que les quizz sur le Moodle de CY Tech.
 
-Vous avez 10 minutes pour finir la partie. Durant la partie, vous pouvez la sauvegarder avec la touche `W`. Vous pouvez également avoir la liste des commandes avec la touche `C`. 
+Vous avez 10 minutes pour finir la partie. Durant la partie, vous pouvez la sauvegarder avec la touche `W`. Vous pouvez également avoir la liste des commandes avec la touche `C`.
 
 Si vous mourrez avant le temps imparti, un message apparaîtra sur l'écran disant que vous vous êtes fait tué. Dans le cas contraire :
     - Si vous arrivez à accomplir les quêtes avant le temps imparti, un message apparaîtra indiquant que vous aurez gagné.
     - Sinon, un message apparaîtra indiquant que vous aurez échoué.
 
-
 - Lorsque vous choisissez l'option `Charger une partie`, le programme vous demandera de saisir le nom du joueur. Si le programme trouve une sauvegarde au nom que vous avez saisi, la partie se lancera avec tout ce que vous avez au moment de la sauvegarde (inventaire, points de vie, défense, avancement des quêtes). Dans le cas contraire, un message s'affichera indiquant qu'il y a aucune sauvegarde au nom que vous avez saisi. Le porgramme vous renverra donc au menu principal.
-
 
 - Lorsque vous choisissez l'option `Quitter la partie`, le programme s'arrêtera.
 
@@ -62,7 +60,7 @@ La partie `quest.c` correspond à la génération des quizz.
 
 La partie `save.c` correspond à la gestion des sauvegardes des parties.
 
-La partie `settings.c` contient toutes les constantes utilisées dans le programme. 
+La partie `settings.c` contient toutes les constantes utilisées dans le programme.
 
 ## Bibliothèques utilisées
 

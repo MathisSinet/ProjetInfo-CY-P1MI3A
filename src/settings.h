@@ -8,8 +8,8 @@ Header to define general constants used by the program
 
 /*__________DISPLAY SETTINGS__________*/
 
-#define MIN_TERMINAL_WIDTH 70
-#define MIN_TERMINAL_HEIGHT 30
+#define MIN_TERMINAL_WIDTH 75
+#define MIN_TERMINAL_HEIGHT 34
 
 /*__________ROOM GENERATION PARAMETERS__________*/
 

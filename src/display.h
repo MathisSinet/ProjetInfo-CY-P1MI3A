@@ -3,7 +3,7 @@ display.h
 Display features of the game
 */
 
-//Minimum terminal size : 70x30
+//Minimum terminal size : 75x34
 //Recommended terminal size : 100x35
 
 
