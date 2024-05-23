@@ -606,43 +606,45 @@ void lore_screen(DisplayInfo *di, WINDOW* lore_box)
     new_wclear(lore_box);
     // Adjust the cursor position to start just below the top left corner of the box
     int i=0, y, x;
-    getyx(lore_box, y, x);
-    wmove(lore_box, y+1, x+2);
-    int ligne_courante = y + 1;
+    int wheight, wwidth;
+    getmaxyx(lore_box, wheight, wwidth);
+
+    y = 1; x = 2;
+    wmove(lore_box, y, x);
 
     char chaine[1000] = "Nous sommes en 2180. Vous incarnez un pionnier de l'espace envoyé par la NASA à bord de sa station spatiale "
-                        "parcourant\nl'immensité du vide. Lorsque vous arrivez sur une planète encore inexplorée, votre base est attaquée par des êtres\nd'origine "
-                        "inconnue. Votre mission est de réaliser des tâches de maintenance de votre station tout en combattant des\nmenaces biologiques mystérieuses,"
-                        "afin de rester en vie. La station est un avant-poste crucial pour l'exploration de\nl'espace et la recherche scientifique. Ainsi, toute "
-                        "défaillance pourrait compromettre les données précieuses collectées\net mettre fin à cette mission vitale. Dans cette lutte pour la survie et "
-                        "la préservation de votre vaisseau, des objets\nsinguliers vous rappellent des souvenirs de votre vie passée sur Terre, les récupérer renforcera "
+                        "parcourant l'immensité du vide, lorsque vous arrivez sur une planète encore inexplorée, votre base est attaquée par des êtres d'origine "
+                        "inconnue. Votre mission est de réaliser des tâches de maintenance de votre station tout en combattant des menaces biologiques mystérieuses, "
+                        "afin de rester en vie. \nLa station est un avant-poste crucial pour l'exploration de l'espace et la recherche scientifique. Ainsi, toute "
+                        "défaillance pourrait compromettre les données précieuses collectées et mettre fin à cette mission vitale. \nDans cette lutte pour la survie et "
+                        "la préservation de votre vaisseau, des objets singuliers vous rappellent des souvenirs de votre vie passée sur Terre, les récupérer renforcera "
                         "votre humanité. ";
-        // Print the text line by line with a delay
-        while(chaine[i] != '\0')
+    // Print the text line by line with a delay
+    nodelay(lore_box, true);
+    while(chaine[i] != '\0')
+    {
+        if(chaine[i] == '\n' || (chaine[i] == ' ' && x > wwidth-12))
         {
-            if(chaine[i] == '\n')
-            {
-                ligne_courante++;
-                wmove(lore_box, ligne_courante, x+2);
-            }
-            else
-            {
-                // Print the character
-                wprintw(lore_box, "%c", chaine[i]);
-            }
-            wrefresh(lore_box);
-            usleep(10000);
-            i++;
-
-            nodelay(lore_box, TRUE);
-            if (wgetch(lore_box) != ERR)
-            {
-                // If a key is pressed, break the loop
-                break;
-            }
+            y++; x=2;
+            wmove(lore_box, y, x);
         }
-
-    wmove(lore_box, LINES/2 - 2, 2);
+        else
+        {
+            // Print the character
+            wprintw(lore_box, "%c", chaine[i]);
+            x++;
+        }
+        if (wgetch(lore_box) != ERR)
+        {
+            // If a key is pressed, break the loop
+            break;
+        }
+        wrefresh(lore_box);
+        usleep(15000);
+        i++;
+    }
+    nodelay(lore_box, false);
+    wmove(lore_box, wheight-2, 2);
     wprintw(lore_box, "Appuyez sur une touche pour continuer...");
     wgetch(lore_box);
 }
