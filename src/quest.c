@@ -122,3 +122,78 @@ bool quizz1(Player* pl, Region* reg, WINDOW* win)
     
     return nb_success == 2;
 }
+
+bool quizz2(Player* pl, Region* reg, WINDOW* win)
+{
+    char pl_answer1[5], pl_answer2[5], answer1[5], answer2[5];
+    uint8_t style1 = randint(reg, 0, 2);
+    uint8_t style2 = randint(reg, 0, 2);
+    uint16_t val1 = randint(reg, 0, 1000);
+    uint16_t val2 = randint(reg, 0, 1000);
+    char *equals[3] = {"=", "+=", "-="};
+    uint16_t nb_success = 0;
+
+    if (style2 == 0)
+    {
+        snprintf(answer1, 5, "%u", val2);
+    }
+    else
+    {
+        strncpy(answer1, "?", 2);
+    }
+    if (style1 == 0)
+    {
+        snprintf(answer2, 5, "%u", val1);
+    }
+    else
+    {
+        strncpy(answer2, "?", 2);
+    }
+
+    mvwprintw(win, 4, 2, "int func(int N, int M){");
+    mvwprintw(win, 5, 2, "    int res = 0;");
+    ///mvwprintw(win, 6, 2, "    for (int i=0; i<N; i++){");
+    ///mvwprintw(win, 7, 2, "      for (int j=0; j<M; j+=M/5){;");
+    mvwprintw(win, 9, 2, "          res+=1");
+    mvwprintw(win, 10, 2, "     }");
+    mvwprintw(win, 11, 2, "   }");
+    mvwprintw(win, 12, 2, "   return res;");
+    mvwaddstr(win, 13, 2, "}");
+    mvwprintw(win, 15, 2, "int main(){");
+    mvwprintw(win, 16, 2, "   int N, M;");
+    ///mvwprintw(win, 17, 2, "   printf(\"%d"\, func(N,M))");
+
+    mvwaddwstr(win, 19, 2, L"Si le programme tente d'afficher une valeur non initialisée, répondez '?'");
+
+    curs_set(1);
+    mvwprintw(win, 20, 2, "Donner la complexité du programme : ");
+    getusrstr(win, 20, 22, pl_answer1, 5, &isvalid_quizz1_answer_chr);
+    mvwprintw(win, 21, 2, "Donner la valeur de res : ");
+    getusrstr(win, 21, 21, pl_answer2, 5, &isvalid_quizz1_answer_chr);
+    curs_set(0);
+    
+    if (!strcmp(pl_answer1, answer1))
+    {
+        nb_success++;
+        mvwprintw(win, 20, 30, "Correct !");
+    }
+    else
+    {
+        mvwaddwstr(win, 20, 30, L"Incorrect, la bonne réponse était ");
+        waddstr(win, answer1);
+    }
+    if (!strcmp(pl_answer2, answer2))
+    {
+        nb_success++;
+        mvwprintw(win, 21, 30, "Correct !");
+    }
+    else
+    {
+        mvwaddwstr(win, 21, 30, L"Incorrect, la bonne réponse était ");
+        waddstr(win, answer2);
+    }
+    
+    wmove(win, 23, 2);
+    
+    return nb_success == 2;
+}
