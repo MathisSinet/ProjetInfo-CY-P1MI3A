@@ -12,7 +12,7 @@ Also contains the item pickup code
 /*__________PLAYER'S ACTIONS__________*/
 
 
-//Tries to move the player in the corresponding direction
+// Tries to move the player in the corresponding direction
 void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
 {
     Co newco = pl->loc;
@@ -20,7 +20,7 @@ void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
     Item item;
     ItemInRoom *itemptr;
 
-    //stores in newco the new coordinate of the player
+    // Stores in newco the new coordinate of the player
     switch (dir)
     {
     case NORTH:
@@ -36,16 +36,16 @@ void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
         newco.x--;
     }
 
-    //content of the destination tile
+    // Content of the destination tile
     dest_content = *get_from_grid(reg, newco.x, newco.y);
 
-    //allows movement if the destination square is empty
+    // Allows movement if the destination square is empty
     if (dest_content == VOID)
     {
         pl->loc = newco;
     }
 
-    //item pickup
+    // Item pickup
     set_itemptr(pl->loc, pl, pl->currentroom, &itemptr);
     if (itemptr)
     {
@@ -100,7 +100,7 @@ void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
         }
     }
 
-    //code when the player enters a door
+    // Code when the player enters a door
     if (dest_content == DOOR)
     {
         switch (dir)
@@ -145,10 +145,10 @@ void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
 }
 
 
-//Player's attack
+// Player's attack
 void playerattack(Region *reg, Player *pl)
 {
-    //Room *room = pl->currentroom;
+    // Room *room = pl->currentroom;
     MonsterInRoom *monsterptr;
     if (pl->atkdelay > 0.0)
     {
@@ -172,7 +172,7 @@ void playerattack(Region *reg, Player *pl)
 /*__________MONSTERS' ACTIONS__________*/
 
 
-//Moves one monster in the corresponding direction
+// Moves one monster in the corresponding direction
 void monstermove_one(Region *reg, Player *pl, Room *room, MonsterInRoom *monsterptr, Pole pole)
 {
     Co newco = monsterptr->loc;
@@ -216,13 +216,13 @@ void monstermove_one(Region *reg, Player *pl, Room *room, MonsterInRoom *monster
 }
 
 
-//Moves the given monster in a random valid direction
+// Moves the given monster in a random valid direction
 void monstermove_random(Region *reg, Player *pl, Room *room, MonsterInRoom *monsterptr)
 {
     monstermove_one(reg, pl, room, monsterptr, rand()%4);
 }
 
-//Moves the given monster towards the player
+// Moves the given monster towards the player
 void monstermove_towardsplayer(Region *reg, Player *pl, Room *room, MonsterInRoom *monsterptr)
 {
     if (rand()%2)
@@ -250,7 +250,7 @@ void monstermove_towardsplayer(Region *reg, Player *pl, Room *room, MonsterInRoo
 }
 
 
-//Moves the monsters in the current room
+// Moves the monsters in the current room
 void monstermove(Region *reg, Player *pl, double diff)
 {
     Room *room = pl->currentroom;
@@ -305,7 +305,7 @@ void monstermove(Region *reg, Player *pl, double diff)
 }
 
 
-//Makes the given monster try to attack the player
+// Makes the given monster try to attack the player
 void monsterattack_one(Region *reg, Player *pl, MonsterInRoom *monster, double diff)
 {
     Monster monster_data;
@@ -344,7 +344,7 @@ void monsterattack_one(Region *reg, Player *pl, MonsterInRoom *monster, double d
 }
 
 
-//Makes the monsters in the current room try to attack the player
+// Makes the monsters in the current room try to attack the player
 void monsterattack(Region *reg, Player *pl, double diff)
 {
     if (pl->currentroom->monster1.exists && pl->currentroom->monster1.hp > 0)
@@ -358,7 +358,7 @@ void monsterattack(Region *reg, Player *pl, double diff)
 }
 
 
-//Display the death screen and run the death routine
+// Displays the death screen and run the death routine
 void death(Region *reg, Player *pl, DisplayInfo *di, int cause_of_death)
 {
     end_gameui(di);
@@ -378,7 +378,7 @@ void death(Region *reg, Player *pl, DisplayInfo *di, int cause_of_death)
 }
 
 
-//Display the win screen
+// Displays the win screen
 void win(Region *reg, Player *pl, DisplayInfo *di)
 {
     end_gameui(di);

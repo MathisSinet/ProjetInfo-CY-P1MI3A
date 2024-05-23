@@ -1,7 +1,7 @@
 #include "items.h"
 
 
-//Returns an item structure corresponding to the given item index
+// Returns an item structure corresponding to the given item index
 /// @param index Item Index
 /// @param name Buffer where the item name will be stored. If it is NULL, the operation is ignored
 Item getitem(ItemIndex index, char *name)

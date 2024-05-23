@@ -13,7 +13,7 @@ Also contains the item pickup code
 #include "save.h"
 #include "quest.h"
 
-//handles the movement of a player
+// Handles the movement of a player
 void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di);
 void monstermove_one(Region *reg, Player *pl, Room *room, MonsterInRoom *monsterptr, Pole pole);
 void monstermove_random(Region *reg, Player *pl, Room *room, MonsterInRoom *monsterptr);

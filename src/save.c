@@ -1,6 +1,6 @@
 #include "save.h"
 
-//Saves the game to the given savefile
+// Saves the game to the given savefile
 int save(FILE *savefile, Region *reg, Player *pl)
 {
     PlayerSave playersave;
@@ -13,7 +13,7 @@ int save(FILE *savefile, Region *reg, Player *pl)
         return 0;
     }
 
-    //Copying of the Player structure
+    // Copying of the Player structure
 
     strcpy(playersave.name, pl->name);
     playersave.hp = pl->hp;
@@ -32,7 +32,7 @@ int save(FILE *savefile, Region *reg, Player *pl)
     playersave.inv_size = pl->inv_size;
     playersave.currentroom = pl->currentroom->index;
 
-    //Copying of the Region structure
+    // Copying of the Region structure
 
     regionsave.seed = reg->seed;
     regionsave.grid_width = reg->grid_width;
@@ -43,25 +43,25 @@ int save(FILE *savefile, Region *reg, Player *pl)
     regionsave.deathtimer = reg->deathtimer;
     regionsave.questinfo = reg->questinfo;
 
-    //Locates the grid and room in the savefile
+    // Locates the grid and room in the savefile
 
     regionsave.gridptr = sizeof(PlayerSave) + sizeof(RegionSave);
     regionsave.roomptr = regionsave.gridptr + regionsave.grid_width*regionsave.grid_height*sizeof(int8_t);
 
-    //Writes the Player and Region structures to the savefile
+    // Writes the Player and Region structures to the savefile
 
     rewind(savefile);
     fwrite(&playersave, sizeof(PlayerSave), 1, savefile);
     fwrite(&regionsave, sizeof(RegionSave), 1, savefile);
 
-    //Saves the grid
+    // Saves the grid
 
     for (int x=0; x<regionsave.grid_width; x++)
     {
         fwrite(reg->grid[x], sizeof(int8_t), regionsave.grid_height, savefile);
     }
 
-    //Saves the rooms
+    // Saves the rooms
 
     for (Room **roomptr = reg->roomlist; roomptr<reg->roomlist+reg->allocated_rooms; roomptr++)
     {
@@ -107,7 +107,7 @@ int save(FILE *savefile, Region *reg, Player *pl)
 }
 
 
-//Tries to load a save with the given name
+// Tries to load a save with the given name
 /// @param name Player name, which is the same as the savefile name
 /// @param reg Region pointer where the save will be loaded
 /// @param pl Player pointer where the save will be loaded
@@ -119,7 +119,7 @@ int load(char *name, Region *reg, Player *pl)
     
     Room *room;
 
-    //Tries to open the savefile
+    // Tries to open the savefile
 
     sprintf(path, "saves/%s", name);
     savefile = fopen(path, "rb");
@@ -132,7 +132,7 @@ int load(char *name, Region *reg, Player *pl)
     RegionSave regionsave;
     RoomSave roomsave;
 
-    //Reads the Player and Region structures
+    // Reads the Player and Region structures
 
     rewind(savefile);
     fread(&playersave, sizeof(PlayerSave), 1, savefile);
@@ -146,16 +146,16 @@ int load(char *name, Region *reg, Player *pl)
     reg->deathtimer = regionsave.deathtimer;
     reg->questinfo = regionsave.questinfo;
 
-    //Loads the grid
+    // Loads the grid
 
-    //Column allocation
+    // Column allocation
     reg->grid = malloc(reg->grid_width * sizeof(int8_t*));
     if (!reg->grid)
     {
         perror("Map allocation failed\n");
         abort();
     }
-    //Row allocation
+    // Row allocation
     for (int8_t **column = reg->grid; column < reg->grid+reg->grid_width; column++)
     {
         *column = malloc(reg->grid_height * sizeof(int8_t));
@@ -167,8 +167,8 @@ int load(char *name, Region *reg, Player *pl)
         fread(*column, sizeof(int8_t), reg->grid_height, savefile);
     }
 
-    //Reads the rooms
-    //room.door_POLE.to is a temporary pointer as not all rooms have a pointer assigned to them yet
+    // Reads the rooms
+    // room.door_POLE.to is a temporary pointer as not all rooms have a pointer assigned to them yet
 
     for (Room **roomptr = reg->roomlist; roomptr < reg->roomlist+MAX_ROOM_COUNT; roomptr++)
     {
@@ -214,7 +214,7 @@ int load(char *name, Region *reg, Player *pl)
         }
     }
 
-    //Now that all rooms have an assigned pointer, we update the pointers of the doors
+    // Now that all rooms have an assigned pointer, we update the pointers of the doors
 
     for (Room **roomptr = reg->roomlist; roomptr < reg->roomlist+reg->allocated_rooms; roomptr++)
     {
@@ -238,7 +238,7 @@ int load(char *name, Region *reg, Player *pl)
         }
     }
 
-    //We now finish by reading the Player structure
+    // We now finish by reading the Player structure
 
     strcpy(pl->name, name);
     pl->hp = playersave.hp,

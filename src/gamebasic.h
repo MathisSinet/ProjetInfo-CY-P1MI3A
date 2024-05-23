@@ -15,7 +15,7 @@
 
 #include "settings.h"
 
-//Structure for display information and window pointers
+// Structure for display information and window pointers
 typedef struct DisplayInfo
 {
     int width;
@@ -28,7 +28,7 @@ DisplayInfo;
 
 typedef enum
 {
-    RESERVED = -1, //reserved space for a room which door was already generated
+    RESERVED = -1, // Reserved space for a room which door was already generated
     VOID = 0,
     WALL = 1,
     DOOR = 2,
@@ -71,7 +71,7 @@ typedef enum
 }
 MonsterIndex;
 
-//Coordinates structure, with x and y
+// Coordinates structure, with x and y
 typedef struct Coordinates
 {
     int32_t x;
@@ -79,7 +79,7 @@ typedef struct Coordinates
 }
 Co;
 
-//Structure for the items
+// Structure for the items
 typedef struct Item
 {
     char *name;
@@ -91,21 +91,21 @@ Item;
 
 typedef struct Monster
 {
-    wchar_t symb; //monster symbol
-    int16_t hp; //monster health
-    double atk; //monster attack
+    wchar_t symb; // Monster symbol
+    int16_t hp; // Monster health
+    double atk; // Monster attack
     uint16_t xp_reward;
-    //value between 0 and 100 to determine the monster's movement pattern (higher is more agressive)
+    // Value between 0 and 100 to determine the monster's movement pattern (higher is more agressive)
     uint16_t agression_value; 
-    double baseatkdelay; //delay between attacks
-    double basemovedelay; //delay between moves
+    double baseatkdelay; // Delay between attacks
+    double basemovedelay; // Delay between moves
 }
 Monster;
 
 struct Room;
 struct Door;
 
-//Structure for the informations of the player
+// Structure for the informations of the player
 typedef struct Player
 {
     char name[MAX_PLAYER_NAME_COUNT];
@@ -127,17 +127,17 @@ typedef struct Player
 }
 Player;
 
-//Structure for a door
+// Structure for a door
 typedef struct Door
 {
     bool exists;
-    uint16_t dist; //distance from the left wall or top wall
+    uint16_t dist; // Distance from the left wall or top wall
     struct Room *to;
 }
 Door;
 
 
-//structure for the quest
+// Structure for the quest
 typedef struct QuestInfo
 {
     bool is_teddybear_generated;
@@ -173,19 +173,19 @@ typedef struct MonsterInRoom
 MonsterInRoom;
 
 
-//Structure for data about room
+// Structure for data about room
 typedef struct Room
 {
-    //is the room generated
+    // Is the room generated
     bool is_generated;
     uint32_t index;
 
-    //coordinates of the top-left corner of the room
+    // Coordinates of the top-left corner of the room
     Co corner;
 
-    //room width, walls included
+    // Room width, walls included
     uint8_t width;
-    //room height, walls included
+    // Room height, walls included
     uint8_t height;
 
     Door door_north;
@@ -193,7 +193,7 @@ typedef struct Room
     Door door_south;
     Door door_west;
 
-    //items and monsters
+    // Items and monsters
     ItemInRoom item1;
     ItemInRoom item2;
     MonsterInRoom monster1;
@@ -202,42 +202,42 @@ typedef struct Room
 Room;
 
 
-//structure for the map
+// Structure for the map
 typedef struct Region
 {
-    //seed used by the RNG
+    // Seed used by the RNG
     uint32_t seed;
 
-    //representation of the map : grid[x][y]
+    // Representation of the map : grid[x][y]
     int8_t **grid;
     uint16_t grid_width;
     uint16_t grid_height;
 
-    //list of room pointers
+    // List of room pointers
     Room *roomlist[MAX_ROOM_COUNT];
     //number of allocated rooms
     uint16_t allocated_rooms;
     uint16_t generated_rooms;
 
-    //coordinated in grid of the zero
+    // Coordinated in grid of the zero
     Co zero;
 
-    //death timer
+    // Death timer
     float deathtimer;
 
     QuestInfo questinfo;
 }
 Region;
 
-//Coordinates builder
+// Coordinates builder
 Co coordinates(int16_t x, int16_t y);
 bool same_coordinates(Co co1, Co co2);
 
 bool is_digit(int chr);
 bool is_valid_playername_char(int chr);
-//generates a random number with the region's seed
+// Generates a random number with the region's seed
 uint32_t new_rand(Region* r);
-//Generates a random number between min and max included using the region's seed
+// Generates a random number between min and max included using the region's seed
 int32_t randint(Region* reg, int32_t min, int32_t max);
 bool randevent(Region *reg, uint32_t prob);
 

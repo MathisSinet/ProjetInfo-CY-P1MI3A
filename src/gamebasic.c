@@ -2,7 +2,7 @@
 
 /*__________BASIC FUNCTIONS__________*/
 
-//Coordinates builder
+// Coordinates builder
 Co coordinates(int16_t x, int16_t y)
 {
     Co ret;
@@ -17,12 +17,12 @@ bool same_coordinates(Co co1, Co co2)
     return (co1.x == co2.x && co1.y == co2.y);
 }
 
-//Returns true if the given chr is a digit
+// Returns true if the given chr is a digit
 bool is_digit(int chr)
 {
     return (chr >= '0' && chr <= '9');
 }
-//Returns true if the given chr is a valid player name char
+// Returns true if the given chr is a valid player name char
 bool is_valid_playername_char(int chr)
 {
     return (
@@ -33,27 +33,27 @@ bool is_valid_playername_char(int chr)
     );
 }
 
-//Generates a random uint32 with the region's seed
+// Generates a random uint32 with the region's seed
 uint32_t new_rand(Region* r)
 {
     r->seed = RAND_A * r->seed + RAND_C;
     return r->seed;
 }
 
-//Generates a random integer between min and max included using the region's seed
+// Generates a random integer between min and max included using the region's seed
 int32_t randint(Region *r, int32_t min, int32_t max)
 {
     return new_rand(r) % (max-min+1) + min;
 }
 
-//Has a prob per thousand chance of returning true
+// Has a prob per thousand chance of returning true
 bool randevent(Region *reg, uint32_t prob)
 {
     return randint(reg, 1, 1000) <= prob;
 }
 
-//returns a pointer to the tile on the grid with given coordinates
-//returns NULL if the coordinates are invalid
+// Returns a pointer to the tile on the grid with given coordinates
+// Returns NULL if the coordinates are invalid
 int8_t* get_from_grid(Region* reg, int32_t x, int32_t y)
 {
     int32_t nx = reg->zero.x + x;
@@ -65,7 +65,7 @@ int8_t* get_from_grid(Region* reg, int32_t x, int32_t y)
     return reg->grid[nx] + ny;
 }
 
-//frees the allocated memory in the region
+// Frees the allocated memory in the region
 void reg_memfree(Region *reg)
 {
     for (Room **room=reg->roomlist; room<reg->roomlist + MAX_ROOM_COUNT; room++)
@@ -80,7 +80,7 @@ void reg_memfree(Region *reg)
 }
 
 
-//returns true if the coordinates are strictly inside of the room
+// Returns true if the coordinates are strictly inside of the room
 bool is_inside_room(Room *room, Co co)
 {
     return (
@@ -90,7 +90,7 @@ bool is_inside_room(Room *room, Co co)
 }
 
 
-//Sets the item pointer if the coordinates match to an item in this room. NULL else
+// Sets the item pointer if the coordinates match to an item in this room. NULL else
 void set_itemptr(Co co, Player *pl, Room *room, ItemInRoom **itemptr)
 {
     *itemptr = NULL;
@@ -108,7 +108,7 @@ void set_itemptr(Co co, Player *pl, Room *room, ItemInRoom **itemptr)
     }
 }
 
-//Sets the monster pointer if the coordinates match to a monster in this room. NULL else
+// Sets the monster pointer if the coordinates match to a monster in this room. NULL else
 void set_monsterptr(Co co, Player *pl, Room *room, MonsterInRoom **monsterptr)
 {
     *monsterptr = NULL;

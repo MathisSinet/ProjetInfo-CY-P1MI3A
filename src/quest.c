@@ -1,12 +1,13 @@
 #include "quest.h"
 
+// Checks if the answer given by the player is valid
 bool isvalid_quizz1_answer_chr(int chr)
 {
     return (is_digit(chr) || chr == '?');
 }
 
 
-//Performs a quizz
+// Performs a quizz
 /// @return true if quizz was completed else false
 bool quizz(Player* pl, Region* reg, DisplayInfo* di, uint8_t quizz_id)
 {
@@ -51,6 +52,8 @@ bool check_quests(Region* reg, Player* pl)
     return false;
 }
 
+
+// Generate the first quizz
 bool quizz1(Player* pl, Region* reg, WINDOW* win)
 {
     char pl_answer1[5], pl_answer2[5], answer1[5], answer2[5];
@@ -127,6 +130,8 @@ bool quizz1(Player* pl, Region* reg, WINDOW* win)
     return nb_success == 2;
 }
 
+
+// Generate the second quizz
 bool quizz2(Player* pl, Region* reg, WINDOW* win)
 {
     char pl_answer[7], answer[7];
@@ -205,6 +210,7 @@ bool quizz2(Player* pl, Region* reg, WINDOW* win)
 }
 
 
+// Generate the third quizz
 bool quizz3(Player* pl, Region* reg, WINDOW* win)
 {
     char pl_answer1[5], pl_answer2[5], answer1[5], answer2[5];

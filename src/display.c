@@ -6,7 +6,7 @@ Display features of the game
 #include "display.h"
 
 
-//Sleeps for the given number of microseconds
+// Sleeps for the given number of microseconds
 void us_sleep(uint64_t us)
 {
     struct timespec ts;
@@ -15,14 +15,14 @@ void us_sleep(uint64_t us)
     nanosleep(&ts, &ts);
 }
 
-//Erases the content of the window and recreates the box
+// Erases the content of the window and recreates the box
 void new_wclear(WINDOW *win)
 {
     werase(win);
     box(win, 0, 0);
 }
 
-//Initialises the user interface
+// Initialises the user interface
 void initcurses(DisplayInfo *di)
 {
     initscr(); 
@@ -50,7 +50,7 @@ void initcurses(DisplayInfo *di)
     init_pair(PAIR_GREEN, COLOR_GREEN, COLOR_BLACK);
 }
 
-//Initializes the main menu interface
+// Initializes the main menu interface
 void init_mainmenu(DisplayInfo *di)
 {
     int y,i;
@@ -99,7 +99,7 @@ void init_mainmenu(DisplayInfo *di)
     box(di->box2, 0, 0);
 }
 
-//Ends the main menu interface
+// Ends the main menu interface
 void end_mainmenu(DisplayInfo *di)
 {
     delwin(di->box1);
@@ -107,7 +107,7 @@ void end_mainmenu(DisplayInfo *di)
     refresh();
 }
 
-//Initializes the game interface
+// Initializes the game interface
 void init_gameui(DisplayInfo *di)
 {
     di->box1 = newwin(di->height-8, di->width-30, 0, 0); //top left panel
@@ -120,7 +120,7 @@ void init_gameui(DisplayInfo *di)
     box(di->box2, 0, 0);
     box(di->box3, 0, 0);
 }
-//Ends the game interface
+// Ends the game interface
 void end_gameui(DisplayInfo *di)
 {
     wclear(di->box1);
@@ -174,7 +174,7 @@ void getusrstr(WINDOW *win, int y, int x, char *buffer, int max_len, bool(*valid
 }
 
 
-//Main menu loop. Returns an integer corresponding to the user's choice
+// Main menu loop. Returns an integer corresponding to the user's choice
 int MainMenu(DisplayInfo *di)
 {
     WINDOW *win = di->box2;
@@ -219,7 +219,7 @@ int MainMenu(DisplayInfo *di)
 }
 
 
-//Updates the right panel
+// Updates the right panel
 void right_panel_update(Region *reg, Player *pl, WINDOW *win)
 {
     char itemname[15];
@@ -227,12 +227,12 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
 
     new_wclear(win);
 
-    //Player name
+    // Player name
     wattron(win, A_BOLD);
     mvwaddstr(win, 1,2, pl->name);
     wattroff(win, A_BOLD);
 
-    //HP bar
+    // HP bar
     mvwaddstr(win, 3, 2, "PV ");
     for (int i=1; i<=10; i++)
     {
@@ -248,7 +248,7 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
         }
     }
 
-    //Defense bar
+    // Defense bar
     mvwaddstr(win, 4, 2, "DEF ");
     for (int i=1; i<=10; i++)
     {
@@ -265,7 +265,7 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
     }
 
     item = getitem(pl->weapon, itemname);
-    //Attack load bar
+    // Attack load bar
     mvwprintw(win, 5, 2, "%lc", item.symb);
     for (int i=1; i<=10; i++)
     {
@@ -281,16 +281,16 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
         }
     }
 
-    //Attack and score
+    // Attack and score
     mvwprintw(win, 6, 2, "Attaque : %d", pl->atk);
     mvwprintw(win, 7, 2, "Score : %d", pl->xp);
     
-    //Weapon
+    // Weapon
     mvwprintw(win, 9, 2, "Arme : ");
     wprintw(win, "%s %lc", item.name, item.symb);
     mvwprintw(win, 10, 2, "Inventaire :");
 
-    //Inventory
+    // Inventory
     for (int i=0; i<MAX_INVENTORY_SIZE; i++)
     {
         if (i < pl->inv_size)
@@ -308,7 +308,7 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
 }
 
 
-//Updates the bottom
+// Updates the bottom
 void bottom_panel_update(Region *reg, Player *pl, WINDOW *win)
 {
     new_wclear(win);
@@ -328,7 +328,7 @@ void bottom_panel_update(Region *reg, Player *pl, WINDOW *win)
 }
 
 
-//Inventory managment function
+// Inventory managment function
 void manage_inventory(Region *reg, Player *pl, DisplayInfo *di)
 {
     WINDOW *win = di->box3;
@@ -338,7 +338,7 @@ void manage_inventory(Region *reg, Player *pl, DisplayInfo *di)
     ItemIndex itemindex;
     bool drop;
 
-    //This function does nothing if the inventory is empty
+    // This function does nothing if the inventory is empty
     if (pl->inv_size <= 0)
     {
         return;
@@ -353,12 +353,12 @@ void manage_inventory(Region *reg, Player *pl, DisplayInfo *di)
     {
         ch = wgetch(win);
         drop = false;
-        //Close inventory
+        // Close inventory
         if (ch == 'e' || ch == 'E')
         {
             break;
         }
-        //Use item
+        // Use item
         if (ch == 'u' || ch == 'U')
         {
             item = getitem(pl->inv[cursor], NULL);
@@ -390,21 +390,21 @@ void manage_inventory(Region *reg, Player *pl, DisplayInfo *di)
                 mvwprintw(win, di->height-2, 2, "A : Jeter l'objet");
             }
         }
-        //Drop item
+        // Drop item
         if (ch == 'a' || ch == 'A' || drop)
         {
-            //Removes the item from the inventory
+            // Removes the item from the inventory
             for (int i=cursor; i<pl->inv_size-1; i++)
             {
                 pl->inv[i] = pl->inv[i+1];
             }
             pl->inv_size--;
-            //If empty inventory, stop the inventory manager
+            // If empty inventory, stop the inventory manager
             if (pl->inv_size == 0)
             {
                 break;
             }
-            //Display update
+            // Display update
             right_panel_update(reg, pl, win);
             mvwprintw(win, di->height-4, 2, "U : Utiliser l'objet");
             mvwprintw(win, di->height-3, 2, "E : Fermer l'inventaire");
@@ -435,7 +435,7 @@ void manage_inventory(Region *reg, Player *pl, DisplayInfo *di)
 }
 
 
-//Shows the controls in the bottom window
+// Shows the controls in the bottom window
 void show_controls(DisplayInfo *di)
 {
     WINDOW *win = di->box2;
@@ -451,14 +451,14 @@ void show_controls(DisplayInfo *di)
 }
 
 
-//Save User Interface
+// Save User Interface
 void save_ui(DisplayInfo *di, Region *reg, Player *pl)
 {
     WINDOW *win = di->box2;
     FILE *savefile;
 
     new_wclear(win);
-    //Sets the path
+    // Sets the path
     char path[MAX_PLAYER_NAME_COUNT+20];
     sprintf(path, "saves/%s", pl->name);
 
@@ -488,7 +488,7 @@ void save_ui(DisplayInfo *di, Region *reg, Player *pl)
 }
 
 
-//Updates the display of the map
+// Updates the display of the map
 void update_map(DisplayInfo *di, Region *reg, Player *pl)
 {
     int w,h;
@@ -573,7 +573,7 @@ void update_map(DisplayInfo *di, Region *reg, Player *pl)
     }
 }
 
-//Display the lore items description on the screen
+// Displays the lore items description on the screen
 void item_desc(WINDOW *win, char* chaine)
 {
     // Adjust the cursor position to start just below the top left corner of the box
@@ -605,7 +605,7 @@ void item_desc(WINDOW *win, char* chaine)
 }
 
 
-//Display the lore screen
+// Displays the lore screen
 void lore_screen(DisplayInfo *di, WINDOW* lore_box)
 {
     new_wclear(lore_box);
@@ -655,7 +655,7 @@ void lore_screen(DisplayInfo *di, WINDOW* lore_box)
 }
 
 
-//Display the win screen
+// Displays the win screen
 void win_screen(DisplayInfo *di, Player *pl)
 {
     int y,i;
@@ -714,7 +714,7 @@ void win_screen(DisplayInfo *di, Player *pl)
     delwin(win_box);
 }
 
-//Display the game over screen
+// Displays the game over screen
 void death_screen(DisplayInfo *di, Player *pl, int cause_of_death)
 {
     int y,i;

@@ -3,8 +3,8 @@ display.h
 Display features of the game
 */
 
-//Minimum terminal size : 75x34
-//Recommended terminal size : 100x35
+// Minimum terminal size : 75x34
+// Recommended terminal size : 100x35
 
 
 #ifndef DISPLAY_HEADER
@@ -24,9 +24,9 @@ Display features of the game
 
 #define COLOR_GREY 585
 
-//Use nodelay(stdscr, true) to prevent delay using getch (returns ERR if no key is pressed)
+// Use nodelay(stdscr, true) to prevent delay using getch (returns ERR if no key is pressed)
 
-//Constants for color pairs
+// Constants for color pairs
 typedef enum
 {
     PAIR_RED = 1,
@@ -52,9 +52,9 @@ void death_screen(DisplayInfo *di, Player *pl, int cause_of_death);
 void win_screen(DisplayInfo *di, Player *pl);
 
 
-//Dynamic way to asks for the user string in curses
+// Dynamic way to asks for the user string in curses
 void getusrstr(WINDOW* win, int y, int x, char* buffer, int max_len, bool(*validatefunc)(int));
-//Main Menu Loop
+// Main Menu Loop
 int MainMenu(DisplayInfo *di);
 
 void right_panel_update(Region *reg, Player *pl, WINDOW *win);

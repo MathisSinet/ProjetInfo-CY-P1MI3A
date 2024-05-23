@@ -3,9 +3,9 @@
 /*__________MAP GENERATION FUNCTIONS__________*/
 
 
-//Allocates a room on the region's room list
-//The newly-created room has only its index initialized
-//This function does not check if the max number of rooms is exceded
+// Allocates a room on the region's room list
+// The newly-created room has only its index initialized
+// This function does not check if the max number of rooms is exceded
 Room *allocate_room(Region* r)
 {
     int index = r->allocated_rooms++;
@@ -19,7 +19,7 @@ Room *allocate_room(Region* r)
     return r->roomlist[index];
 }
 
-//Initializes a non-generated room
+// Initializes a non-generated room
 void init_room(Room* room)
 {
     room->is_generated = false;
@@ -45,8 +45,8 @@ void init_room(Room* room)
     room->monster2.loc = coordinates(room->corner.x-2*MAX_ROOM_WIDTH, room->corner.y-2*MAX_ROOM_HEIGHT);
 }
 
-//Returns true if the region of the grid given by a corner, width and height is free
-//i.e. it contains only VOID
+// Returns true if the region of the grid given by a corner, width and height is free
+// i.e. it contains only VOID
 bool is_free_box(Region *reg, Co corner, uint16_t width, uint16_t height)
 {
     int8_t* tile;
@@ -71,9 +71,9 @@ bool is_free_box(Region *reg, Co corner, uint16_t width, uint16_t height)
 }
 
 
-//Declares space in the region for a future room to be generated when the player
-//enters a door
-//This function uses MIN_ROOM_WIDTH and MIN_ROOM_HEIGHT
+// Declares space in the region for a future room to be generated when the player
+// Enters a door
+// This function uses MIN_ROOM_WIDTH and MIN_ROOM_HEIGHT
 void reserve_box(Region *reg, Co corner)
 {
     for (int x=corner.x; x<corner.x+MIN_ROOM_WIDTH; x++)
@@ -89,8 +89,8 @@ void reserve_box(Region *reg, Co corner)
 }
 
 
-//Removes the reservation of a room previously done by reserve_room
-//so that the space is VOID again to create the room
+// Removes the reservation of a room previously done by reserve_room
+// So that the space is VOID again to create the room
 void unreserve_box(Region* reg, Co corner)
 {
     for (int x=corner.x; x<corner.x+MIN_ROOM_WIDTH; x++)
@@ -105,11 +105,11 @@ void unreserve_box(Region* reg, Co corner)
     }
 }
 
-//This function tries to reserve a room in the grid, from a given room and a given door pole
-//return value : true if successful, false if failure
-//If successful, the reserved room has the entry door marked as existing and pointing to the previous room
-//The exit door in the previous room points to the new room
-//The corner of the new room matches the corner of the reservation
+// This function tries to reserve a room in the grid, from a given room and a given door pole
+// Return value : true if successful, false if failure
+// If successful, the reserved room has the entry door marked as existing and pointing to the previous room
+// The exit door in the previous room points to the new room
+// The corner of the new room matches the corner of the reservation
 int reserve_room(Region* reg, Room* room, Pole pole)
 {
     Co corner;
@@ -198,10 +198,10 @@ int reserve_room(Region* reg, Room* room, Pole pole)
 }
 
 
-//Creates the walls of the room in the grid, while also placing the doors
+// Creates the walls of the room in the grid, while also placing the doors
 void wall_room(Region *reg, Room *room)
 {
-    //upper wall
+    // Upper wall
     for (int dx=0; dx<room->width; dx++)
     {
         if (room->door_north.exists && dx == room->door_north.dist)
@@ -213,7 +213,7 @@ void wall_room(Region *reg, Room *room)
             *get_from_grid(reg, room->corner.x + dx, room->corner.y) = WALL;
         }
     }
-    //lower wall
+    // Lower wall
     for (int dx=0; dx<room->width; dx++)
     {
         if (room->door_south.exists && dx == room->door_south.dist)
@@ -225,7 +225,7 @@ void wall_room(Region *reg, Room *room)
             *get_from_grid(reg, room->corner.x + dx, room->corner.y + room->height-1) = WALL;
         }
     }
-    //eastern wall
+    // Eastern wall
     for (int dy=0; dy<room->height; dy++)
     {
         if (room->door_east.exists && dy == room->door_east.dist)
@@ -237,7 +237,7 @@ void wall_room(Region *reg, Room *room)
             *get_from_grid(reg, room->corner.x + room->width-1, room->corner.y + dy) = WALL;
         }
     }
-    //western wall
+    // Western wall
     for (int dy=0; dy<room->height; dy++)
     {
         if (room->door_west.exists && dy == room->door_west.dist)
@@ -252,7 +252,7 @@ void wall_room(Region *reg, Room *room)
 }
 
 
-//Doubles the allocated memory for the grid in the given direction
+// Doubles the allocated memory for the grid in the given direction
 void extend_grid(Region* reg, Pole dir)
 {
     int8_t **newgrid;
@@ -340,10 +340,10 @@ void extend_grid(Region* reg, Pole dir)
 }
 
 
-//Initializes the Region and Player structures for a new game
+// Initializes the Region and Player structures for a new game
 void initial_map(Region* reg, Player *pl)
 {
-    //Room list initialisation
+    // Room list initialisation
     reg->allocated_rooms = 0;
     for (Room **p = reg->roomlist; p < reg->roomlist+MAX_ROOM_COUNT; p++)
     {
@@ -354,14 +354,14 @@ void initial_map(Region* reg, Player *pl)
     reg->grid_height = 10 * MAX_ROOM_HEIGHT;
     reg->zero = coordinates(reg->grid_width / 2, reg->grid_height / 2);
 
-    //Column allocation
+    // Column allocation
     reg->grid = malloc(reg->grid_width * sizeof(int8_t*));
     if (!reg->grid)
     {
         perror("Map allocation failed\n");
         abort();
     }
-    //Row allocation
+    // Row allocation
     for (int8_t **column = reg->grid; column < reg->grid+reg->grid_width; column++)
     {
         *column = calloc(reg->grid_height, sizeof(int8_t));
@@ -372,7 +372,7 @@ void initial_map(Region* reg, Player *pl)
         }
     }
 
-    //Quests initialization
+    // Quests initialization
 
     reg->questinfo.is_ball_generated = false;
     reg->questinfo.is_ball_found = false;
@@ -383,7 +383,7 @@ void initial_map(Region* reg, Player *pl)
 
     reg->questinfo.monsters_killed = 0;
 
-    //First room initialization
+    // First room initialization
     Room *firstRoom = allocate_room(reg);
     init_room(firstRoom);
     firstRoom->width = INIT_ROOM_WIDTH;
@@ -412,7 +412,7 @@ void initial_map(Region* reg, Player *pl)
     
     reg->generated_rooms = 1;
 
-    //Player initialization
+    // Player initialization
 
     reg->deathtimer = DEFAULT_DEATH_TIMER;
 
@@ -430,7 +430,7 @@ void initial_map(Region* reg, Player *pl)
 }
 
 
-//Places side doors for a room generated from the north or the south
+// Places side doors for a room generated from the north or the south
 void place_ew_side_doors(Region *reg, Room *room)
 {
     if (room->height > MIN_ROOM_HEIGHT+3)
@@ -467,7 +467,7 @@ void place_ew_side_doors(Region *reg, Room *room)
 }
 
 
-//Places side doors for a room generated from the west or the east
+// Places side doors for a room generated from the west or the east
 void place_ns_side_doors(Region *reg, Room *room)
 {
     if (room->width > MIN_ROOM_WIDTH+3)
@@ -504,7 +504,7 @@ void place_ns_side_doors(Region *reg, Room *room)
 }
 
 
-//Returns true if the given room (top-left corner, width, height) is creatable, while allowing 'room' to overlap
+// Returns true if the given room (top-left corner, width, height) is creatable, while allowing 'room' to overlap
 bool newroom_valid_space(Region *reg, Room *room, Co corner, uint16_t width, uint16_t height)
 {
     for (int x=corner.x; x<corner.x+width; x++)
@@ -526,7 +526,7 @@ bool newroom_valid_space(Region *reg, Room *room, Co corner, uint16_t width, uin
 }
 
 
-//Generates the room when a players enters it for the first time
+// Generates the room when a players enters it for the first time
 void generate_room(Region *reg, Room* from, Pole dir)
 {
     Room *newroom;
@@ -537,7 +537,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
     switch (dir)
     {
     case NORTH:
-        //grid extension?
+        // Grid extension ?
         if (reg->zero.y + from->corner.y < 3 * MAX_ROOM_HEIGHT)
         {
             extend_grid(reg, NORTH);
@@ -568,7 +568,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
         newroom->door_south.dist = diff + MIN_ROOM_WIDTH/2;
 
-        //attempts to place doors
+        // Attempts to place doors
 
         if (newroom->width > MIN_ROOM_WIDTH+2)
         {
@@ -584,7 +584,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
 
     case EAST:
-        //grid extension?
+        // Grid extension?
         if (reg->zero.x + from->corner.x + from->width > reg->grid_width - 3*MAX_ROOM_WIDTH)
         {
             extend_grid(reg, EAST);
@@ -628,7 +628,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
         break;
 
     case SOUTH:
-        //grid extension?
+        // Grid extension?
         if (reg->zero.y + from->corner.y + from->height > reg->grid_height - 3*MAX_ROOM_HEIGHT)
         {
             extend_grid(reg, SOUTH);
@@ -672,7 +672,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
         break;
 
     case WEST:
-        //grid extension?
+        // Grid extension?
         if (reg->zero.x + from->corner.x < 3 * MAX_ROOM_WIDTH)
         {
             extend_grid(reg, WEST);
@@ -719,7 +719,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
 }
 
 
-//Fills the room with potential item and monster
+// Fills the room with potential item and monster
 void fill_room(Region *reg, Room *room, Pole pole)
 {
     bool iswest = pole == WEST;
@@ -727,7 +727,7 @@ void fill_room(Region *reg, Room *room, Pole pole)
     bool isnorth = pole == NORTH;
     bool issouth = pole == SOUTH;
 
-    //First item
+    // First item
     if (room->width > 4 && room->height > 4)
     {
         room->item1.loc = coordinates(
@@ -736,7 +736,7 @@ void fill_room(Region *reg, Room *room, Pole pole)
         );
         fill_item(reg, room, &room->item1);
     }
-    //First monster
+    // First monster
     if (room->width > 6 && room->height > 6)
     {
         do{
@@ -747,7 +747,7 @@ void fill_room(Region *reg, Room *room, Pole pole)
         } while (same_coordinates(room->item1.loc, room->monster1.loc));
         fill_monster(reg, room, &room->monster1);
     }
-    //Second item
+    // Second item
     if (room->width > 8 && room->height > 8 && room->item1.exists && randevent(reg, 920))
     {
         do{
@@ -759,7 +759,7 @@ void fill_room(Region *reg, Room *room, Pole pole)
             same_coordinates(room->item2.loc, room->monster1.loc));
         fill_item(reg, room, &room->item2);
     }
-    //Second monster
+    // Second monster
     if (room->width > 10 && room->height > 8 && room->monster1.exists && !room->item2.exists && randevent(reg, 900))
     {
         do{
@@ -776,7 +776,7 @@ void fill_room(Region *reg, Room *room, Pole pole)
 }
 
 
-//Fills the room with potential item
+// Fills the room with potential item
 void fill_item(Region *reg, Room *room, ItemInRoom *item){
     int16_t loot = randint(reg, 1, 1000);
 
@@ -848,7 +848,7 @@ void fill_item(Region *reg, Room *room, ItemInRoom *item){
     */
 }
 
-//Fills the room with potential monster
+// Fills the room with potential monster
 void fill_monster(Region *reg, Room *room, MonsterInRoom *monster)
 {
     Monster monster_s;

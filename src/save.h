@@ -28,7 +28,7 @@ struct PlayerSave
     uint32_t currentroom;
 };
 
-//Structure used to save the Door structure
+// Structure used to save the Door structure
 struct DoorSave
 {
     bool exists;
@@ -36,14 +36,14 @@ struct DoorSave
     uint32_t to;
 };
 
-//Structure used to save the Room structure
+// Structure used to save the Room structure
 struct RoomSave
 {
-    //is the room generated
+    // Is the room generated
     bool is_generated;
     uint32_t index;
 
-    //coordinates of the top-left corner of the room
+    // Coordinates of the top-left corner of the room
     Co corner;
 
     //room width, walls included
@@ -56,45 +56,45 @@ struct RoomSave
     struct DoorSave door_south;
     struct DoorSave door_west;
 
-    //items and monsters
+    // Items and monsters
     ItemInRoom item1;
     ItemInRoom item2;
     MonsterInRoom monster1;
     MonsterInRoom monster2;
 };
 
-//Structure used to save the Region structure
+// Structure used to save the Region structure
 struct RegionSave
 {
     uint32_t seed;
 
-    //representation of the map : grid[x][y]
+    // Representation of the map : grid[x][y]
     uint64_t gridptr;
     uint16_t grid_width;
     uint16_t grid_height;
 
-    //list of room pointers
+    // List of room pointers
     uint64_t roomptr;
-    //number of allocated rooms
+    // Number of allocated rooms
     uint16_t allocated_rooms;
     uint16_t generated_rooms;
 
-    //coordinated in grid of the zero
+    // Coordinated in grid of the zero
     Co zero;
 
-    //death timer
+    // Death timer
     float deathtimer;
 
     QuestInfo questinfo;
 };
 
-//Structure used to save the Player structure
+// Structure used to save the Player structure
 typedef struct PlayerSave PlayerSave;
-//Structure used to save the Door structure
+// Structure used to save the Door structure
 typedef struct DoorSave DoorSave;
-//Structure used to save the Room structure
+// Structure used to save the Room structure
 typedef struct RoomSave RoomSave;
-//Structure used to save the Region structure
+// Structure used to save the Region structure
 typedef struct RegionSave RegionSave;
 
 

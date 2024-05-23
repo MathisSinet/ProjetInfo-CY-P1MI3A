@@ -5,13 +5,13 @@ Main file of the program
 
 #include "main.h"
 
-// calls exit(__status) while ending curses mode
+// Calls exit(__status) while ending curses mode
 void pexit(DisplayInfo *di, int __status)
 {
     endwin();
     exit(__status);
 }
-// segmentation fault handler
+// Segmentation fault handler
 void segfault()
 {
     sleep(1);
@@ -19,7 +19,7 @@ void segfault()
     printf("---Erreur de segmentation---\n");
     exit(EXIT_FAILURE);
 }
-// abortion handler
+// Abortion handler
 void aborthandler()
 {
     sleep(1);
@@ -40,13 +40,13 @@ void NewGame(DisplayInfo *di, Region *reg, Player *pl)
     new_wclear(win);
     curs_set(1);
     
-    //asks for player name
-    //for(int i=0; i<MAX_PLAYER_NAME_COUNT; i++){pl->name[i] = '\0';}
+    // Asks for player name
+    // For(int i=0; i<MAX_PLAYER_NAME_COUNT; i++){pl->name[i] = '\0';}
     mvwprintw(win,1,2, "Entrez le nom du joueur : ");
     getyx(win, y, x);
     getusrstr(win, y, x, pl->name, MAX_PLAYER_NAME_COUNT, &is_valid_playername_char);
 
-    //asks for the seed
+    // Asks for the seed
     mvwprintw(win,2,2, "Entrez la seed : ");
     getyx(win, y, x);
     getusrstr(win, y, x, buffer, 20, &is_digit);
@@ -94,7 +94,7 @@ bool loadSave(DisplayInfo *di, Region *reg, Player *pl)
 }
 
 
-//Game loop
+// Game loop
 void Game(DisplayInfo *di, Region *reg, Player *pl)
 {
     int ch;
