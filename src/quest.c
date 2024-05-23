@@ -1,18 +1,46 @@
 #include "quest.h"
 
+bool isvalid_quizz1_answer_chr(int chr)
+{
+    return (is_digit(chr) || chr == '?');
+}
+
+
 //Performs a quizz
 /// @return true if quizz was completed else false
 bool quizz(Player* pl, Region* reg, DisplayInfo* di, uint8_t quizz_id)
 {
     WINDOW *win = di->box1;
+    bool sucess;
+
     nodelay(win, false);
     new_wclear(win);
-    mvwaddwstr(win, 1, 1, L"Vous avez trouvé un équipement informatique défaillant de la station !");
-    mvwaddwstr(win, 2, 1, L"Retrouvez les valeurs affichées par ce programme pour corriger le code défaillant :");
+    mvwaddwstr(win, 1, 2, L"Vous avez trouvé un équipement informatique défaillant de la station !");
+    mvwaddwstr(win, 2, 2, L"Retrouvez les valeurs affichées par ce programme pour corriger le code défaillant :");
+
+    switch(quizz_id)
+    {
+        case 1:
+            sucess = quizz1(pl, reg, win);
+            break;
+        default:
+            break;
+    }
+
+    if (sucess)
+    {
+        reg->questinfo.quizz_done++;
+        waddwstr(win, L"Vous avez réussi !");
+    }
+    else
+    {
+        waddwstr(win, L"Vous avez échoué !");
+        pl->hp--;
+    }
 
     wgetch(win);
     nodelay(win, true);
-    return false;
+    return sucess;
 }
 
 bool check_quests(Region* reg, Player* pl)
@@ -23,20 +51,74 @@ bool check_quests(Region* reg, Player* pl)
 bool quizz1(Player* pl, Region* reg, WINDOW* win)
 {
     char pl_answer1[5], pl_answer2[5], answer1[5], answer2[5];
-    mvwaddwstr(win, 4, 1, L"typedef struct{");
-    mvwaddwstr(win, 5, 1, L"    int x;");
-    mvwaddwstr(win, 6, 1, L"    int y;");
-    mvwaddwstr(win, 7, 1, L"}Mystruct");
-    mvwaddwstr(win, 9, 1, L"int main(){");
-    mvwaddwstr(win, 10, 1, L"   Mystruct s;");
-    mvwaddwstr(win, 11, 1, L"   s.x += 1");
-    mvwaddwstr(win, 12, 1, L"   s.y -= 2");
-    mvwaddwstr(win, 13, 1, L"   printf(\"%d %d\", s.x, s.y)");
-    mvwaddwstr(win, 14, 1, L"   return 0;");
-    ///
-    if (!strcmp(pl_answer1, answer1) && !strcmp(pl_answer2, answer2))
+    uint8_t style1 = randint(reg, 0, 2);
+    uint8_t style2 = randint(reg, 0, 2);
+    uint16_t val1 = randint(reg, 0, 1000);
+    uint16_t val2 = randint(reg, 0, 1000);
+    char *equals[3] = {"=", "+=", "-="};
+    uint16_t nb_success = 0;
+
+    if (style2 == 0)
     {
-        return true;
+        snprintf(answer1, 5, "%u", val2);
     }
-    return false;
+    else
+    {
+        strncpy(answer1, "?", 2);
+    }
+    if (style1 == 0)
+    {
+        snprintf(answer2, 5, "%u", val1);
+    }
+    else
+    {
+        strncpy(answer2, "?", 2);
+    }
+
+    mvwprintw(win, 4, 2, "typedef struct{");
+    mvwprintw(win, 5, 2, "    int x;");
+    mvwprintw(win, 6, 2, "    int y;");
+    mvwprintw(win, 7, 2, "}Mystruct;");
+    mvwprintw(win, 9, 2, "int main(){");
+    mvwprintw(win, 10, 2, "   Mystruct s;");
+    mvwprintw(win, 11, 2, "   s.x %s %u", equals[style1], val1);
+    mvwprintw(win, 12, 2, "   s.y %s %u", equals[style2], val2);
+    mvwaddstr(win, 13, 2, "   printf(\"%d\", s.y)");
+    mvwaddstr(win, 14, 2, "   printf(\"%d\", s.x)");
+    mvwprintw(win, 15, 2, "   return 0;");
+    mvwprintw(win, 16, 2, "}");
+
+    mvwaddwstr(win, 18, 2, L"Si le programme tente d'afficher une valeur non initialisée, répondez '?'");
+
+    curs_set(1);
+    mvwprintw(win, 20, 2, "Premier affichage : ");
+    getusrstr(win, 20, 22, pl_answer1, 5, &isvalid_quizz1_answer_chr);
+    mvwprintw(win, 21, 2, "Second affichage : ");
+    getusrstr(win, 21, 21, pl_answer2, 5, &isvalid_quizz1_answer_chr);
+    curs_set(0);
+    
+    if (!strcmp(pl_answer1, answer1))
+    {
+        nb_success++;
+        mvwprintw(win, 20, 30, "Correct !");
+    }
+    else
+    {
+        mvwaddwstr(win, 20, 30, L"Incorrect, la bonne réponse était ");
+        waddstr(win, answer1);
+    }
+    if (!strcmp(pl_answer2, answer2))
+    {
+        nb_success++;
+        mvwprintw(win, 21, 30, "Correct !");
+    }
+    else
+    {
+        mvwaddwstr(win, 21, 30, L"Incorrect, la bonne réponse était ");
+        waddstr(win, answer2);
+    }
+    
+    wmove(win, 23, 2);
+    
+    return nb_success == 2;
 }

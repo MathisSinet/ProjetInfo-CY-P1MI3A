@@ -13,10 +13,10 @@ Header to define general constants used by the program
 
 /*__________ROOM GENERATION PARAMETERS__________*/
 
-#define MAX_ROOM_COUNT 85
+#define MAX_ROOM_COUNT 80
 
-#define MAX_ROOM_WIDTH 35
-#define MAX_ROOM_HEIGHT 19
+#define MAX_ROOM_WIDTH 31
+#define MAX_ROOM_HEIGHT 17
 
 #define INIT_ROOM_WIDTH 23
 #define INIT_ROOM_HEIGHT 11
@@ -41,7 +41,7 @@ Header to define general constants used by the program
 
 /*__________QUEST SETTINGS__________*/
 
-#define GOAL_MONSTER_KILLS 25
+#define GOAL_MONSTER_KILLS 20
 
 /*__________RANDOM NUMBER GENERATOR SETTINGS__________*/
 

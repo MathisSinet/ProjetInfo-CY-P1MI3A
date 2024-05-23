@@ -80,10 +80,9 @@ void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
             if(itemptr->index == ITEM_QUEST_TEDDYBEAR)
             {
                 new_wclear(di->box2);
-                char chaine_teddybear[200] = "Vous avez trouvé un vieux nounours en peluche, celui de votre fille. Il semble avoir traversé des galaxies, tout comme\nvous. Vous sentez la chaleur des souvenirs familiaux vous envahir.";
-                item_desc(di, chaine_teddybear);
-                wrefresh(di->box2);
-                us_sleep(500*1000);
+                char teddybear_descr[200] = "Vous avez trouvé un vieux nounours en peluche, celui de votre fille. Il semble avoir traversé des galaxies, tout comme vous. Vous sentez la chaleur des souvenirs familiaux vous envahir.";
+                item_desc(di->box2, teddybear_descr);
+                us_sleep(1000*1000);
                 wgetch(di->box2);
                 itemptr->exists = false;
                 reg->questinfo.is_teddybear_found = true;
@@ -91,10 +90,9 @@ void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
             if(itemptr->index == ITEM_QUEST_BALL)
             {
                 new_wclear(di->box2);
-                char chaine_ball[300] = "Vous avez trouvé un ballon de football. En voyant cet objet, des souvenirs vous reviennent en tête, vous pouvez voir\nvotre fils jouer au football avec vous. Vous décidez donc de jongler un peu avec la balle.";
-                item_desc(di, chaine_ball);
-                wrefresh(di->box2);
-                us_sleep(500*1000);
+                char ball_descr[300] = "Vous avez trouvé un ballon de football. En voyant cet objet, des souvenirs vous reviennent en tête, vous pouvez voir votre fils jouer au football avec vous. Vous décidez donc de jongler un peu avec la balle.";
+                item_desc(di->box2, ball_descr);
+                us_sleep(1000*1000);
                 wgetch(di->box2);
                 itemptr->exists = false;
                 reg->questinfo.is_ball_found = true;

@@ -573,30 +573,34 @@ void update_map(DisplayInfo *di, Region *reg, Player *pl)
 }
 
 //Display the lore items description on the screen
-void item_desc(DisplayInfo *di, char* chaine)
+void item_desc(WINDOW *win, char* chaine)
 {
     // Adjust the cursor position to start just below the top left corner of the box
     int i=0, y, x;
-    getyx(di->box2, y, x);
-    wmove(di->box2, y+1, x+2);
-    int ligne_courante = y + 1;
-        // Print the text line by line with a delay
-        while(chaine[i] != '\0')
+    int wheight, wwidth;
+    getmaxyx(win, wheight, wwidth);
+
+    y = 1; x = 2;
+    wmove(win, y, x);
+    // Print the text line by line with a delay
+    while(chaine[i] != '\0')
+    {
+        if(chaine[i] == '\n' || (chaine[i] == ' ' && x > wwidth-12))
         {
-            if(chaine[i] == '\n')
-            {
-                ligne_courante++;
-                wmove(di->box2, ligne_courante, x+2);
-            }
-            else
-            {
-                // Print the character
-                wprintw(di->box2, "%c", chaine[i]);
-            }
-            wrefresh(di->box2);
-            i++;
+            y++; x=2;
+            wmove(win, y, x);
         }
-        mvwprintw(di->box2, 6, y+1, "Appyuez sur une touche pour continuer..");
+        else
+        {
+            // Print the character
+            wprintw(win, "%c", chaine[i]);
+            x++;
+        }
+        wrefresh(win);
+        i++;
+    }
+    mvwprintw(win, wheight-2, 2, "Appyuez sur une touche pour continuer...");
+    wrefresh(win);
 }
 
 

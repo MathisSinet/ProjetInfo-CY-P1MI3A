@@ -748,7 +748,7 @@ void fill_room(Region *reg, Room *room, Pole pole)
         fill_monster(reg, room, &room->monster1);
     }
     //Second item
-    if (room->width > 8 && room->height > 8 && room->item1.exists && randevent(reg, 900))
+    if (room->width > 8 && room->height > 8 && room->item1.exists && randevent(reg, 920))
     {
         do{
         room->item2.loc = coordinates(
@@ -760,7 +760,7 @@ void fill_room(Region *reg, Room *room, Pole pole)
         fill_item(reg, room, &room->item2);
     }
     //Second monster
-    if (room->width > 9 && room->height > 9 && room->monster1.exists && !room->item2.exists && randevent(reg, 900))
+    if (room->width > 10 && room->height > 8 && room->monster1.exists && !room->item2.exists && randevent(reg, 900))
     {
         do{
         room->monster2.loc = coordinates(
