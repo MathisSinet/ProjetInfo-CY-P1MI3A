@@ -27,6 +27,9 @@ bool quizz(Player* pl, Region* reg, DisplayInfo* di, uint8_t quizz_id)
         case 2:
             success = quizz2(pl, reg, win);
             break;
+        case 3:
+            success = quizz3(pl, reg, win);
+            break;
         default:
             break;
     }
@@ -213,23 +216,107 @@ bool quizz2(Player* pl, Region* reg, WINDOW* win)
 // Generate the third quizz
 bool quizz3(Player* pl, Region* reg, WINDOW* win)
 {
-    char pl_answer1[5], pl_answer2[5], answer1[5], answer2[5];
+    char pl_answer1[7], pl_answer2[7], answer1[7], answer2[7];
     uint16_t nb_success = 0;
+    int16_t seed_type, seed_qty;
+    int current_type, current_qty;
 
     char *types[12] = {"char", "short", "int", "float", "long", "double", "char*", "short*", "int*", "float*", "long*", "double*"};
     uint16_t types_alignof[12] = {1, 2, 4, 4, 8, 8, 8, 8, 8, 8, 8};
-    uint16_t types_weights[12] = {10, 10, 10, 4, 6, 4, 6, 6, 6, 3, 3, 3};
+    uint16_t types_weights[12] = {10, 10, 10, 4, 6, 4, 5, 5, 5, 2, 2, 2};
     uint16_t total_types_weights = 0;
-    for (int i=0; i<10; i++){total_types_weights += types_weights[i];};
+    for (int i=0; i<12; i++){total_types_weights += types_weights[i];};
 
-    uint16_t max_qty = 5;
     uint16_t qty_weights[5] = {20, 10, 10, 8, 8};
     uint16_t total_qty_weights = 0;
     for (int i=0; i<5; i++){total_qty_weights += qty_weights[i];};
 
-    uint16_t structure[5];
     uint16_t structure_sizeof = 0;
     uint16_t structure_alignof = 0;
 
+    mvwprintw(win, 4, 2, "#include <stdio.h>");
+    mvwprintw(win, 6, 2, "typedef struct{");
+    for (int i=0; i<5; i++)
+    {
+        //Decides the type and quantity of the member of the structure
+        seed_type = randint(reg, 1, total_types_weights);
+        current_type=-1;
+        do
+        {
+            current_type++;
+            seed_type -= types_weights[current_type];
+        }
+        while (seed_type > 0);
+        seed_qty = randint(reg, 1, total_qty_weights);
+        current_qty=-1;
+        do
+        {
+            current_qty++;
+            seed_qty -= qty_weights[current_qty];
+        }
+        while (seed_qty > 0);
 
+        while(structure_sizeof % types_alignof[current_type])
+        {
+            structure_sizeof++;
+        }
+        if (types_alignof[current_type] > structure_alignof)
+        {
+            structure_alignof = types_alignof[current_type];
+        }
+        structure_sizeof += types_alignof[current_type] * (current_qty+1);
+
+        mvwprintw(win, 7+i, 2, "   %s m%c", types[current_type], 'a'+i);
+        if (current_qty+1 > 1)
+        {
+            wprintw(win, "[%d]", current_qty+1);
+        }
+        wprintw(win, ";");
+    }
+    while(structure_sizeof % structure_alignof)
+    {
+        structure_sizeof++;
+    }
+
+    mvwprintw(win, 13, 2, "}Mystruct;");
+    mvwprintw(win, 15, 2, "int main(){");
+    mvwaddstr(win, 16, 2, "   printf(\"%ld\", sizeof(Mystruct));");
+    mvwaddstr(win, 17, 2, "   printf(\"%ld\", _Alignof(Mystruct));");
+    mvwprintw(win, 18, 2, "   return 0;");
+    mvwprintw(win, 19, 2, "}");
+
+    snprintf(answer1, 7, "%u", structure_sizeof);
+    snprintf(answer2, 7, "%u", structure_alignof);
+
+    curs_set(1);
+    mvwprintw(win, 21, 2, "Premier affichage : ");
+    getusrstr(win, 21, 22, pl_answer1, 5, &isvalid_quizz1_answer_chr);
+    mvwprintw(win, 22, 2, "Second affichage : ");
+    getusrstr(win, 22, 21, pl_answer2, 5, &isvalid_quizz1_answer_chr);
+    curs_set(0);
+
+    if (!strcmp(pl_answer1, answer1))
+    {
+        nb_success++;
+        mvwprintw(win, 21, 32, "Correct !");
+    }
+    else
+    {
+        mvwaddwstr(win, 21, 32, L"Incorrect, la bonne réponse était ");
+        waddstr(win, answer1);
+    }
+    if (!strcmp(pl_answer2, answer2))
+    {
+        nb_success++;
+        mvwprintw(win, 22, 32, "Correct !");
+    }
+    else
+    {
+        mvwaddwstr(win, 22, 32, L"Incorrect, la bonne réponse était ");
+        waddstr(win, answer2);
+    }
+    
+    wmove(win, 24, 2);
+    
+    return nb_success == 2;
 }

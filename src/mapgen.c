@@ -793,8 +793,7 @@ void fill_item(Region *reg, Room *room, ItemInRoom *item){
         reg->questinfo.is_teddybear_generated = true;
         return;
     }
-    //40
-    if (reg->questinfo.quizz_generated < 3 && loot <= 500*(3-reg->questinfo.quizz_generated) + 1200*(int)((double)reg->generated_rooms/MAX_ROOM_COUNT))
+    if (reg->questinfo.quizz_generated < 3 && loot <= 40*(3-reg->questinfo.quizz_generated) + 1200*(int)((double)reg->generated_rooms/MAX_ROOM_COUNT))
     {
         item->index = ITEM_QUEST_QUIZZ;
         reg->questinfo.quizz_generated++;
