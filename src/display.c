@@ -382,6 +382,10 @@ void manage_inventory(Region *reg, Player *pl, DisplayInfo *di)
                 {
                     pl->inv[cursor] = itemindex;
                 }
+                else
+                {
+                    drop = true;
+                }
                 pl->atk = item.stat;
                 //Display update
                 right_panel_update(reg, pl, win);
