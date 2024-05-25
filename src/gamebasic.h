@@ -89,6 +89,7 @@ typedef struct Item
 }
 Item;
 
+// Structure for the monsters
 typedef struct Monster
 {
     wchar_t symb; // Monster symbol
@@ -137,7 +138,7 @@ typedef struct Door
 Door;
 
 
-// Structure for the quest
+// Structure for the quest informations
 typedef struct QuestInfo
 {
     bool is_teddybear_generated;
@@ -153,6 +154,7 @@ typedef struct QuestInfo
 QuestInfo;
 
 
+// This structure locates an item, storing the index instead of the full Item structure
 typedef struct ItemInRoom
 {
     bool exists;
@@ -161,6 +163,8 @@ typedef struct ItemInRoom
 }
 ItemInRoom;
 
+
+// This structure locates an monster and its current state, storing the index instead of the full Monster structure
 typedef struct MonsterInRoom
 {
     bool exists;
@@ -188,6 +192,7 @@ typedef struct Room
     // Room height, walls included
     uint8_t height;
 
+    // Doors of the room
     Door door_north;
     Door door_east;
     Door door_south;
@@ -215,8 +220,9 @@ typedef struct Region
 
     // List of room pointers
     Room *roomlist[MAX_ROOM_COUNT];
-    //number of allocated rooms
+    // number of allocated rooms
     uint16_t allocated_rooms;
+    // number of generated rooms
     uint16_t generated_rooms;
 
     // Coordinated in grid of the zero
@@ -229,15 +235,13 @@ typedef struct Region
 }
 Region;
 
-// Coordinates builder
 Co coordinates(int16_t x, int16_t y);
 bool same_coordinates(Co co1, Co co2);
 
 bool is_digit(int chr);
 bool is_valid_playername_char(int chr);
-// Generates a random number with the region's seed
+
 uint32_t new_rand(Region* r);
-// Generates a random number between min and max included using the region's seed
 int32_t randint(Region* reg, int32_t min, int32_t max);
 bool randevent(Region *reg, uint32_t prob);
 

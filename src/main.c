@@ -111,7 +111,10 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
         ch = wgetch(di->box1);
         if (ch == 'x' || ch == 'X')
         {
-            break;
+            if (quit_ui(di))
+            {
+                break;
+            }
         }
         switch (ch)
         {
@@ -197,7 +200,6 @@ int main(int argc, char **argv)
     rand();
     signal(SIGSEGV, &segfault);
     signal(SIGABRT, &aborthandler);
-
 
     initcurses(&di);
     init_mainmenu(&di);

@@ -19,6 +19,7 @@ Room *allocate_room(Region* r)
     return r->roomlist[index];
 }
 
+
 // Initializes a non-generated room
 void init_room(Room* room)
 {
@@ -44,6 +45,7 @@ void init_room(Room* room)
     room->monster1.loc = coordinates(room->corner.x-2*MAX_ROOM_WIDTH, room->corner.y-2*MAX_ROOM_HEIGHT);
     room->monster2.loc = coordinates(room->corner.x-2*MAX_ROOM_WIDTH, room->corner.y-2*MAX_ROOM_HEIGHT);
 }
+
 
 // Returns true if the region of the grid given by a corner, width and height is free
 // i.e. it contains only VOID
@@ -74,6 +76,8 @@ bool is_free_box(Region *reg, Co corner, uint16_t width, uint16_t height)
 // Declares space in the region for a future room to be generated when the player
 // Enters a door
 // This function uses MIN_ROOM_WIDTH and MIN_ROOM_HEIGHT
+/// @param reg region pointer
+/// @param corner top-left corner of the box
 void reserve_box(Region *reg, Co corner)
 {
     for (int x=corner.x; x<corner.x+MIN_ROOM_WIDTH; x++)
@@ -91,6 +95,8 @@ void reserve_box(Region *reg, Co corner)
 
 // Removes the reservation of a room previously done by reserve_room
 // So that the space is VOID again to create the room
+/// @param reg region pointer
+/// @param corner top-left corner of the box
 void unreserve_box(Region* reg, Co corner)
 {
     for (int x=corner.x; x<corner.x+MIN_ROOM_WIDTH; x++)
@@ -272,6 +278,7 @@ void extend_grid(Region* reg, Pole dir)
                     abort();
                 }
                 *column = newcol;
+                // The original part is copied on the lower part and the upper part is cleared
                 for (int8_t *p1=*column, *p2=*column+reg->grid_height/2; p2 < *column+reg->grid_height; p1++,p2++)
                 {
                     *p2 = *p1;
@@ -781,19 +788,19 @@ void fill_item(Region *reg, Room *room, ItemInRoom *item){
     int16_t loot = randint(reg, 1, 1000);
 
     item->exists = true;
-    if (!reg->questinfo.is_ball_generated && loot <= 50 + 1200*(int)((double)reg->generated_rooms/MAX_ROOM_COUNT))
+    if (!reg->questinfo.is_ball_generated && loot <= -300 + (int)(1400*(((double)(reg->generated_rooms))/MAX_ROOM_COUNT)))
     {
         item->index = ITEM_QUEST_BALL;
         reg->questinfo.is_ball_generated = true;
         return;
     }
-    if (!reg->questinfo.is_teddybear_generated && loot <= 50 + 1200*(int)((double)reg->generated_rooms/MAX_ROOM_COUNT))
+    if (!reg->questinfo.is_teddybear_generated && loot <= -300 + (int)(1400*(((double)(reg->generated_rooms))/MAX_ROOM_COUNT)))
     {
         item->index = ITEM_QUEST_TEDDYBEAR;
         reg->questinfo.is_teddybear_generated = true;
         return;
     }
-    if (reg->questinfo.quizz_generated < 3 && loot <= 40*(3-reg->questinfo.quizz_generated) + 1200*(int)((double)reg->generated_rooms/MAX_ROOM_COUNT))
+    if (reg->questinfo.quizz_generated < 3 && loot <= -100 + 50*(3-reg->questinfo.quizz_generated) + (int)(1150*((double)(reg->generated_rooms)/MAX_ROOM_COUNT)))
     {
         item->index = ITEM_QUEST_QUIZZ;
         reg->questinfo.quizz_generated++;
@@ -838,13 +845,6 @@ void fill_item(Region *reg, Room *room, ItemInRoom *item){
     {
         item->exists = false;
     }
-
-    /*
-    if (randevent(reg, 300))
-    {
-    item->index = ITEM_QUEST_QUIZZ;
-    }
-    */
 }
 
 // Fills the room with potential monster
@@ -876,7 +876,7 @@ void fill_monster(Region *reg, Room *room, MonsterInRoom *monster)
 
     if (monster->exists)
     {
-        monster_s = getmonster(monster->index, NULL);
+        monster_s = getmonster(monster->index);
         monster->hp = monster_s.hp;
         monster->movedelay = 1.5*monster_s.basemovedelay;
         monster->atkdelay = monster_s.baseatkdelay;

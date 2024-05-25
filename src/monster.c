@@ -3,8 +3,7 @@
 
 // Returns an item structure corresponding to the given item index
 /// @param index Monster Index
-/// @param name Buffer where the item name will be stored. If it is NULL, the operation is ignored
-Monster getmonster(MonsterIndex index, char *name)
+Monster getmonster(MonsterIndex index)
 {
     Monster monster;
     switch(index)

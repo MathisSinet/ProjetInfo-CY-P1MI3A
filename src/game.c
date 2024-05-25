@@ -1,5 +1,5 @@
 /*
-game.h
+game.c
 Contains functions to allow the player and monsters to move and attack
 Also contains the item pickup code
 */
@@ -81,7 +81,7 @@ void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
                 new_wclear(di->box2);
                 char teddybear_descr[200] = "Vous avez trouvé un vieux nounours en peluche, celui de votre fille. Il semble avoir traversé des galaxies, tout comme vous. Vous sentez la chaleur des souvenirs familiaux vous envahir.";
                 item_desc(di->box2, teddybear_descr);
-                us_sleep(1000*1000);
+                us_sleep(1500*1000);
                 wgetch(di->box2);
                 itemptr->exists = false;
                 reg->questinfo.is_teddybear_found = true;
@@ -91,7 +91,7 @@ void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di)
                 new_wclear(di->box2);
                 char ball_descr[300] = "Vous avez trouvé un ballon de football. En voyant cet objet, des souvenirs vous reviennent en tête, vous pouvez voir votre fils jouer au football avec vous. Vous décidez donc de jongler un peu avec la balle.";
                 item_desc(di->box2, ball_descr);
-                us_sleep(1000*1000);
+                us_sleep(1500*1000);
                 wgetch(di->box2);
                 itemptr->exists = false;
                 reg->questinfo.is_ball_found = true;
@@ -257,7 +257,7 @@ void monstermove(Region *reg, Player *pl, double diff)
     Monster monster;
     if (room->monster1.exists)
     {
-        monster = getmonster(room->monster1.index, NULL);
+        monster = getmonster(room->monster1.index);
         room->monster1.movedelay -= diff;
         if (room->monster1.movedelay < 0.0)
         {
@@ -281,7 +281,7 @@ void monstermove(Region *reg, Player *pl, double diff)
 
     if (room->monster2.exists)
     {
-        monster = getmonster(room->monster2.index, NULL);
+        monster = getmonster(room->monster2.index);
         room->monster2.movedelay -= diff;
         if (room->monster2.movedelay < 0.0)
         {
@@ -313,7 +313,7 @@ void monsterattack_one(Region *reg, Player *pl, MonsterInRoom *monster, double d
     int damage2;
     int damage_roll;
 
-    monster_data = getmonster(monster->index, NULL);
+    monster_data = getmonster(monster->index);
     monster->atkdelay -= diff;
     if (monster->atkdelay > 0.0)
     {
@@ -356,6 +356,9 @@ void monsterattack(Region *reg, Player *pl, double diff)
         monsterattack_one(reg, pl, &pl->currentroom->monster2, diff);
     }
 }
+
+
+/*__________WIN/DEATH__________*/
 
 
 // Displays the death screen and run the death routine

@@ -194,7 +194,7 @@ bool quizz2(Player* pl, Region* reg, WINDOW* win)
     switch(style2)
     {
         case 0:
-            mvwprintw(win, 9, 2, "      for (int j=0; i<M; j++){");
+            mvwprintw(win, 9, 2, "      for (int j=0; j<M; j++){");
             factor2 = M;
             break;
         case 1:
@@ -260,8 +260,8 @@ bool quizz3(Player* pl, Region* reg, WINDOW* win)
 
     // Data used by the quizz generator
     char *types[12] = {"char", "short", "int", "float", "long", "double", "char*", "short*", "int*", "float*", "long*", "double*"};
-    uint16_t types_alignof[12] = {1, 2, 4, 4, 8, 8, 8, 8, 8, 8, 8};
-    uint16_t types_weights[12] = {10, 10, 10, 4, 6, 4, 5, 5, 5, 2, 2, 2};
+    uint16_t types_alignof[12] = {1, 2, 4, 4, 8, 8, 8, 8, 8, 8, 8, 8};
+    uint16_t types_weights[12] = {10, 10, 10, 4, 6, 4, 4, 4, 4, 2, 2, 2};
     uint16_t total_types_weights = 0;
     for (int i=0; i<12; i++){total_types_weights += types_weights[i];};
 

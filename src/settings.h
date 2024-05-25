@@ -24,7 +24,7 @@ Header to define general constants used by the program
 #define MIN_ROOM_WIDTH 5
 #define MIN_ROOM_HEIGHT 5
 
-#define SIDE_DOORS_PROBABILITY 550
+#define SIDE_DOORS_PROBABILITY 500
 
 /*__________MEMORY PARAMETERS__________*/
 

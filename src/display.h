@@ -24,8 +24,6 @@ Display features of the game
 
 #define COLOR_GREY 585
 
-// Use nodelay(stdscr, true) to prevent delay using getch (returns ERR if no key is pressed)
-
 // Constants for color pairs
 typedef enum
 {
@@ -46,15 +44,15 @@ void init_mainmenu(DisplayInfo *di);
 void end_mainmenu(DisplayInfo *di);
 void init_gameui(DisplayInfo *di);
 void end_gameui(DisplayInfo *di);
-void item_desc(WINDOW *win, char* chaine);
+void item_desc(WINDOW *win, char* str);
 void lore_screen(DisplayInfo *di, WINDOW* lore_box);
 void death_screen(DisplayInfo *di, Player *pl, int cause_of_death);
 void win_screen(DisplayInfo *di, Player *pl);
 
 
-// Dynamic way to asks for the user string in curses
+
 void getusrstr(WINDOW* win, int y, int x, char* buffer, int max_len, bool(*validatefunc)(int));
-// Main Menu Loop
+
 int MainMenu(DisplayInfo *di);
 
 void right_panel_update(Region *reg, Player *pl, WINDOW *win);
@@ -64,6 +62,7 @@ void manage_inventory(Region *reg, Player *pl, DisplayInfo *di);
 void show_controls(DisplayInfo *di);
 
 void save_ui(DisplayInfo *di, Region *reg, Player *pl);
+bool quit_ui(DisplayInfo *di);
 void update_map(DisplayInfo *di, Region *reg, Player *pl);
 
 #endif

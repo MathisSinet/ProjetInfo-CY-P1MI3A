@@ -1,7 +1,7 @@
 /*
 game.h
 Contains functions to allow the player and monsters to move and attack
-Also contains the item pickup code
+Also contains the item pickup code, the win and death code
 */
 
 #ifndef GAME_HEADER
@@ -13,7 +13,6 @@ Also contains the item pickup code
 #include "save.h"
 #include "quest.h"
 
-// Handles the movement of a player
 void playermove(Region *reg, Player *pl, Pole dir, DisplayInfo* di);
 void monstermove_one(Region *reg, Player *pl, Room *room, MonsterInRoom *monsterptr, Pole pole);
 void monstermove_random(Region *reg, Player *pl, Room *room, MonsterInRoom *monsterptr);

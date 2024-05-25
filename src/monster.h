@@ -3,6 +3,6 @@
 
 #include "gamebasic.h"
 
-Monster getmonster(MonsterIndex index, char *name);
+Monster getmonster(MonsterIndex index);
 
 #endif

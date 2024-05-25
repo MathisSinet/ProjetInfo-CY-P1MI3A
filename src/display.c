@@ -152,12 +152,14 @@ void getusrstr(WINDOW *win, int y, int x, char *buffer, int max_len, bool(*valid
     {
         chr = wgetch(win);
 
+        // checks for 'Enter' press
         if (len > 0 && (chr == KEY_ENTER || chr == '\n' || chr == '\r'))
         {
             buffer[len] = '\0';
             break;
         }
 
+        // checks for backspace press
         if (len > 0 && (chr == KEY_BACKSPACE || chr == KEY_DC || chr == 127))
         {
             buffer[--len] = '\0';
@@ -165,6 +167,7 @@ void getusrstr(WINDOW *win, int y, int x, char *buffer, int max_len, bool(*valid
             wmove(win, y, x+len);
         }
 
+        // checks for writing
         if ((*validatefunc)(chr) && len < max_len-1)
         {
             buffer[len++] = (char) chr;
@@ -308,7 +311,7 @@ void right_panel_update(Region *reg, Player *pl, WINDOW *win)
 }
 
 
-// Updates the bottom
+// Updates the bottom panel
 void bottom_panel_update(Region *reg, Player *pl, WINDOW *win)
 {
     new_wclear(win);
@@ -353,11 +356,13 @@ void manage_inventory(Region *reg, Player *pl, DisplayInfo *di)
     {
         ch = wgetch(win);
         drop = false;
+
         // Close inventory
         if (ch == 'e' || ch == 'E')
         {
             break;
         }
+
         // Use item
         if (ch == 'u' || ch == 'U')
         {
@@ -394,6 +399,7 @@ void manage_inventory(Region *reg, Player *pl, DisplayInfo *di)
                 mvwprintw(win, di->height-2, 2, "A : Jeter l'objet");
             }
         }
+
         // Drop item
         if (ch == 'a' || ch == 'A' || drop)
         {
@@ -421,6 +427,7 @@ void manage_inventory(Region *reg, Player *pl, DisplayInfo *di)
                 mvwaddwstr(win, 11+cursor, 2, RARROW_SYMB);
             }
         }
+
         if (ch == KEY_DOWN || ch == 's' || ch == 'S')
         {
             mvwaddwstr(win, 11+cursor, 2, L"  ");
@@ -460,35 +467,55 @@ void save_ui(DisplayInfo *di, Region *reg, Player *pl)
 {
     WINDOW *win = di->box2;
     FILE *savefile;
+    int chr;
 
     new_wclear(win);
     // Sets the path
     char path[MAX_PLAYER_NAME_COUNT+20];
     sprintf(path, "saves/%s", pl->name);
 
-    if (true/*access(path, W_OK)*/)
+    mvwaddwstr(win, 1, 2, L"Voulez-vous sauvegarder ? O/N");
+    chr = wgetch(win);
+    if (chr == 'o' || chr == 'O')
     {
-        mvwaddwstr(win, 1, 2, L"Voulez-vous sauvegarder ? O/N");
-        if (wgetch(win) == 'o')
+        new_wclear(win);
+        if ((savefile = fopen(path, "wb")))
         {
-            new_wclear(win);
-            if ((savefile = fopen(path, "wb")))
-            {
-                save(savefile, reg, pl);
-                fclose(savefile);
-                mvwprintw(win, 1, 2, "Sauvegarde dans %s", path);
-                mvwaddwstr(win, 2, 2, L"Appuyez sur une touche pour revenir au jeu...");
-            }
-            else
-            {
-                mvwaddwstr(win, 2, 2, L"Une erreur s'est produite. Appuyez sur une touche pour revenir au jeu...");
-            }
-            wgetch(win);
+            save(savefile, reg, pl);
+            fclose(savefile);
+            mvwprintw(win, 1, 2, "Sauvegarde dans %s", path);
+            mvwaddwstr(win, 2, 2, L"Appuyez sur une touche pour revenir au jeu...");
         }
+        else
+        {
+            mvwaddwstr(win, 2, 2, L"Une erreur s'est produite. Appuyez sur une touche pour revenir au jeu...");
+        }
+        wgetch(win);
     }
 
     new_wclear(win);
     wrefresh(win);
+}
+
+// Asks confirmation to quit the game
+bool quit_ui(DisplayInfo *di)
+{
+    WINDOW *win = di->box2;
+    int chr;
+    bool quit = false;
+
+    new_wclear(win);
+    mvwaddwstr(win, 1, 2, L"Voulez-vous quitter sans sauvegarder ? O/N");
+    chr = wgetch(win);
+    if (chr == 'o' || chr == 'O')
+    {
+        quit = true;
+    }
+
+    new_wclear(win);
+    wrefresh(win);
+
+    return quit;
 }
 
 
@@ -506,11 +533,14 @@ void update_map(DisplayInfo *di, Region *reg, Player *pl)
     getmaxyx(win, h, w);
     h-=3; w-=2;
     new_wclear(win);
+
+    // Prints the death timer
     reg->deathtimer < DEFAULT_DEATH_TIMER / 10 ? wattron(win, COLOR_PAIR(PAIR_RED)) : 0;
     mvwprintw(win, row++, 2, "%.f secondes avant ", reg->deathtimer);
     waddwstr(win, L"épuisement de l'oxygène de la station");
     reg->deathtimer < DEFAULT_DEATH_TIMER / 10 ? wattroff(win, COLOR_PAIR(PAIR_RED)) : 0;
     
+    // Prints the map
     for (int y=pl->loc.y-h/2; y<pl->loc.y+h/2; y++)
     {
         wmove(win, row++,1);
@@ -528,6 +558,7 @@ void update_map(DisplayInfo *di, Region *reg, Player *pl)
                 continue;
             }
 
+            // Prints an eventual item
             set_itemptr(coordinates(x,y), pl, pl->currentroom, &itemptr);
             if (itemptr)
             {
@@ -539,12 +570,13 @@ void update_map(DisplayInfo *di, Region *reg, Player *pl)
                 continue;
             }
 
+            // Prints an eventual monster
             set_monsterptr(coordinates(x,y), pl, pl->currentroom, &monsterptr);
             if (monsterptr)
             {
                 if (monsterptr->hp > 0)
                 {
-                    wprintw(win, "%lc", getmonster(monsterptr->index, NULL).symb);
+                    wprintw(win, "%lc", getmonster(monsterptr->index).symb);
                 }
                 else
                 {
@@ -560,9 +592,12 @@ void update_map(DisplayInfo *di, Region *reg, Player *pl)
                 wprintw(win, "  ");
                 break;
             case RESERVED:
+                wprintw(win, "  ");
+                /*
                 wattron(win, COLOR_PAIR(PAIR_GREY));
                 wprintw(win, "RR");
                 wattroff(win, COLOR_PAIR(PAIR_GREY));
+                */
                 break;
             case WALL:
                 waddwstr(win, WALL_SYMB);
@@ -577,8 +612,9 @@ void update_map(DisplayInfo *di, Region *reg, Player *pl)
     }
 }
 
+
 // Displays the lore items description on the screen
-void item_desc(WINDOW *win, char* chaine)
+void item_desc(WINDOW *win, char* str)
 {
     // Adjust the cursor position to start just below the top left corner of the box
     int i=0, y, x;
@@ -588,9 +624,9 @@ void item_desc(WINDOW *win, char* chaine)
     y = 1; x = 2;
     wmove(win, y, x);
     // Print the text line by line with a delay
-    while(chaine[i] != '\0')
+    while(str[i] != '\0')
     {
-        if(chaine[i] == '\n' || (chaine[i] == ' ' && x > wwidth-12))
+        if(str[i] == '\n' || (str[i] == ' ' && x > wwidth-12))
         {
             y++; x=2;
             wmove(win, y, x);
@@ -598,7 +634,7 @@ void item_desc(WINDOW *win, char* chaine)
         else
         {
             // Print the character
-            wprintw(win, "%c", chaine[i]);
+            wprintw(win, "%c", str[i]);
             x++;
         }
         wrefresh(win);
@@ -621,7 +657,7 @@ void lore_screen(DisplayInfo *di, WINDOW* lore_box)
     y = 1; x = 2;
     wmove(lore_box, y, x);
 
-    char chaine[1000] = "Nous sommes en 2180. Vous incarnez un pionnier de l'espace envoyé par la NASA à bord de sa station spatiale "
+    char str[1000] = "Nous sommes en 2180. Vous incarnez un pionnier de l'espace envoyé par la NASA à bord de sa station spatiale "
                         "parcourant l'immensité du vide, lorsque vous arrivez sur une planète encore inexplorée, votre base est attaquée par des êtres d'origine "
                         "inconnue. Votre mission est de réaliser des tâches de maintenance de votre station tout en combattant des menaces biologiques mystérieuses, "
                         "afin de rester en vie. \nLa station est un avant-poste crucial pour l'exploration de l'espace et la recherche scientifique. Ainsi, toute "
@@ -630,9 +666,9 @@ void lore_screen(DisplayInfo *di, WINDOW* lore_box)
                         "votre humanité. ";
     // Print the text line by line with a delay
     nodelay(lore_box, true);
-    while(chaine[i] != '\0')
+    while(str[i] != '\0')
     {
-        if(chaine[i] == '\n' || (chaine[i] == ' ' && x > wwidth-12))
+        if(str[i] == '\n' || (str[i] == ' ' && x > wwidth-12))
         {
             y++; x=2;
             wmove(lore_box, y, x);
@@ -640,7 +676,7 @@ void lore_screen(DisplayInfo *di, WINDOW* lore_box)
         else
         {
             // Print the character
-            wprintw(lore_box, "%c", chaine[i]);
+            wprintw(lore_box, "%c", str[i]);
             x++;
         }
         if (wgetch(lore_box) != ERR)

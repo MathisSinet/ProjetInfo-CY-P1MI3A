@@ -46,7 +46,7 @@ int32_t randint(Region *r, int32_t min, int32_t max)
     return new_rand(r) % (max-min+1) + min;
 }
 
-// Has a prob per thousand chance of returning true
+// Has a prob per thousand chance of returning true, using the seeded random number generator
 bool randevent(Region *reg, uint32_t prob)
 {
     return randint(reg, 1, 1000) <= prob;
@@ -65,12 +65,13 @@ int8_t* get_from_grid(Region* reg, int32_t x, int32_t y)
     return reg->grid[nx] + ny;
 }
 
+
 // Frees the allocated memory in the region
 void reg_memfree(Region *reg)
 {
     for (Room **room=reg->roomlist; room<reg->roomlist + MAX_ROOM_COUNT; room++)
     {
-        free(*room);
+        free(*room); // Uses the fact that free(NULL) does nothing
     }
     for (int8_t **column = reg->grid; column < reg->grid+reg->grid_width; column++)
     {
