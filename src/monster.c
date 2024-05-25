@@ -1,3 +1,8 @@
+/*
+monster.c
+Function to get information about a generic monster
+*/
+
 #include "monster.h"
 
 

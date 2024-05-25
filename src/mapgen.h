@@ -1,4 +1,7 @@
-/*__________MAP GENERATION HEADER__________*/
+/*
+mapgen.h
+Functions used to allocate, generate and fill rooms
+*/
 
 #ifndef MAPGEN_HEADER
 #define MAPGEN_HEADER

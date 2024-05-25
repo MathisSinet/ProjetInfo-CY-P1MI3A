@@ -1,3 +1,8 @@
+/*
+quest.h
+Functions to generate quests and check for their completion
+*/
+
 #ifndef QUEST_HEADER
 #define QUEST_HEADER
 

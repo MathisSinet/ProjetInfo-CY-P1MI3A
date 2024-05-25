@@ -1,3 +1,8 @@
+/*
+items.h
+Function to get information about an item
+*/
+
 #ifndef ITEMS_HEADER
 #define ITEMS_HEADER
 

@@ -1,6 +1,9 @@
-#include "mapgen.h"
+/*
+mapgen.c
+Functions used to allocate, generate and fill rooms
+*/
 
-/*__________MAP GENERATION FUNCTIONS__________*/
+#include "mapgen.h"
 
 
 // Allocates a room on the region's room list
@@ -110,6 +113,7 @@ void unreserve_box(Region* reg, Co corner)
         }
     }
 }
+
 
 // This function tries to reserve a room in the grid, from a given room and a given door pole
 // Return value : true if successful, false if failure
@@ -538,36 +542,45 @@ void generate_room(Region *reg, Room* from, Pole dir)
 {
     Room *newroom;
     int width, height, diff;
+
+    // Randomly generates the room size, could be reduced later
     width = randint(reg, MIN_ROOM_WIDTH+4, MAX_ROOM_WIDTH);
     height = randint(reg, MIN_ROOM_HEIGHT+4, MAX_ROOM_HEIGHT);
+
     reg->generated_rooms++;
+
     switch (dir)
     {
     case NORTH:
-        // Grid extension ?
+        // Extends the grid if needed
         if (reg->zero.y + from->corner.y < 3 * MAX_ROOM_HEIGHT)
         {
             extend_grid(reg, NORTH);
         }
 
+        // Initializes the parameters of the room
         newroom = from->door_north.to;
         unreserve_box(reg, newroom->corner);
-        diff = randint(reg, 0, width - MIN_ROOM_WIDTH);
+        diff = randint(reg, 0, width - MIN_ROOM_WIDTH); // represents how much the room will extend left compared to extending right
         newroom->width = width;
         newroom->height = height;
         newroom->corner.x -= diff;
-        while (!newroom_valid_space(reg, from, newroom->corner, diff+MIN_ROOM_WIDTH, MIN_ROOM_HEIGHT)) //first resizing
+
+        // First resizing
+        while (!newroom_valid_space(reg, from, newroom->corner, diff+MIN_ROOM_WIDTH, MIN_ROOM_HEIGHT))
         {
             diff--;
             newroom->corner.x++;
             newroom->width--;
         }
-        while (!newroom_valid_space(reg, from, newroom->corner, newroom->width, MIN_ROOM_HEIGHT)) //second resizing
+        // Second resizing
+        while (!newroom_valid_space(reg, from, newroom->corner, newroom->width, MIN_ROOM_HEIGHT)) 
         {
             newroom->width--;
         }
         newroom->corner.y = from->corner.y - height + 1;
-        while (!newroom_valid_space(reg, from, newroom->corner, newroom->width, newroom->height)) //third resizing
+        // Third resizing
+        while (!newroom_valid_space(reg, from, newroom->corner, newroom->width, newroom->height))
         {
             newroom->corner.y++;
             newroom->height--;
@@ -576,7 +589,6 @@ void generate_room(Region *reg, Room* from, Pole dir)
         newroom->door_south.dist = diff + MIN_ROOM_WIDTH/2;
 
         // Attempts to place doors
-
         if (newroom->width > MIN_ROOM_WIDTH+2)
         {
             newroom->door_north.dist = randint(reg, 2, newroom->width-3);
@@ -584,6 +596,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
         }
         place_ew_side_doors(reg, newroom);
 
+        // Completes room generation
         newroom->is_generated = true;
         wall_room(reg, newroom);
         fill_room(reg, newroom, NORTH);
@@ -591,29 +604,34 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
 
     case EAST:
-        // Grid extension?
+        // Extends the grid if needed
         if (reg->zero.x + from->corner.x + from->width > reg->grid_width - 3*MAX_ROOM_WIDTH)
         {
             extend_grid(reg, EAST);
         }
 
+        // Initializes the parameters of the room
         newroom = from->door_east.to;
         unreserve_box(reg, newroom->corner);
         diff = randint(reg, 0, height - MIN_ROOM_HEIGHT);
         newroom->width = width;
         newroom->height = height;
         newroom->corner.y -= diff;
+
+        // First resizing
         while (!newroom_valid_space(reg, from, newroom->corner, MIN_ROOM_WIDTH, diff+MIN_ROOM_HEIGHT))
         {
             diff--;
             newroom->corner.y++;
             newroom->height--;
         }
+        // Second resizing
         while (!newroom_valid_space(reg, from, newroom->corner, MIN_ROOM_WIDTH, newroom->height))
         {
             newroom->height--;
         }
         newroom->corner.x = from->corner.x + from->width - 1;
+        // Third resizing
         while (!newroom_valid_space(reg, from, newroom->corner, newroom->width, newroom->height))
         {
             newroom->width--;
@@ -621,6 +639,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
         newroom->door_west.dist = diff + MIN_ROOM_WIDTH/2;
 
+        // Attempts to place doors
         if (newroom->height > MIN_ROOM_HEIGHT+2)
         {
             newroom->door_east.dist = randint(reg, 2, newroom->height-3);
@@ -628,37 +647,42 @@ void generate_room(Region *reg, Room* from, Pole dir)
         }
         place_ns_side_doors(reg, newroom);
 
-
+        // Completes room generation
         newroom->is_generated = true;
         wall_room(reg, newroom);
         fill_room(reg, newroom, EAST);
         break;
 
+
     case SOUTH:
-        // Grid extension?
+        // Extends the grid if needed
         if (reg->zero.y + from->corner.y + from->height > reg->grid_height - 3*MAX_ROOM_HEIGHT)
         {
             extend_grid(reg, SOUTH);
         }
 
-
+        // Initializes the parameters of the room
         newroom = from->door_south.to;
         unreserve_box(reg, newroom->corner);
         diff = randint(reg, 0, width - MIN_ROOM_WIDTH);
         newroom->width = width;
         newroom->height = height;
         newroom->corner.x -= diff;
+
+        // First resizing
         while (!newroom_valid_space(reg, from, newroom->corner, diff+MIN_ROOM_WIDTH, MIN_ROOM_HEIGHT))
         {
             diff--;
             newroom->corner.x++;
             newroom->width--;
         }
+        // Second resizing
         while (!newroom_valid_space(reg, from, newroom->corner, newroom->width, MIN_ROOM_HEIGHT))
         {
             newroom->width--;
         }
         newroom->corner.y = from->corner.y + from->height - 1;
+        // Third resizing
         while (!newroom_valid_space(reg, from, newroom->corner, newroom->width, newroom->height))
         {
             newroom->height--;
@@ -666,6 +690,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
         newroom->door_north.dist = diff + MIN_ROOM_WIDTH/2;
 
+        // Attempts to place doors
         if (newroom->width > MIN_ROOM_WIDTH+2)
         {
             newroom->door_south.dist = randint(reg, 2, newroom->width-3);
@@ -673,36 +698,42 @@ void generate_room(Region *reg, Room* from, Pole dir)
         }
         place_ew_side_doors(reg, newroom);
 
+        // Completes room generation
         newroom->is_generated = true;
         wall_room(reg, newroom);
         fill_room(reg, newroom, SOUTH);
         break;
 
+
     case WEST:
-        // Grid extension?
+        // Extends the grid if needed
         if (reg->zero.x + from->corner.x < 3 * MAX_ROOM_WIDTH)
         {
             extend_grid(reg, WEST);
         }
 
-
+        // Initializes the parameters of the room
         newroom = from->door_west.to;
         unreserve_box(reg, newroom->corner);
         diff = randint(reg, 0, height - MIN_ROOM_HEIGHT);
         newroom->width = width;
         newroom->height = height;
         newroom->corner.y -= diff;
+
+        // First resizing
         while (!newroom_valid_space(reg, from, newroom->corner, MIN_ROOM_WIDTH, diff+MIN_ROOM_HEIGHT))
         {
             diff--;
             newroom->corner.y++;
             newroom->height--;
         }
+        // Second resizing
         while (!newroom_valid_space(reg, from, newroom->corner, MIN_ROOM_WIDTH, newroom->height))
         {
             newroom->height--;
         }
         newroom->corner.x = from->corner.x - width + 1;
+        // Third resizing
         while (!newroom_valid_space(reg, from, newroom->corner, newroom->width, newroom->height))
         {
             newroom->corner.x++;
@@ -711,6 +742,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
 
         newroom->door_east.dist = diff + MIN_ROOM_WIDTH/2;
 
+        // Attempts to place doors
         if (newroom->height > MIN_ROOM_HEIGHT+2)
         {
             newroom->door_west.dist = randint(reg, 2, newroom->height-3);
@@ -718,6 +750,7 @@ void generate_room(Region *reg, Room* from, Pole dir)
         }
         place_ns_side_doors(reg, newroom);
 
+        // Completes room generation
         newroom->is_generated = true;
         wall_room(reg, newroom);
         fill_room(reg, newroom, WEST);

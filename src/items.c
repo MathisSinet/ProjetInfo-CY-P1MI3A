@@ -1,3 +1,8 @@
+/*
+items.c
+Function to get information about an item
+*/
+
 #include "items.h"
 
 

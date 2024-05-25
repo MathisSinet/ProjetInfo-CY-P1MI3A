@@ -1,3 +1,8 @@
+/*
+gamebasic.h
+Basic structures for the game and basic functions to manipulate them
+*/
+
 #ifndef GAMEBASIC_HEADER
 #define GAMEBASIC_HEADER
 

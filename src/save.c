@@ -1,3 +1,8 @@
+/*
+save.c
+This file contains the game saving system
+*/
+
 #include "save.h"
 
 // Saves the game to the given savefile

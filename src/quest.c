@@ -1,3 +1,8 @@
+/*
+quest.c
+Functions to generate quests and check for their completion
+*/
+
 #include "quest.h"
 
 

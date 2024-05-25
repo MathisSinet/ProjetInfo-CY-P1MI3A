@@ -1,3 +1,8 @@
+/*
+monster.h
+Function to get information about a generic monster
+*/
+
 #ifndef MONSTER_HEADER
 #define MONSTER_HEADER
 

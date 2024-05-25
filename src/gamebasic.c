@@ -1,3 +1,8 @@
+/*
+gamebasic.c
+Basic structures for the game and basic functions to manipulate them
+*/
+
 #include "gamebasic.h"
 
 /*__________BASIC FUNCTIONS__________*/
