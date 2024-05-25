@@ -42,11 +42,9 @@ void initcurses(DisplayInfo *di)
     }
 
     start_color();
-    init_color(COLOR_GREY, 500, 500, 500);
     init_pair(PAIR_RED, COLOR_RED, COLOR_BLACK);
     init_pair(PAIR_BLUE, COLOR_BLUE, COLOR_BLACK);
     init_pair(PAIR_CYAN, COLOR_CYAN, COLOR_BLACK);
-    init_pair(PAIR_GREY, COLOR_GREY, COLOR_BLACK);
     init_pair(PAIR_GREEN, COLOR_GREEN, COLOR_BLACK);
 }
 
