@@ -736,7 +736,6 @@ void win_screen(DisplayInfo *di, Player *pl)
         i++;
     }
     wattroff(win_box, COLOR_PAIR(PAIR_GREEN));
-    wrefresh(win_box);
 
     // Displays a sentence depending on the cause of the player win
     y = 2*num_lines + 2;
@@ -747,10 +746,10 @@ void win_screen(DisplayInfo *di, Player *pl)
     mvwaddstr(win_box, y+2, (di->width-strlen(buffer)-1)/2, buffer);
     snprintf(buffer, 100, "Nombre de mort(s) : %d", pl->death_count);
     mvwaddstr(win_box, y+3, (di->width-strlen(buffer)-1)/2, buffer);
-    refresh();
-
+    wrefresh(win_box);
+    sleep(3);
     wgetch(win_box);
-
+    
     delwin(win_box);
 }
 
