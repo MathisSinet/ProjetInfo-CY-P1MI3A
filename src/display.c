@@ -652,6 +652,7 @@ void lore_screen(DisplayInfo *di, WINDOW* lore_box)
     // Adjust the cursor position to start just below the top left corner of the box
     int i=0, y, x;
     int wheight, wwidth;
+    bool dodelay = true;
     getmaxyx(lore_box, wheight, wwidth);
 
     y = 1; x = 2;
@@ -681,11 +682,14 @@ void lore_screen(DisplayInfo *di, WINDOW* lore_box)
         }
         if (wgetch(lore_box) != ERR)
         {
-            // If a key is pressed, break the loop
-            break;
+            // If a key is pressed, stop the delay when printing each character
+            dodelay = false;
         }
         wrefresh(lore_box);
-        usleep(15000);
+        if (dodelay)
+        {
+            us_sleep(15000);
+        }
         i++;
     }
     nodelay(lore_box, false);
