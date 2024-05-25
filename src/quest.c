@@ -319,12 +319,12 @@ bool quizz3(Player* pl, Region* reg, WINDOW* win)
         structure_sizeof++;
     }
 
-    mvwprintw(win, 13, 2, "}Mystruct;");
-    mvwprintw(win, 15, 2, "int main(){");
-    mvwaddstr(win, 16, 2, "   printf(\"%ld\", sizeof(Mystruct));");
-    mvwaddstr(win, 17, 2, "   printf(\"%ld\", _Alignof(Mystruct));");
-    mvwprintw(win, 18, 2, "   return 0;");
-    mvwprintw(win, 19, 2, "}");
+    mvwprintw(win, 12, 2, "}Mystruct;");
+    mvwprintw(win, 14, 2, "int main(){");
+    mvwaddstr(win, 15, 2, "   printf(\"%ld\", sizeof(Mystruct));");
+    mvwaddstr(win, 16, 2, "   printf(\"%ld\", _Alignof(Mystruct));");
+    mvwprintw(win, 17, 2, "   return 0;");
+    mvwprintw(win, 18, 2, "}");
 
     // Computes the expected answers
     snprintf(answer1, 7, "%u", structure_sizeof);
@@ -332,14 +332,24 @@ bool quizz3(Player* pl, Region* reg, WINDOW* win)
 
     // Asks for the answers
     curs_set(1);
-    mvwprintw(win, 21, 2, "Premier affichage : ");
-    getusrstr(win, 21, 22, pl_answer1, 5, &isvalid_quizz1_answer_chr);
-    mvwprintw(win, 22, 2, "Second affichage : ");
-    getusrstr(win, 22, 21, pl_answer2, 5, &isvalid_quizz1_answer_chr);
+    mvwprintw(win, 20, 2, "Premier affichage : ");
+    getusrstr(win, 20, 22, pl_answer1, 5, &isvalid_quizz1_answer_chr);
+    mvwprintw(win, 21, 2, "Second affichage : ");
+    getusrstr(win, 21, 21, pl_answer2, 5, &isvalid_quizz1_answer_chr);
     curs_set(0);
 
     // Compares the given answers with the expected answers
     if (!strcmp(pl_answer1, answer1))
+    {
+        nb_success++;
+        mvwprintw(win, 20, 32, "Correct !");
+    }
+    else
+    {
+        mvwaddwstr(win, 20, 32, L"Incorrect, la bonne réponse était ");
+        waddstr(win, answer1);
+    }
+    if (!strcmp(pl_answer2, answer2))
     {
         nb_success++;
         mvwprintw(win, 21, 32, "Correct !");
@@ -347,20 +357,10 @@ bool quizz3(Player* pl, Region* reg, WINDOW* win)
     else
     {
         mvwaddwstr(win, 21, 32, L"Incorrect, la bonne réponse était ");
-        waddstr(win, answer1);
-    }
-    if (!strcmp(pl_answer2, answer2))
-    {
-        nb_success++;
-        mvwprintw(win, 22, 32, "Correct !");
-    }
-    else
-    {
-        mvwaddwstr(win, 22, 32, L"Incorrect, la bonne réponse était ");
         waddstr(win, answer2);
     }
     
-    wmove(win, 24, 2);
+    wmove(win, 23, 2);
     
     return nb_success == 2;
 }
