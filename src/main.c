@@ -100,7 +100,6 @@ void Game(DisplayInfo *di, Region *reg, Player *pl)
     int ch;
     float t1, t2, diff;
     update_map(di, reg, pl);
-    wrefresh(di->box2); //temp
     right_panel_update(reg, pl, di->box3);
     bottom_panel_update(reg, pl, di->box2);
     nodelay(di->box1, true);
